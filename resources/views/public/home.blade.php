@@ -67,11 +67,10 @@
                     <span style="color:#fbbf24;font-size:14px;">
                         @if($pick->stars === 10)
                             <div style="text-align:center;">
-                                <span>★★★★★★★★★★</span>
-                                <div style="font-size:10px;margin-top:2px;">Exclusive Whale Package</div>
+                                <span style="color:#f59e0b;">★10 WHALE</span>
                             </div>
                         @else
-                            {{ str_repeat('★', $pick->stars) }}{{ str_repeat('☆', 10 - ($pick->stars * 2)) }}
+                            {{ str_repeat('★', $pick->stars) }}{{ str_repeat('☆', 5 - $pick->stars) }}
                         @endif
                     </span>
                 </div>
@@ -102,7 +101,7 @@
                 <!-- Game Info -->
                 <div style="background:#0f172a;border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:#94a3b8;">
                     <div style="display:flex;justify-content:space-between;">
-                        <span>{{ $pick->game_date->format('M d, Y') }}</span>
+                        <span>{{ $pick->game_date?->format('M d, Y') ?? 'TBD' }}</span>
                         <span>{{ $pick->game_time ?? 'TBD' }}</span>
                     </div>
                     <div style="margin-top:4px;color:#64748b;">{{ $pick->venue ?? 'TBD' }}</div>
@@ -222,7 +221,7 @@
 </div>
 
 <!-- Simulation Modal -->
-<div id="simulateModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;">
+<div id="simulateModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:white;border-radius:16px;padding:32px;max-width:400px;text-align:center;">
         <h3 id="modalTitle" style="margin-bottom:8px;">Simulation Result</h3>
         <p id="modalResult" style="font-size:24px;font-weight:bold;margin:16px 0;"></p>

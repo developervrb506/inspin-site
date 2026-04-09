@@ -9,8 +9,12 @@
 
         <div class="sport-filter">
             <a href="{{ route('consensus') }}" class="{{ !$sport ? 'active' : '' }}">All</a>
-            <a href="{{ route('consensus', ['sport' => 'Football']) }}" class="{{ $sport === 'Football' ? 'active' : '' }}">NFL</a>
-            <a href="{{ route('consensus', ['sport' => 'Basketball']) }}" class="{{ $sport === 'Basketball' ? 'active' : '' }}">NBA</a>
+            <a href="{{ route('consensus', ['sport' => 'NFL']) }}" class="{{ $sport === 'NFL' ? 'active' : '' }}">NFL</a>
+            <a href="{{ route('consensus', ['sport' => 'NCAAF']) }}" class="{{ $sport === 'NCAAF' ? 'active' : '' }}">NCAAF</a>
+            <a href="{{ route('consensus', ['sport' => 'NBA']) }}" class="{{ $sport === 'NBA' ? 'active' : '' }}">NBA</a>
+            <a href="{{ route('consensus', ['sport' => 'NCAAB']) }}" class="{{ $sport === 'NCAAB' ? 'active' : '' }}">NCAAB</a>
+            <a href="{{ route('consensus', ['sport' => 'MLB']) }}" class="{{ $sport === 'MLB' ? 'active' : '' }}">MLB</a>
+            <a href="{{ route('consensus', ['sport' => 'NHL']) }}" class="{{ $sport === 'NHL' ? 'active' : '' }}">NHL</a>
         </div>
 
         <table class="c-table">
@@ -30,7 +34,7 @@
                     <td>
                         <div style="font-weight:600;color:#0f172a;">{{ $game->away_team }}</div>
                         <div style="font-weight:600;color:#0f172a;">{{ $game->home_team }}</div>
-                        <div style="font-size:11px;color:#64748b;">{{ $game->league }} - {{ $game->game_date->format('M d, g:i A') }}</div>
+                        <div style="font-size:11px;color:#64748b;">{{ $game->league }} - {{ $game->game_date?->format('M d, g:i A') ?? 'TBD' }}</div>
                     </td>
                     <td>
                         <div style="font-size:12px;">{{ $game->moneyline_away }}</div>

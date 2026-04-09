@@ -48,6 +48,28 @@
             <h3 style="margin:30px 0 20px;color:#0f172a;">Teams</h3>
             <div class="form-row">
                 <div class="form-group">
+                    <label for="team1_preset">Quick Fill Team 1</label>
+                    <select id="team1_preset" onchange="fillTeam1(this.value)">
+                        <option value="">Type manually or select below...</option>
+                        @foreach($teamLogos as $logo)
+                            <option value="{{ $logo->id }}" data-name="{{ $logo->team_name }}" data-logo="{{ $logo->logo_path }}" data-abbr="{{ $logo->abbreviation }}">{{ $logo->sport }} - {{ $logo->team_name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="hint">Select a team to auto-fill name and logo</div>
+                </div>
+                <div class="form-group">
+                    <label for="team2_preset">Quick Fill Team 2</label>
+                    <select id="team2_preset" onchange="fillTeam2(this.value)">
+                        <option value="">Type manually or select below...</option>
+                        @foreach($teamLogos as $logo)
+                            <option value="{{ $logo->id }}" data-name="{{ $logo->team_name }}" data-logo="{{ $logo->logo_path }}" data-abbr="{{ $logo->abbreviation }}">{{ $logo->sport }} - {{ $logo->team_name }}</option>
+                        @endforeach
+                    </select>
+                    <div class="hint">Select a team to auto-fill name and logo</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
                     <label for="team1_name">Team 1 Name *</label>
                     <input type="text" id="team1_name" name="team1_name" value="{{ old('team1_name', $pick->team1_name) }}" placeholder="e.g., Alabama" required>
                 </div>
@@ -202,7 +224,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Auto-set whale exclusive when stars = 10
     const starsSelect = document.getElementById('stars');
     const whaleCheckbox = document.querySelector('input[name="is_whale_exclusive"]');
     starsSelect.addEventListener('change', function() {
@@ -210,6 +231,56 @@ document.addEventListener('DOMContentLoaded', function() {
             whaleCheckbox.checked = true;
         }
     });
+
+    // Filter team dropdowns by sport
+    const sportSelect = document.getElementById('sport');
+    if (sportSelect) {
+        sportSelect.addEventListener('change', function() {
+            const selectedSport = this.value;
+            filterTeamDropdown('team1_preset', selectedSport);
+            filterTeamDropdown('team2_preset', selectedSport);
+            filterTeamDropdown('team1_name', selectedSport);
+        });
+        // Initial filter
+        filterTeamDropdown('team1_preset', sportSelect.value);
+        filterTeamDropdown('team2_preset', sportSelect.value);
+    }
 });
+
+function filterTeamDropdown(selectId, sport) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const options = select.querySelectorAll('option');
+    options.forEach(function(opt) {
+        if (opt.value === '') {
+            opt.style.display = '';
+            return;
+        }
+        const optSport = opt.textContent.split(' - ')[0];
+        if (!sport || optSport === sport) {
+            opt.style.display = '';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+}
+
+function fillTeam1(selectedValue) {
+    if (!selectedValue) return;
+    const select = document.getElementById('team1_preset');
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.value) {
+        document.getElementById('team1_name').value = opt.dataset.name || '';
+    }
+}
+
+function fillTeam2(selectedValue) {
+    if (!selectedValue) return;
+    const select = document.getElementById('team2_preset');
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.value) {
+        document.getElementById('team2_name').value = opt.dataset.name || '';
+    }
+}
 </script>
 @endsection

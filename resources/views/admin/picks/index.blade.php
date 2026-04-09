@@ -43,9 +43,9 @@
                         <td style="font-weight:600;color:#3b82f6;">{{ $pick->pick }}</td>
                         <td>
                             @if($pick->stars === 10)
-                                <span style="color:#fbbf24;" title="Exclusive Whale Package">★★★★★★★★★★</span>
+                                <span style="color:#f59e0b;" title="Exclusive Whale Package">★10 WHALE</span>
                             @else
-                                <span style="color:#fbbf24;">{{ str_repeat('★', $pick->stars) }}{{ str_repeat('☆', 10 - ($pick->stars * 2)) }}</span>
+                                <span style="color:#fbbf24;">{{ str_repeat('★', $pick->stars) }}{{ str_repeat('☆', 5 - $pick->stars) }}</span>
                             @endif
                         </td>
                         <td>
@@ -62,7 +62,7 @@
                         <td>{{ $pick->expert_name ?? '-' }}</td>
                         <td>
                             <div>{{ $pick->game_date?->format('M d, Y') ?? 'TBD' }}</div>
-                            <div style="font-size:12px;color:#94a3b8;">{{ $pick->game_time?->format('h:i A') ?? '' }}</div>
+                            <div style="font-size:12px;color:#94a3b8;">{{ $pick->game_time ?? '' }}</div>
                         </td>
                         <td style="white-space:nowrap;">
                             <a href="{{ route('admin.picks.edit', $pick) }}" class="btn btn-ghost btn-sm">

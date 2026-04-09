@@ -37,7 +37,7 @@
                         <div style="font-size:12px;">{{ $game->total_over }}</div>
                         <div style="font-size:12px;">{{ $game->total_under }}</div>
                     </td>
-                    <td style="font-size:12px;color:#64748b;">{{ $game->game_date->format('M d, g:i A') }}</td>
+                    <td style="font-size:12px;color:#64748b;">{{ $game->game_date?->format('M d, g:i A') ?? 'TBD' }}</td>
                 </tr>
                 @endforeach
             </tbody>
