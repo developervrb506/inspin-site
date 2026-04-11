@@ -296,7 +296,10 @@
                     <input type="password" class="modal-input" placeholder="Password" name="password" required>
                     <button type="submit" class="modal-btn">Login</button>
                     <div id="loginError" class="modal-error"></div>
-                    <div style="text-align:center;margin-top:16px;">
+                    <div style="text-align:center;margin-top:12px;">
+                        <a href="{{ route('password.request') }}" style="color:#64748b;font-size:13px;">Forgot password?</a>
+                    </div>
+                    <div style="text-align:center;margin-top:8px;">
                         <a href="#" style="color:#2563eb;font-size:13px;" onclick="switchTab('register')">Don't have an account? Register</a>
                     </div>
                 </form>

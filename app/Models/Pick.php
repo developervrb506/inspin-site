@@ -26,6 +26,7 @@ class Pick extends Model
         'stars',
         'result',
         'units',
+        'units_result',
         'expert_name',
         'related_article_id',
         'is_active',
@@ -36,6 +37,7 @@ class Pick extends Model
         'game_date' => 'date',
         'stars' => 'integer',
         'units' => 'decimal:2',
+        'units_result' => 'decimal:2',
         'is_active' => 'boolean',
         'is_whale_exclusive' => 'boolean',
     ];
@@ -74,6 +76,19 @@ class Pick extends Model
     public function relatedArticle(): BelongsTo
     {
         return $this->belongsTo(Article::class, 'related_article_id');
+    }
+
+    // Accessor: Pick status (ACTIVE / STARTED / GRADED)
+    public function getStatusAttribute(): string
+    {
+        if ($this->result !== 'pending') {
+            return 'GRADED';
+        }
+        $timeStr = $this->game_time
+            ? \Carbon\Carbon::parse($this->game_time)->format('H:i:s')
+            : '00:00:00';
+        $gameStart = \Carbon\Carbon::parse($this->game_date->format('Y-m-d') . ' ' . $timeStr);
+        return $gameStart->isPast() ? 'STARTED' : 'ACTIVE';
     }
 
     // Accessor: Stars display text
