@@ -22,9 +22,24 @@ class PublicController extends Controller
 
     public function home()
     {
+        $now = now();
+        $expertPicks = Pick::where('is_active', true)
+            ->where('result', 'pending')
+            ->where(function ($q) use ($now) {
+                $q->where('game_date', '>', $now->toDateString())
+                  ->orWhere(function ($q2) use ($now) {
+                      $q2->where('game_date', $now->toDateString())
+                         ->where('game_time', '>', $now->format('H:i:s'));
+                  });
+            })
+            ->orderBy('game_date', 'asc')
+            ->orderBy('game_time', 'asc')
+            ->limit(5)
+            ->get();
+
         return view('public.home', [
-            'articles' => Article::published()->limit(6)->get(),
-            'expertPicks' => Pick::active()->orderBy('game_date', 'desc')->orderBy('game_time', 'asc')->limit(10)->get(),
+            'articles' => Article::published()->latest()->limit(6)->get(),
+            'expertPicks' => $expertPicks,
             'hotStreaks' => $this->streakService->getHotStreaks(),
             'packages' => Package::active()->get(),
             'whalePackages' => WhalePackage::active()->get(),
@@ -99,7 +114,7 @@ class PublicController extends Controller
     public function picks()
     {
         $sport = request('sport');
-        $picks = Pick::active()
+        $picks = Pick::where('is_active', true)
             ->when($sport, fn($q) => $q->where('sport', $sport))
             ->orderBy('game_date', 'desc')
             ->orderBy('game_time', 'asc')

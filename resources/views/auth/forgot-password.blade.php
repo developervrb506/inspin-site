@@ -1,10 +1,10 @@
 @extends('layouts.auth')
 
-@section('title', 'Reset Password - INSPIN')
+@section('title', 'Forgot Password - INSPIN')
 
 @section('content')
 <div class="auth-form-header">
-    <h1>Reset Password</h1>
+    <h1>Forgot Password</h1>
     <p>Enter your email and we'll send you a password reset link.</p>
 </div>
 
@@ -26,6 +26,6 @@
 </form>
 
 <div class="auth-footer">
-    Remember your password? <a href="{{ route('login') }}">Back to sign in</a>
+    Remember your password? <a href="{{ route('home') }}">Back to sign in</a>
 </div>
 @endsection

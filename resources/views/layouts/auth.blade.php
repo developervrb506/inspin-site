@@ -108,7 +108,9 @@
     <div class="auth-layout">
         <div class="auth-brand">
             <div class="auth-brand-content">
-                <div class="auth-brand-logo">INSPIN<span>.com</span></div>
+                <div class="auth-brand-logo">
+                    <img src="{{ asset('images/inspin-logo.png') }}" alt="INSPIN" style="max-width:180px;height:auto;display:block;margin:0 auto 8px;">
+                </div>
                 <h2>Expert Sports Betting Analysis</h2>
                 <p>Access our simulation model that's been up over 150 units in the last 3 years. Get daily picks, betting consensus, live odds, and expert analysis for NFL, NBA, MLB, and NHL.</p>
                 <div class="auth-brand-stats">
