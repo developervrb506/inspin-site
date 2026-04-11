@@ -134,9 +134,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="units">Units</label>
-                    <input type="number" step="0.01" id="units" name="units" value="{{ old('units', $pick->units) }}" placeholder="e.g., +1.00 or -2.20">
-                    <div class="hint">Positive for wins, negative for losses</div>
+                    <label for="units">Units (stake)</label>
+                    <input type="number" step="0.01" id="units" name="units" value="{{ old('units', $pick->units) }}" placeholder="e.g., 1.00">
+                    <div class="hint">Number of units wagered on this pick</div>
+                </div>
+                <div class="form-group">
+                    <label for="units_result">Unit Result (grade)</label>
+                    <input type="number" step="0.01" id="units_result" name="units_result" value="{{ old('units_result', $pick->units_result) }}" placeholder="e.g., +3.00 or -2.00">
+                    <div class="hint">Enter manually after grading. Win: +units, Loss: -units, Push: 0.00. Example: 3-star pick at +100 = +3.00</div>
                 </div>
             </div>
 
