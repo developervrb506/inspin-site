@@ -38,7 +38,7 @@ class PublicController extends Controller
             ->get();
 
         return view('public.home', [
-            'articles' => Article::published()->latest()->limit(6)->get(),
+            'articles' => Article::published()->latest()->limit(3)->get(),
             'expertPicks' => $expertPicks,
             'hotStreaks' => $this->streakService->getHotStreaks(),
             'packages' => Package::active()->get(),

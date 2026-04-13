@@ -286,7 +286,7 @@
             
             <div class="modal-tabs">
                 <button class="modal-tab active" onclick="switchTab('login')">Login</button>
-                <button class="modal-tab" onclick="switchTab('register')">Register</button>
+                <button class="modal-tab" onclick="switchTab('register')">Join Now</button>
             </div>
             
             <!-- Login Form -->
@@ -300,7 +300,7 @@
                         <a href="{{ route('password.request') }}" style="color:#64748b;font-size:13px;">Forgot password?</a>
                     </div>
                     <div style="text-align:center;margin-top:8px;">
-                        <a href="#" style="color:#2563eb;font-size:13px;" onclick="switchTab('register')">Don't have an account? Register</a>
+                        <a href="#" style="color:#2563eb;font-size:13px;" onclick="switchTab('register')">Don't have an account? Join Now</a>
                     </div>
                 </form>
             </div>
@@ -325,9 +325,16 @@
 
     <script>
         // Modal functions
-        function openModal() {
+        function openModal(tab) {
             document.getElementById('authModal').classList.add('active');
             document.body.style.overflow = 'hidden';
+            if (tab === 'join') {
+                document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.modal-tab')[1].classList.add('active');
+                document.getElementById('registerTab').classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+            }
         }
         
         function closeModal() {
