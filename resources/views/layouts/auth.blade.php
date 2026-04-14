@@ -314,7 +314,7 @@
             <div class="auth-brand-glow"></div>
             <div class="auth-brand-content">
                 <div class="auth-brand-logo">
-                    <img src="{{ asset('images/inspin-logo.png') }}" alt="INSPIN — Insider Picks Sports Information">
+                    <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN — Insider Picks Sports Information">
                 </div>
 
                 <h2>Expert Sports Betting <span>Analysis & Picks</span></h2>
