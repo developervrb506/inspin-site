@@ -82,10 +82,10 @@
                     @php
                         $timeStr = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
                         $gameStart = \Carbon\Carbon::parse($pick->game_date->format('Y-m-d') . ' ' . $timeStr);
-                        $status = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->isPast() ? 'STARTED' : 'ACTIVE');
-                        $statusColor = $status === 'ACTIVE' ? '#4ade80' : ($status === 'STARTED' ? '#fcd34d' : '#71717a');
-                        $statusBg = $status === 'ACTIVE' ? 'rgba(74,222,128,0.1)' : ($status === 'STARTED' ? 'rgba(252,211,77,0.1)' : 'rgba(113,113,122,0.1)');
-                        $statusBorder = $status === 'ACTIVE' ? 'rgba(74,222,128,0.3)' : ($status === 'STARTED' ? 'rgba(252,211,77,0.3)' : 'rgba(113,113,122,0.3)');
+                        $status = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->isPast() ? 'LIVE' : 'UPCOMING');
+                        $statusColor = $status === 'UPCOMING' ? '#4ade80' : ($status === 'LIVE' ? '#fcd34d' : '#71717a');
+                        $statusBg = $status === 'UPCOMING' ? 'rgba(74,222,128,0.1)' : ($status === 'LIVE' ? 'rgba(252,211,77,0.1)' : 'rgba(113,113,122,0.1)');
+                        $statusBorder = $status === 'UPCOMING' ? 'rgba(74,222,128,0.3)' : ($status === 'LIVE' ? 'rgba(252,211,77,0.3)' : 'rgba(113,113,122,0.3)');
                     @endphp
                     <tr style="border-bottom:1px solid #1f1f23;transition:background 0.15s;" onmouseover="this.style.background='rgba(245,158,11,0.04)'" onmouseout="this.style.background='transparent'">
                         <td style="padding:15px 16px;">

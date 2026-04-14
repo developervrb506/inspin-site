@@ -22,16 +22,8 @@ class PublicController extends Controller
 
     public function home()
     {
-        $now = now();
         $expertPicks = Pick::where('is_active', true)
             ->where('result', 'pending')
-            ->where(function ($q) use ($now) {
-                $q->where('game_date', '>', $now->toDateString())
-                  ->orWhere(function ($q2) use ($now) {
-                      $q2->where('game_date', $now->toDateString())
-                         ->where('game_time', '>', $now->format('H:i:s'));
-                  });
-            })
             ->orderBy('game_date', 'asc')
             ->orderBy('game_time', 'asc')
             ->limit(5)
