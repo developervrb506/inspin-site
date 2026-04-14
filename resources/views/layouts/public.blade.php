@@ -347,7 +347,7 @@
     <header class="header">
         <div class="wrap">
             <a href="{{ route('home') }}" class="logo">
-                <img src="{{ asset('images/inspin-logo.png') }}" alt="INSPIN - Insider Picks Sports Information">
+                <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN - Insider Picks Sports Information">
             </a>
             <ul class="nav" id="mainNav">
                 <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
