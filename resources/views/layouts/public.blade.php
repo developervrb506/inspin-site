@@ -540,7 +540,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload();
+                    window.location.href = data.redirect || '{{ route('dashboard') }}';
                 } else {
                     errorDiv.textContent = data.message || 'Login failed. Please check your credentials.';
                     errorDiv.style.display = 'block';
@@ -551,7 +551,7 @@
                 errorDiv.style.display = 'block';
             });
         });
-        
+
         // Handle register form
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
