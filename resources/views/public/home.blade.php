@@ -5,10 +5,13 @@
 {{-- ===== HERO ===== --}}
 <div class="hero">
     <div class="container">
-        <h1>INSPIN Simulation Model - <span>Up +150 Units</span> Over 3 Years</h1>
-        <p>We simulate every NFL, NCAAF, NBA, NCAAB, NHL, and MLB game thousands of times. A $100 bettor would have netted $15,000+ profit. Get access to all our picks and start winning.</p>
-        <div class="hero-actions">
-            <a href="{{ route('join') }}" class="btn btn-red">Subscribe Now</a>
+        <h1>INSPIN Simulation/Handicapper Model – <span>Up +150 Units over 3 Years</span></h1>
+        <p style="color:#fbbf24;font-size:15px;font-weight:600;margin-bottom:12px;position:relative;">($100 bettor won $15,000 / $500 bettor won $75,000 / $1,000 bettor won $150,000)</p>
+        <p style="font-size:1.15rem;color:#fafafa;font-weight:700;margin-bottom:12px;position:relative;">Want to crush the books without the guesswork?</p>
+        <p style="position:relative;">We're giving you <strong style="color:#fbbf24;">7 DAYS</strong> of premium handicapping picks absolutely <strong style="color:#fbbf24;">FREE</strong>. No strings, no "hidden" fees, and zero obligation to stay. Just pure, data-driven, analytic picks delivered straight to you.</p>
+        <p style="margin-top:16px;position:relative;">Stop guessing and start winning. Claim your 7-day free trial now and see the difference professional research makes before you ever spend a dime. <strong style="color:#fbbf24;">Free Trial Click Below!</strong></p>
+        <div class="hero-actions" style="margin-top:32px;">
+            <a href="{{ route('join') }}" class="btn btn-green">Join Now</a>
         </div>
     </div>
 </div>
