@@ -122,6 +122,11 @@ class PickController extends Controller
             unset($validated['team2_logo']);
         }
 
+        // Ensure game_time has seconds (MySQL TIME requires HH:MM:SS)
+        if (!empty($validated['game_time']) && substr_count($validated['game_time'], ':') === 1) {
+            $validated['game_time'] = $validated['game_time'] . ':00';
+        }
+
         $validated['is_whale_exclusive'] = $request->boolean('is_whale_exclusive') || $validated['stars'] === 10;
         $validated['is_active'] = $request->boolean('is_active', true);
 
@@ -188,6 +193,11 @@ class PickController extends Controller
             $validated['team2_logo'] = $path;
         } else {
             $validated['team2_logo'] = $validated['team2_logo'] ?? $pick->team2_logo;
+        }
+
+        // Ensure game_time has seconds (MySQL TIME requires HH:MM:SS)
+        if (!empty($validated['game_time']) && substr_count($validated['game_time'], ':') === 1) {
+            $validated['game_time'] = $validated['game_time'] . ':00';
         }
 
         // Handle checkbox booleans
