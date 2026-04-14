@@ -220,19 +220,88 @@
         .admin-alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
         .metric { display: inline-block; background: #eff6ff; color: #1d4ed8; border-radius: 8px; padding: 8px 16px; margin-right: 8px; margin-bottom: 8px; font-weight: 700; font-size: 14px; }
 
+        /* ===== HAMBURGER ===== */
+        .hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; cursor: pointer; padding: 8px 6px; background: none; border: 1px solid var(--black-border); border-radius: 8px; z-index: 201; }
+        .hamburger span { display: block; width: 22px; height: 2px; background: #a1a1aa; border-radius: 2px; transition: all 0.3s; }
+        .hamburger:hover span { background: var(--gold); }
+        .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--gold); }
+        .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
+
+        /* Mobile nav overlay */
+        .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 199; backdrop-filter: blur(4px); }
+        .nav-overlay.open { display: block; }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 1.9rem; }
-            .hero { padding: 52px 0 44px; }
-            .nav a { padding: 12px 10px; font-size: 11px; }
+            /* Top bar */
+            .top-bar .wrap { flex-direction: column; gap: 6px; text-align: center; }
+            .top-bar .tagline { font-size: 11px; }
+
+            /* Header */
+            .header .wrap { padding: 0 16px; }
+            .logo img { height: 40px; }
+
+            /* Hamburger on, nav off by default */
+            .hamburger { display: flex; }
+            .nav {
+                position: fixed;
+                top: 0; right: -280px;
+                width: 280px; height: 100vh;
+                background: var(--black);
+                border-left: 1px solid var(--black-border);
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                z-index: 200;
+                transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
+                padding-top: 70px;
+                box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+                overflow-y: auto;
+            }
+            .nav.open { right: 0; }
+            .nav a { padding: 16px 24px; font-size: 13px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
+            .nav a.active::after, .nav a:hover::after { display: none; }
+
+            /* Hero */
+            .hero { padding: 44px 0 36px; }
+            .hero h1 { font-size: 1.65rem; letter-spacing: -0.3px; }
+            .hero p { font-size: 14px; }
+            .hero-actions { gap: 10px; }
+            .btn { padding: 12px 22px; font-size: 14px; }
+
+            /* Sections */
+            .section { padding: 40px 0; }
+            .section-title { font-size: 1.45rem; }
+            .container { padding: 0 16px; }
+
+            /* Grids */
             .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-            .header .wrap { flex-direction: column; gap: 0; }
-            .top-bar .wrap { flex-direction: column; gap: 8px; }
+
+            /* Admin */
             .admin-form-row { flex-direction: column; }
-            .section-title { font-size: 1.5rem; }
-            .cta { padding: 40px 24px; }
+
+            /* CTA */
+            .cta { padding: 36px 20px; border-radius: 14px; }
+            .cta h2 { font-size: 1.45rem; }
+
+            /* Footer */
+            .footer .wrap { flex-direction: column; gap: 24px; }
+            .footer-links { gap: 12px; }
+
+            /* Modal */
+            .modal-box { padding: 24px 20px; width: 95%; }
         }
 
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.4rem; }
+            .hero p { font-size: 13.5px; }
+            .section-title { font-size: 1.3rem; }
+            .top-bar .auth { gap: 10px; }
+        }
+    </style>
+    @stack('styles')
+    <style>
         /* ===== MODAL ===== */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .modal-overlay.active { display: flex; }
@@ -274,12 +343,13 @@
         </div>
     </div>
 
+    <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
     <header class="header">
         <div class="wrap">
             <a href="{{ route('home') }}" class="logo">
                 <img src="{{ asset('images/inspin-logo.png') }}" alt="INSPIN - Insider Picks Sports Information">
             </a>
-            <ul class="nav">
+            <ul class="nav" id="mainNav">
                 <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
                 <li><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}">Picks</a></li>
                 <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
@@ -288,6 +358,11 @@
                 <li><a href="{{ route('trends') }}" class="{{ request()->routeIs('trends') ? 'active' : '' }}">Trends</a></li>
                 <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a></li>
             </ul>
+            <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -367,6 +442,35 @@
     </div>
 
     <script>
+        // Nav toggle
+        function toggleNav() {
+            var nav = document.getElementById('mainNav');
+            var btn = document.getElementById('hamburger');
+            var overlay = document.getElementById('navOverlay');
+            var isOpen = nav.classList.contains('open');
+            if (isOpen) {
+                nav.classList.remove('open');
+                btn.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            } else {
+                nav.classList.add('open');
+                btn.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        function closeNav() {
+            document.getElementById('mainNav').classList.remove('open');
+            document.getElementById('hamburger').classList.remove('open');
+            document.getElementById('navOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        // Close nav on resize back to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) closeNav();
+        });
+
         // Modal functions
         function openModal(tab) {
             document.getElementById('authModal').classList.add('active');
