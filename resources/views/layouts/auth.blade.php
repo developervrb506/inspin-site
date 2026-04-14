@@ -296,6 +296,12 @@
             .auth-form-panel { padding: 24px 20px; background: var(--surface); }
             .auth-form-panel::before { display: none; }
             .auth-card { padding: 28px 22px; }
+            .form-row { flex-direction: column; gap: 0; }
+        }
+        @media (max-width: 480px) {
+            .auth-form-panel { padding: 16px 12px; }
+            .auth-card { padding: 22px 16px; border-radius: 14px; }
+            .auth-form-header h1 { font-size: 1.3rem; }
         }
     </style>
 </head>

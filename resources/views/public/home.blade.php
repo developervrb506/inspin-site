@@ -1,6 +1,33 @@
 @extends('layouts.public')
 @section('title', 'INSPIN - Sports Betting Analysis & Picks')
 
+@push('styles')
+<style>
+    /* Packages grid — 3 col desktop, 2 col tablet, 1 col mobile */
+    .pkg-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 900px) { .pkg-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .pkg-grid { grid-template-columns: 1fr; } }
+
+    /* Picks table — hide Date/Time columns on small screens */
+    @media (max-width: 640px) {
+        .picks-col-date, .picks-col-time { display: none; }
+        .picks-col-matchup { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+    }
+
+    /* Whale banner text on small screens */
+    @media (max-width: 560px) {
+        .whale-inner { flex-direction: column !important; text-align: center !important; }
+        .whale-inner > div:first-child { justify-content: center !important; }
+        .whale-price-block { width: 100% !important; }
+    }
+
+    /* Hero text adjustments */
+    @media (max-width: 480px) {
+        .hero h1 { font-size: 1.3rem !important; }
+    }
+</style>
+@endpush
+
 @section('content')
 {{-- ===== HERO ===== --}}
 <div class="hero">
@@ -69,9 +96,9 @@
                 <thead>
                     <tr style="border-bottom:1px solid #27272a;">
                         <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;white-space:nowrap;background:rgba(9,9,11,0.6);">Sport</th>
-                        <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;background:rgba(9,9,11,0.6);">Matchup</th>
-                        <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;white-space:nowrap;background:rgba(9,9,11,0.6);">Date</th>
-                        <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;white-space:nowrap;background:rgba(9,9,11,0.6);">Time</th>
+                        <th class="picks-col-matchup" style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;background:rgba(9,9,11,0.6);">Matchup</th>
+                        <th class="picks-col-date" style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;white-space:nowrap;background:rgba(9,9,11,0.6);">Date</th>
+                        <th class="picks-col-time" style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;white-space:nowrap;background:rgba(9,9,11,0.6);">Time</th>
                         <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;background:rgba(9,9,11,0.6);">Status</th>
                         <th style="text-align:left;padding:12px 16px;color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;background:rgba(9,9,11,0.6);">Stars</th>
                         <th style="text-align:right;padding:12px 16px;background:rgba(9,9,11,0.6);"></th>
@@ -91,11 +118,11 @@
                         <td style="padding:15px 16px;">
                             <span style="background:rgba(30,58,95,0.8);color:#93c5fd;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;border:1px solid rgba(147,197,253,0.15);">{{ $pick->sport }}</span>
                         </td>
-                        <td style="padding:15px 16px;font-weight:600;color:#fafafa;white-space:nowrap;">
+                        <td class="picks-col-matchup" style="padding:15px 16px;font-weight:600;color:#fafafa;white-space:nowrap;">
                             {{ $pick->team1_name }} <span style="color:#52525b;font-size:12px;margin:0 4px;">vs</span> {{ $pick->team2_name }}
                         </td>
-                        <td style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_date?->format('M d, Y') ?? 'TBD' }}</td>
-                        <td style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('g:i A') : 'TBD' }}</td>
+                        <td class="picks-col-date" style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_date?->format('M d, Y') ?? 'TBD' }}</td>
+                        <td class="picks-col-time" style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('g:i A') : 'TBD' }}</td>
                         <td style="padding:15px 16px;">
                             <span style="background:{{ $statusBg }};color:{{ $statusColor }};border:1px solid {{ $statusBorder }};padding:3px 10px;border-radius:5px;font-size:10.5px;font-weight:700;letter-spacing:0.3px;">{{ $status }}</span>
                         </td>
@@ -136,7 +163,7 @@
         </div>
 
         {{-- 3×2 Pricing Grid --}}
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px;">
+        <div class="pkg-grid" style="display:grid;gap:20px;margin-bottom:32px;">
             @foreach($featuredPackages as $pkg)
             @php
                 $isPopular = $pkg->slug === 'monthly';
@@ -187,7 +214,7 @@
             <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at 80% 50%,rgba(245,158,11,0.12) 0%,transparent 65%);pointer-events:none;"></div>
             <div style="position:absolute;top:-60px;right:60px;width:160px;height:160px;background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 70%);pointer-events:none;"></div>
             <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(245,158,11,0.3),transparent);pointer-events:none;"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1;flex-wrap:wrap;">
+            <div class="whale-inner" style="display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1;flex-wrap:wrap;">
                 <div style="display:flex;align-items:center;gap:20px;">
                     <div style="font-size:3.2rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(245,158,11,0.3));">🐋</div>
                     <div>
@@ -200,7 +227,7 @@
                         </div>
                     </div>
                 </div>
-                <div style="text-align:center;flex-shrink:0;">
+                <div class="whale-price-block" style="text-align:center;flex-shrink:0;">
                     <div style="background:linear-gradient(135deg,#fcd34d 0%,#f59e0b 50%,#d97706 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:2.8rem;font-weight:900;line-height:1;letter-spacing:-1px;">${{ number_format($whalePkg->price, 2) }}</div>
                     <div style="color:#52525b;font-size:12px;margin-bottom:18px;margin-top:4px;">{{ $whalePkg->duration ?? '12 Months' }} Access</div>
                     <div style="background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:#09090b;padding:12px 28px;border-radius:10px;font-weight:800;font-size:14px;display:inline-block;box-shadow:0 4px 18px rgba(245,158,11,0.35);letter-spacing:0.2px;">Become a Whale →</div>
