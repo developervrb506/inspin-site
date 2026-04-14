@@ -26,7 +26,8 @@
 
         /* ===== BASE ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--surface); color: var(--text); line-height: 1.6; }
+        html { overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--surface); color: var(--text); line-height: 1.6; overflow-x: hidden; max-width: 100vw; }
         a { color: var(--text); text-decoration: none; transition: color 0.15s; }
         a:hover { color: var(--gold); }
         img { max-width: 100%; }
