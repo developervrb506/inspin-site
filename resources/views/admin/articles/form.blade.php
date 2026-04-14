@@ -48,7 +48,7 @@
                 </div>
                 <div class="form-group">
                     <label>Content <span class="required">*</span></label>
-                    <textarea name="content" class="form-control" rows="14" placeholder="Full article content…">{{ old('content', $article->content) }}</textarea>
+                    <textarea name="content" id="articleContent" class="form-control" rows="14" placeholder="Full article content…">{{ old('content', $article->content) }}</textarea>
                     @error('content')<div class="form-error">{{ $message }}</div>@enderror
                 </div>
             </div>
@@ -101,6 +101,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
 function previewImg(input, previewId) {
     const preview = document.getElementById(previewId);
@@ -110,5 +111,28 @@ function previewImg(input, previewId) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+// Initialize CKEditor on the content textarea
+ClassicEditor
+    .create(document.getElementById('articleContent'), {
+        toolbar: [
+            'heading', '|',
+            'bold', 'italic', 'underline', '|',
+            'bulletedList', 'numberedList', '|',
+            'blockQuote', 'link', '|',
+            'undo', 'redo'
+        ],
+        heading: {
+            options: [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+            ]
+        }
+    })
+    .catch(error => {
+        console.error('CKEditor failed to load:', error);
+    });
 </script>
 @endpush
