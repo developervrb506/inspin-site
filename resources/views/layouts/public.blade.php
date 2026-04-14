@@ -228,8 +228,8 @@
         .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
 
-        /* Mobile nav overlay */
-        .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
+        /* Mobile nav overlay — must stay below header (z-index:100) so nav links are clickable */
+        .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 99; }
         .nav-overlay.open { display: block; }
 
         /* ===== RESPONSIVE ===== */
@@ -253,7 +253,7 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 0;
-                z-index: 200;
+                z-index: 101;
                 transition: right 0.3s cubic-bezier(0.4,0,0.2,1);
                 padding-top: 70px;
                 box-shadow: -8px 0 40px rgba(0,0,0,0.5);
