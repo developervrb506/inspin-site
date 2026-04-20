@@ -1,22 +1,17 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('author')->nullable()->default(null)->change();
-        });
+        DB::statement('ALTER TABLE articles MODIFY COLUMN author VARCHAR(255) NULL DEFAULT NULL');
     }
 
     public function down(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('author')->nullable(false)->default('INSPIN Staff')->change();
-        });
+        DB::statement("ALTER TABLE articles MODIFY COLUMN author VARCHAR(255) NOT NULL DEFAULT 'INSPIN Staff'");
     }
 };
