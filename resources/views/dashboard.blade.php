@@ -41,6 +41,17 @@
             <div class="stat-label">Contests</div>
         </div>
     </div>
+    <div class="stat-card">
+        <div class="stat-icon {{ ($unitsRow->total_units ?? 0) >= 0 ? 'green' : 'red' }}">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <div>
+            <div class="stat-value" style="color:{{ ($unitsRow->total_units ?? 0) >= 0 ? '#16a34a' : '#dc2626' }};">
+                {{ $unitsRow && $unitsRow->total_units !== null ? (($unitsRow->total_units >= 0 ? '+' : '') . number_format($unitsRow->total_units, 2)) : '—' }}
+            </div>
+            <div class="stat-label">All-Time Units</div>
+        </div>
+    </div>
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">

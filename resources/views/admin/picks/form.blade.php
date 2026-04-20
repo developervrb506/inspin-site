@@ -30,7 +30,7 @@
                         @error('game_date')<div class="form-error">{{ $message }}</div>@enderror
                     </div>
                     <div class="form-group">
-                        <label>Game Time</label>
+                        <label>Game Time <span style="color:#64748b;font-weight:400;font-size:12px;">(ET)</span></label>
                         <input type="time" name="game_time" class="form-control" value="{{ old('game_time', $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i') : '') }}">
                         @error('game_time')<div class="form-error">{{ $message }}</div>@enderror
                     </div>
@@ -101,9 +101,16 @@
             <div class="card-header"><h2>Pick Details</h2></div>
             <div class="card-body">
                 <div class="form-group full" style="margin-bottom:16px;">
-                    <label>Pick Recommendation <span class="required">*</span></label>
-                    <textarea name="pick" class="form-control" rows="3" placeholder="e.g. Chiefs -3.5 (-110)">{{ old('pick', $pick->pick) }}</textarea>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                        <label style="margin:0;">Pick Recommendation <span class="required">*</span></label>
+                        <button type="button" onclick="checkPickQuality()" id="checkPickBtn" style="display:inline-flex;align-items:center;gap:6px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;transition:all 0.15s;">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Check Quality with Claude
+                        </button>
+                    </div>
+                    <textarea name="pick" id="pickText" class="form-control" rows="3" placeholder="e.g. Chiefs -3.5 (-110)">{{ old('pick', $pick->pick) }}</textarea>
                     @error('pick')<div class="form-error">{{ $message }}</div>@enderror
+                    <div id="pickQualityResult" style="display:none;margin-top:10px;padding:14px 16px;border-radius:8px;border:1px solid;font-size:13px;"></div>
                 </div>
                 <div class="form-grid-3">
                     <div class="form-group">
@@ -205,6 +212,71 @@ function previewImg(input, previewId) {
         reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+// ── Pick Quality Checker ─────────────────────────────────────
+function checkPickQuality() {
+    const sport   = document.querySelector('[name="sport"]').value;
+    const team1   = document.querySelector('[name="team1_name"]').value.trim();
+    const team2   = document.querySelector('[name="team2_name"]').value.trim();
+    const pick    = document.getElementById('pickText').value.trim();
+    const gameDate= document.querySelector('[name="game_date"]').value;
+
+    if (!pick) { alert('Enter the pick text first.'); return; }
+    if (!team1 || !team2) { alert('Enter both team names first.'); return; }
+
+    const btn = document.getElementById('checkPickBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Checking…';
+
+    const resultEl = document.getElementById('pickQualityResult');
+    resultEl.style.display = 'none';
+
+    fetch('{{ route('admin.ai.check-pick') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ sport, team1, team2, pick, game_date: gameDate }),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            resultEl.style.background = '#fef2f2'; resultEl.style.borderColor = '#fecaca'; resultEl.style.color = '#991b1b';
+            resultEl.innerHTML = '✗ ' + data.error;
+        } else {
+            const passed = data.passed;
+            resultEl.style.background = passed ? '#f0fdf4' : '#fffbeb';
+            resultEl.style.borderColor = passed ? '#bbf7d0' : '#fde68a';
+            resultEl.style.color = '#0f172a';
+
+            let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                <span style="font-size:18px;">${passed ? '✅' : '⚠️'}</span>
+                <strong>${data.summary}</strong>
+                <span style="margin-left:auto;background:${passed?'#16a34a':'#d97706'};color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;">Score: ${data.score}/10</span>
+            </div>`;
+
+            if (data.issues && data.issues.length) {
+                html += `<div style="margin-bottom:8px;"><strong style="color:#dc2626;">Issues:</strong><ul style="margin:4px 0 0 16px;padding:0;">`;
+                data.issues.forEach(i => { html += `<li style="margin-bottom:2px;">${i}</li>`; });
+                html += '</ul></div>';
+            }
+            if (data.suggestions && data.suggestions.length) {
+                html += `<div><strong style="color:#d97706;">Suggestions:</strong><ul style="margin:4px 0 0 16px;padding:0;">`;
+                data.suggestions.forEach(s => { html += `<li style="margin-bottom:2px;">${s}</li>`; });
+                html += '</ul></div>';
+            }
+            resultEl.innerHTML = html;
+        }
+        resultEl.style.display = 'block';
+    })
+    .catch(() => {
+        resultEl.style.background='#fef2f2'; resultEl.style.borderColor='#fecaca'; resultEl.style.color='#991b1b';
+        resultEl.innerHTML = '✗ Quality check failed. Please try again.';
+        resultEl.style.display = 'block';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Check Quality with Claude';
+    });
 }
 
 // Auto-check whale when stars = 10

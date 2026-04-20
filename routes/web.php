@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutController as AdminAboutController;
+use App\Http\Controllers\Admin\AiController as AdminAiController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\PerformanceController as AdminPerformanceController;
 use App\Http\Controllers\Admin\ExpertController as AdminExpertController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WhalePackageController as AdminWhalePackageController;
@@ -27,7 +30,7 @@ Route::get('/trends', [PublicController::class, 'trends'])->name('trends');
 Route::get('/join', [PublicController::class, 'join'])->name('join');
 Route::get('/picks', [PublicController::class, 'picks'])->name('picks');
 Route::post('/picks/{pick}/simulate', [PickController::class, 'simulate'])->name('picks.simulate')->middleware('auth');
-Route::get('/about', function () { return view('public.about'); })->name('about');
+Route::get('/about', [PublicController::class, 'about'])->name('about');
 Route::get('/reviews', function () { return view('public.reviews'); })->name('reviews');
 Route::get('/betting-tools', function () { return view('public.tools'); })->name('tools');
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');
@@ -64,13 +67,18 @@ Route::middleware('auth')->group(function () {
 Route::middleware('admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
+        $unitsRow = App\Models\Pick::whereNotNull('units_result')
+            ->where('result', '!=', 'pending')
+            ->selectRaw("SUM(units_result) as total_units, SUM(CASE WHEN result='win' THEN 1 ELSE 0 END) as wins, SUM(CASE WHEN result='loss' THEN 1 ELSE 0 END) as losses")
+            ->first();
         return view('dashboard', [
             'stats' => [
-                'picks' => App\Models\Pick::count(),
-                'tickets' => App\Models\SupportTicket::count(),
+                'picks'    => App\Models\Pick::count(),
+                'tickets'  => App\Models\SupportTicket::count(),
                 'contests' => App\Models\Contest::count(),
                 'articles' => App\Models\Article::count(),
             ],
+            'unitsRow' => $unitsRow,
         ]);
     })->name('dashboard');
 
@@ -99,6 +107,13 @@ Route::middleware('admin')->group(function () {
         Route::resource('users', AdminUserController::class)->except(['create', 'store', 'show']);
         Route::resource('whale-packages', AdminWhalePackageController::class)->except(['show']);
         Route::resource('picks', PickController::class)->except(['show']);
+        Route::post('ai/parse-pdf', [AdminAiController::class, 'parsePdf'])->name('ai.parse-pdf');
+        Route::post('ai/generate-article', [AdminAiController::class, 'generateArticle'])->name('ai.generate-article');
+        Route::post('ai/generate-excerpt', [AdminAiController::class, 'generateExcerpt'])->name('ai.generate-excerpt');
+        Route::post('ai/check-pick', [AdminAiController::class, 'checkPick'])->name('ai.check-pick');
+        Route::get('about', [AdminAboutController::class, 'edit'])->name('about.edit');
+        Route::put('about', [AdminAboutController::class, 'update'])->name('about.update');
+        Route::get('performance', [AdminPerformanceController::class, 'index'])->name('performance.index');
     });
 });
 
