@@ -100,6 +100,7 @@ class PickController extends Controller
             'simulation_result' => 'nullable|string|in:Win,Loss,Push',
             'result' => 'nullable|string|in:pending,win,loss,push',
             'units' => 'nullable|numeric',
+            'units_result' => 'nullable|numeric',
             'expert_name' => 'nullable|string',
             'related_article_id' => 'nullable|exists:articles,id',
             'team1_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -119,6 +120,11 @@ class PickController extends Controller
             $validated['team2_logo'] = $request->file('team2_logo')->store('uploads/teams', 'public');
         } else {
             unset($validated['team2_logo']);
+        }
+
+        // Ensure game_time has seconds (MySQL TIME requires HH:MM:SS)
+        if (!empty($validated['game_time']) && substr_count($validated['game_time'], ':') === 1) {
+            $validated['game_time'] = $validated['game_time'] . ':00';
         }
 
         $validated['is_whale_exclusive'] = $request->boolean('is_whale_exclusive') || $validated['stars'] === 10;
@@ -156,6 +162,7 @@ class PickController extends Controller
             'simulation_result' => 'nullable|string|in:Win,Loss,Push',
             'result' => 'nullable|in:pending,win,loss,push',
             'units' => 'nullable|numeric',
+            'units_result' => 'nullable|numeric',
             'expert_name' => 'nullable|string',
             'related_article_id' => 'nullable|exists:articles,id',
             'team1_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -186,6 +193,11 @@ class PickController extends Controller
             $validated['team2_logo'] = $path;
         } else {
             $validated['team2_logo'] = $validated['team2_logo'] ?? $pick->team2_logo;
+        }
+
+        // Ensure game_time has seconds (MySQL TIME requires HH:MM:SS)
+        if (!empty($validated['game_time']) && substr_count($validated['game_time'], ':') === 1) {
+            $validated['game_time'] = $validated['game_time'] . ':00';
         }
 
         // Handle checkbox booleans

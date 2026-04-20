@@ -4,12 +4,20 @@
 
 @section('content')
 <div class="auth-form-header">
-    <h1>Sign In</h1>
-    <p>Welcome back! Enter your credentials to access your account.</p>
+    <div class="auth-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+        </svg>
+    </div>
+    <h1>Welcome back</h1>
+    <p>Sign in to access your picks, packages, and account.</p>
 </div>
 
 @if ($errors->any())
-    <div class="alert alert-danger">{{ $errors->first() }}</div>
+    <div class="alert alert-danger">
+        <svg style="flex-shrink:0;width:16px;height:16px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+        {{ $errors->first() }}
+    </div>
 @endif
 
 <form method="POST" action="{{ route('login') }}">

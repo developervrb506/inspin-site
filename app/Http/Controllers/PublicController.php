@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\BettingConsensus;
 use App\Models\Contest;
+use App\Models\Expert;
 use App\Models\Package;
 use App\Models\Pick;
+use App\Models\SiteSetting;
 use App\Models\SupportTicket;
 use App\Models\WhalePackage;
 use App\Services\StreakService;
@@ -22,9 +24,16 @@ class PublicController extends Controller
 
     public function home()
     {
+        $expertPicks = Pick::where('is_active', true)
+            ->where('result', 'pending')
+            ->orderBy('game_date', 'asc')
+            ->orderBy('game_time', 'asc')
+            ->limit(5)
+            ->get();
+
         return view('public.home', [
-            'articles' => Article::published()->limit(6)->get(),
-            'expertPicks' => Pick::active()->orderBy('game_date', 'desc')->orderBy('game_time', 'asc')->limit(10)->get(),
+            'articles' => Article::published()->latest()->limit(3)->get(),
+            'expertPicks' => $expertPicks,
             'hotStreaks' => $this->streakService->getHotStreaks(),
             'packages' => Package::active()->get(),
             'whalePackages' => WhalePackage::active()->get(),
@@ -87,6 +96,14 @@ class PublicController extends Controller
         ]);
     }
 
+    public function about()
+    {
+        return view('public.about', [
+            'aboutContent' => SiteSetting::get('about_content', ''),
+            'experts'      => Expert::where('is_active', true)->get(),
+        ]);
+    }
+
     public function trends()
     {
         $streakService = new StreakService();
@@ -99,7 +116,7 @@ class PublicController extends Controller
     public function picks()
     {
         $sport = request('sport');
-        $picks = Pick::active()
+        $picks = Pick::where('is_active', true)
             ->when($sport, fn($q) => $q->where('sport', $sport))
             ->orderBy('game_date', 'desc')
             ->orderBy('game_time', 'asc')
