@@ -83,7 +83,7 @@
                     @endif
                     <div style="font-size:12px;color:#94a3b8;margin-bottom:12px;">
                         {{ $pick->game_date?->format('M d, Y') }}
-                        {{ $pick->game_time ? ' @ ' . \Carbon\Carbon::parse($pick->game_time)->format('g:i A') : '' }}
+                        {{ $pick->game_time ? ' @ ' . \Carbon\Carbon::parse($pick->game_time)->format('g:i A') . ' ET' : '' }}
                     </div>
 
                     {{-- Pick — gated --}}

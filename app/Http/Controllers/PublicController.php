@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\BettingConsensus;
 use App\Models\Contest;
+use App\Models\Expert;
 use App\Models\Package;
 use App\Models\Pick;
+use App\Models\SiteSetting;
 use App\Models\SupportTicket;
 use App\Models\WhalePackage;
 use App\Services\StreakService;
@@ -91,6 +93,14 @@ class PublicController extends Controller
     {
         return view('public.odds', [
             'consensus' => BettingConsensus::orderBy('game_date')->limit(10)->get(),
+        ]);
+    }
+
+    public function about()
+    {
+        return view('public.about', [
+            'aboutContent' => SiteSetting::get('about_content', ''),
+            'experts'      => Expert::where('is_active', true)->get(),
         ]);
     }
 

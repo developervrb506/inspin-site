@@ -14,7 +14,7 @@
 <div class="card">
     <div class="card-body" style="padding-bottom:0;">
         <form method="GET" class="search-bar">
-            <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search title, category, author…">
+            <input type="text" name="q" value="{{ $search ?? '' }}" placeholder="Search title, category, author…">
             <button type="submit" class="btn btn-ghost">Search</button>
             @if($search)<a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Clear</a>@endif
         </form>

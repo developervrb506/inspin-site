@@ -122,7 +122,7 @@
                             {{ $pick->team1_name }} <span style="color:#52525b;font-size:12px;margin:0 4px;">vs</span> {{ $pick->team2_name }}
                         </td>
                         <td class="picks-col-date" style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_date?->format('M d, Y') ?? 'TBD' }}</td>
-                        <td class="picks-col-time" style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('g:i A') : 'TBD' }}</td>
+                        <td class="picks-col-time" style="padding:15px 16px;color:#a1a1aa;white-space:nowrap;font-size:13px;">{{ $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('g:i A') . ' ET' : 'TBD' }}</td>
                         <td style="padding:15px 16px;">
                             <span style="background:{{ $statusBg }};color:{{ $statusColor }};border:1px solid {{ $statusBorder }};padding:3px 10px;border-radius:5px;font-size:10.5px;font-weight:700;letter-spacing:0.3px;">{{ $status }}</span>
                         </td>
