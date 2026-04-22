@@ -28,7 +28,7 @@ class PublicController extends Controller
             ->where('result', 'pending')
             ->orderBy('game_date', 'asc')
             ->orderBy('game_time', 'asc')
-            ->limit(5)
+            ->limit(4)
             ->get();
 
         return view('public.home', [
