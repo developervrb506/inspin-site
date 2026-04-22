@@ -59,6 +59,10 @@
                             <label>Rotation #</label>
                             <input type="number" name="team1_rotation" class="form-control" value="{{ old('team1_rotation', $pick->team1_rotation) }}" placeholder="e.g. 101">
                         </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Betting % (Team 1)</label>
+                            <input type="number" name="team1_percent" class="form-control" min="0" max="100" value="{{ old('team1_percent', $pick->team1_percent) }}" placeholder="e.g. 55">
+                        </div>
                         <div class="form-group">
                             <label>Logo</label>
                             <input type="file" name="team1_logo" class="form-control" accept="image/*" onchange="previewImg(this,'prev1')">
@@ -80,6 +84,10 @@
                         <div class="form-group" style="margin-bottom:12px;">
                             <label>Rotation #</label>
                             <input type="number" name="team2_rotation" class="form-control" value="{{ old('team2_rotation', $pick->team2_rotation) }}" placeholder="e.g. 102">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Betting % (Team 2)</label>
+                            <input type="number" name="team2_percent" class="form-control" min="0" max="100" value="{{ old('team2_percent', $pick->team2_percent) }}" placeholder="e.g. 45">
                         </div>
                         <div class="form-group">
                             <label>Logo</label>

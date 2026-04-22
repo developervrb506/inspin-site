@@ -105,6 +105,8 @@ class PickController extends Controller
             'related_article_id' => 'nullable|exists:articles,id',
             'team1_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'team2_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'team1_percent' => 'nullable|integer|min:0|max:100',
+            'team2_percent' => 'nullable|integer|min:0|max:100',
             'is_active' => 'boolean',
             'is_whale_exclusive' => 'boolean',
         ]);
@@ -167,6 +169,8 @@ class PickController extends Controller
             'related_article_id' => 'nullable|exists:articles,id',
             'team1_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'team2_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'team1_percent' => 'nullable|integer|min:0|max:100',
+            'team2_percent' => 'nullable|integer|min:0|max:100',
             'is_active' => 'boolean',
             'is_whale_exclusive' => 'boolean',
         ]);

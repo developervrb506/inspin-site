@@ -5,45 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'INSPIN - Sports Betting Analysis & Picks')</title>
     <meta name="description" content="@yield('meta', 'INSPIN - Expert sports betting analysis, daily picks, betting consensus, live odds, and trends for NFL, NBA, MLB, NHL.')">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
     <style>
         /* ===== DESIGN TOKENS ===== */
         :root {
-            --black:       #09090b;   /* zinc-950 — richer than pure black */
-            --black-soft:  #18181b;   /* zinc-900 — surfaces in dark sections */
-            --black-border:#27272a;   /* zinc-800 — subtle borders on dark bg */
-            --black-hover: #3f3f46;   /* zinc-700 — hover state on dark */
-            --gold:        #f59e0b;   /* amber-500 — refined gold */
-            --gold-light:  #fcd34d;   /* amber-300 — highlights */
-            --gold-dark:   #d97706;   /* amber-600 — gold hover */
-            --gold-glow:   rgba(245,158,11,0.25);
-            --white:       #fafafa;   /* warm white */
-            --surface:     #f4f4f5;   /* zinc-100 — page background */
-            --surface-2:   #e4e4e7;   /* zinc-200 — card borders */
-            --text:        #18181b;   /* zinc-900 — primary text */
-            --text-muted:  #71717a;   /* zinc-500 */
-            --text-dim:    #a1a1aa;   /* zinc-400 */
+            --black:       #171818;
+            --black-soft:  #212121;
+            --black-border:#2d2d2d;
+            --black-hover: #3a3a3a;
+            --gold:        #FDB515;
+            --gold-light:  #fdd060;
+            --gold-dark:   #e09c0d;
+            --gold-glow:   rgba(253,181,21,0.25);
+            --white:       #FFFCEE;
+            --surface:     #212121;
+            --surface-2:   #2d2d2d;
+            --text:        #FFFCEE;
+            --text-muted:  #9a9a9a;
+            --text-dim:    #6e6e6e;
         }
 
         /* ===== BASE ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { overflow-x: hidden; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--surface); color: var(--text); line-height: 1.6; overflow-x: hidden; max-width: 100vw; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #171818; color: #FFFCEE; line-height: 1.6; overflow-x: hidden; max-width: 100vw; }
         a { color: var(--text); text-decoration: none; transition: color 0.15s; }
         a:hover { color: var(--gold); }
         img { max-width: 100%; }
 
-        /* ===== TOP BAR ===== */
-        .top-bar { background: var(--black); border-bottom: 1px solid var(--black-border); padding: 7px 0; font-size: 13px; }
-        .top-bar .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .top-bar .tagline { color: var(--text-dim); font-size: 11.5px; letter-spacing: 0.2px; }
-        .top-bar .auth { display: flex; gap: 16px; align-items: center; }
-        .top-bar .auth a { color: #d4d4d8; font-weight: 600; font-size: 13px; transition: color 0.15s; }
-        .top-bar .auth a:hover { color: var(--gold-light); }
-        .top-bar .auth .join-btn { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--black); padding: 5px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.2px; box-shadow: 0 2px 8px var(--gold-glow); transition: all 0.2s; }
-        .top-bar .auth .join-btn:hover { background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); box-shadow: 0 4px 14px var(--gold-glow); color: var(--black); transform: translateY(-1px); }
+        /* ===== HEADER AUTH (right side) ===== */
+        .header-auth { display: flex; gap: 18px; align-items: center; flex-shrink: 0; }
+        .header-login { color: #FFFCEE; font-size: 13.5px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-decoration: none; transition: color 0.15s; cursor: pointer; background: none; border: none; padding: 0; opacity: 0.75; }
+        .header-login:hover { color: #FFFCEE; opacity: 1; }
+        .header-signup { display: inline-block; padding: 8px 22px; border: 1px solid #FDB515; border-radius: 50px; color: #FDB515; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: background 0.18s, filter 0.18s; white-space: nowrap; filter: drop-shadow(0px 0px 9.4px #FDB515); }
+        .header-signup:hover { background: rgba(253,181,21,0.1); color: #FDB515; }
+        .header-user-name { color: #a1a1aa; font-size: 13px; }
+        .header-dash-link { color: #d4d4d8; font-size: 13px; font-weight: 600; text-decoration: none; transition: color .15s; }
+        .header-dash-link:hover { color: var(--gold); }
+        .header-logout-btn { background: none; border: none; color: #71717a; font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; transition: color .15s; }
+        .header-logout-btn:hover { color: #ef4444; }
 
         /* ===== HEADER — sticky glass ===== */
-        .header { background: rgba(9,9,11,0.97); border-bottom: 1px solid var(--black-border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 0 var(--black-border), 0 4px 24px rgba(0,0,0,0.4); }
+        .header { background: rgba(23,24,24,0.97); border-bottom: 1px solid rgba(255,252,238,.06); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 1px 0 rgba(255,255,255,.04), 0 4px 24px rgba(0,0,0,0.5); }
         .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%); }
         .header .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
         .logo { padding: 10px 0; }
@@ -51,8 +57,8 @@
 
         /* ===== NAV ===== */
         .nav { display: flex; gap: 0; list-style: none; flex-wrap: wrap; transform: none; visibility: visible; }
-        .nav a { display: block; padding: 17px 13px; color: #a1a1aa; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; transition: all 0.18s; border-bottom: 2px solid transparent; margin-bottom: -1px; position: relative; }
-        .nav a:hover { color: var(--white); }
+        .nav a { display: block; padding: 20px 13px; color: #9a9a9a; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-transform: none; letter-spacing: 0.1px; transition: all 0.18s; border-bottom: 2px solid transparent; margin-bottom: -1px; position: relative; }
+        .nav a:hover { color: #FFFCEE; }
         .nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
         .nav a.active::after, .nav a:hover::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 60%; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); border-radius: 2px; }
         .nav a.active::after { width: 80%; }
@@ -157,7 +163,7 @@
         .cta .btn:hover { background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); box-shadow: 0 6px 24px rgba(245,158,11,0.45); transform: translateY(-2px); }
 
         /* ===== FOOTER ===== */
-        .footer { background: var(--black); padding: 40px 0; margin-top: 0; border-top: 1px solid var(--black-border); position: relative; }
+        .footer { background: #171818; padding: 40px 0; margin-top: 0; border-top: 1px solid rgba(255,252,238,.06); position: relative; }
         .footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, var(--gold-dark) 25%, var(--gold) 50%, var(--gold-dark) 75%, transparent 100%); }
         .footer .wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
         .footer-links { display: flex; gap: 20px; list-style: none; flex-wrap: wrap; }
@@ -235,13 +241,10 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            /* Top bar */
-            .top-bar .wrap { flex-direction: column; gap: 6px; text-align: center; }
-            .top-bar .tagline { font-size: 11px; }
-
             /* Header */
             .header .wrap { padding: 0 16px; }
             .logo img { height: 40px; }
+            .header-auth { display: none; }
 
             /* Hamburger on, nav off by default */
             .hamburger { display: flex; }
@@ -305,47 +308,92 @@
     </style>
     @stack('styles')
     <style>
-        /* ===== MODAL ===== */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        /* ===== MODAL — dark Figma theme ===== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--white); border-radius: 18px; padding: 32px; max-width: 400px; width: 90%; box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05); text-align: center; animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
-        .modal-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light), var(--gold), var(--gold-dark)); }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-tabs { display: flex; margin-bottom: 24px; border-radius: 10px; overflow: hidden; border: 1px solid var(--surface-2); gap: 2px; background: var(--surface); padding: 3px; }
-        .modal-tab { flex: 1; padding: 10px; background: transparent; border: none; font-weight: 700; cursor: pointer; transition: all 0.2s; color: var(--text-muted); border-radius: 8px; font-size: 14px; }
-        .modal-tab.active { background: var(--black); color: var(--gold); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-box {
+            background: #1a1a1a;
+            border: 1px solid rgba(253,181,21,0.2);
+            border-radius: 20px;
+            padding: 36px 32px 32px;
+            max-width: 420px;
+            width: 92%;
+            box-shadow: 0 0 60px rgba(253,181,21,0.08), 0 32px 80px rgba(0,0,0,0.7);
+            animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative;
+            overflow: hidden;
+        }
+        .modal-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FDB515, transparent);
+        }
+        .modal-logo { text-align: center; margin-bottom: 6px; }
+        .modal-logo img { height: 40px; width: auto; }
+        .modal-title { font-family: 'Clash Display', sans-serif; font-size: 1.4rem; font-weight: 500; color: #FFFCEE; text-align: center; margin-bottom: 6px; }
+        .modal-subtitle { font-size: 13px; color: #6e6e6e; text-align: center; margin-bottom: 24px; }
+        .modal-tabs { display: flex; margin-bottom: 24px; border-radius: 50px; overflow: hidden; border: 1px solid rgba(255,252,238,.1); gap: 0; background: #111; padding: 4px; }
+        .modal-tab { flex: 1; padding: 9px; background: transparent; border: none; font-family: 'DM Sans', sans-serif; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #6e6e6e; border-radius: 50px; font-size: 13.5px; }
+        .modal-tab.active { background: #FDB515; color: #171818; }
         .modal-tab-content { display: none; text-align: left; }
         .modal-tab-content.active { display: block; }
-        .modal-input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--surface-2); border-radius: 9px; font-size: 14px; margin-bottom: 12px; transition: all 0.2s; background: var(--surface); color: var(--text); }
-        .modal-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(245,158,11,0.12); background: var(--white); }
-        .modal-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--black) 0%, var(--black-soft) 100%); color: var(--gold); border: none; border-radius: 9px; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 8px; transition: all 0.2s; letter-spacing: 0.2px; }
-        .modal-btn:hover { background: linear-gradient(135deg, var(--black-soft) 0%, var(--black-hover) 100%); box-shadow: 0 4px 14px rgba(0,0,0,0.3); transform: translateY(-1px); }
-        .modal-error { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
-        .modal-close { position: absolute; top: 16px; right: 16px; background: var(--surface); border: 1px solid var(--surface-2); border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); font-size: 16px; line-height: 1; transition: all 0.15s; }
-        .modal-close:hover { background: var(--surface-2); color: var(--text); }
+        .modal-input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid rgba(255,252,238,.1);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #111;
+            color: #FFFCEE;
+        }
+        .modal-input::placeholder { color: #4a4a4a; }
+        .modal-input:focus { outline: none; border-color: #FDB515; box-shadow: 0 0 0 3px rgba(253,181,21,0.12); }
+        .modal-btn {
+            width: 100%;
+            padding: 14px;
+            background: #FDB515;
+            color: #171818;
+            border: none;
+            border-radius: 50px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: all 0.2s;
+            letter-spacing: 0.1px;
+            box-shadow: 0 0 20px rgba(253,181,21,0.3);
+        }
+        .modal-btn:hover { background: #ffc62a; box-shadow: 0 0 30px rgba(253,181,21,0.5); transform: translateY(-1px); }
+        .modal-remember { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .modal-remember input[type=checkbox] { width: 16px; height: 16px; accent-color: #FDB515; cursor: pointer; flex-shrink: 0; }
+        .modal-remember label { font-size: 13px; color: #9a9a9a; cursor: pointer; user-select: none; }
+        .modal-divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+        .modal-divider span { font-size: 12px; color: #4a4a4a; white-space: nowrap; }
+        .modal-divider::before, .modal-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,252,238,.08); }
+        .modal-error { color: #ef4444; font-size: 13px; margin-top: 6px; display: none; }
+        .modal-link { color: #FDB515; font-size: 13px; text-decoration: none; transition: opacity .15s; }
+        .modal-link:hover { opacity: 0.8; color: #FDB515; }
+        .modal-close {
+            position: absolute; top: 14px; right: 14px;
+            background: rgba(255,252,238,.05);
+            border: 1px solid rgba(255,252,238,.08);
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: #6e6e6e; font-size: 18px; line-height: 1;
+            transition: all 0.15s;
+        }
+        .modal-close:hover { background: rgba(255,252,238,.1); color: #FFFCEE; }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="wrap">
-            <span class="tagline">INSPIN - Expert Sports Betting Analysis & Simulation Models</span>
-            <div class="auth">
-                @auth
-                    <span style="color:#64748b;">{{ Auth::user()->name }}</span>
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
-                    <a href="{{ route('profile') }}">Profile</a>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                        @csrf
-                        <button type="submit" style="background:none;border:none;color:#2563eb;cursor:pointer;font-weight:600;font-size:13px;">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}">Login</a>
-                    <a href="{{ route('join') }}" class="join-btn">Join Now</a>
-                @endauth
-            </div>
-        </div>
-    </div>
-
     <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
     <header class="header">
         <div class="wrap">
@@ -361,6 +409,18 @@
                 <li><a href="{{ route('trends') }}" class="{{ request()->routeIs('trends') ? 'active' : '' }}">Trends</a></li>
                 <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a></li>
             </ul>
+            <div class="header-auth" id="headerAuth">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="header-dash-link">{{ Auth::user()->name }}</a>
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="header-logout-btn">Logout</button>
+                    </form>
+                @else
+                    <button onclick="openModal()" class="header-login">Log In</button>
+                    <a href="{{ route('join') }}" class="header-signup">Sign Up</a>
+                @endauth
+            </div>
             <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Toggle navigation">
                 <span></span>
                 <span></span>
@@ -403,42 +463,55 @@
     <div id="authModal" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 style="margin-bottom:20px;color:#0f172a;">Welcome to INSPIN</h2>
-            
-            <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchTab('login')">Login</button>
-                <button class="modal-tab" onclick="switchTab('register')">Join Now</button>
+
+            <div class="modal-logo">
+                <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN">
             </div>
-            
+            <div id="modalTitle" class="modal-title">Welcome Back</div>
+            <div id="modalSubtitle" class="modal-subtitle">Sign in to access your picks</div>
+
+            <div class="modal-tabs">
+                <button class="modal-tab active" id="tabLoginBtn" onclick="switchTab('login')">Log In</button>
+                <button class="modal-tab" id="tabRegisterBtn" onclick="switchTab('register')">Join Now</button>
+            </div>
+
             <!-- Login Form -->
             <div id="loginTab" class="modal-tab-content active">
                 <form id="loginForm">
-                    <input type="email" class="modal-input" placeholder="Email address" name="email" required>
-                    <input type="password" class="modal-input" placeholder="Password" name="password" required>
-                    <button type="submit" class="modal-btn">Login</button>
+                    <input type="email" class="modal-input" placeholder="Email address" name="email" required autocomplete="email">
+                    <input type="password" class="modal-input" placeholder="Password" name="password" required autocomplete="current-password">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                        <div class="modal-remember">
+                            <input type="checkbox" id="rememberMe" name="remember">
+                            <label for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="{{ route('password.request') }}" class="modal-link" style="font-size:12.5px;">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="modal-btn">Log In</button>
                     <div id="loginError" class="modal-error"></div>
-                    <div style="text-align:center;margin-top:12px;">
-                        <a href="{{ route('password.request') }}" style="color:#64748b;font-size:13px;">Forgot password?</a>
-                    </div>
-                    <div style="text-align:center;margin-top:8px;">
-                        <a href="#" style="color:#2563eb;font-size:13px;" onclick="switchTab('register')">Don't have an account? Join Now</a>
-                    </div>
+                    <div class="modal-divider"><span>or</span></div>
+                    <p style="text-align:center;font-size:13px;color:#6e6e6e;margin:0;">
+                        Don't have an account?
+                        <a href="#" class="modal-link" onclick="switchTab('register');return false;">Join Now</a>
+                    </p>
                 </form>
             </div>
-            
+
             <!-- Register Form -->
             <div id="registerTab" class="modal-tab-content">
                 <form id="registerForm">
-                    <input type="text" class="modal-input" placeholder="Full Name" name="name" required>
-                    <input type="email" class="modal-input" placeholder="Email address" name="email" required>
+                    <input type="text" class="modal-input" placeholder="Full Name" name="name" required autocomplete="name">
+                    <input type="email" class="modal-input" placeholder="Email address" name="email" required autocomplete="email">
                     <input type="tel" class="modal-input" placeholder="Phone (optional)" name="phone">
-                    <input type="password" class="modal-input" placeholder="Password" name="password" required>
-                    <input type="password" class="modal-input" placeholder="Confirm Password" name="password_confirmation" required>
+                    <input type="password" class="modal-input" placeholder="Password" name="password" required autocomplete="new-password">
+                    <input type="password" class="modal-input" placeholder="Confirm Password" name="password_confirmation" required autocomplete="new-password">
                     <button type="submit" class="modal-btn">Create Account</button>
                     <div id="registerError" class="modal-error"></div>
-                    <div style="text-align:center;margin-top:16px;">
-                        <a href="#" style="color:#2563eb;font-size:13px;" onclick="switchTab('login')">Already have an account? Login</a>
-                    </div>
+                    <div class="modal-divider"><span>or</span></div>
+                    <p style="text-align:center;font-size:13px;color:#6e6e6e;margin:0;">
+                        Already have an account?
+                        <a href="#" class="modal-link" onclick="switchTab('login');return false;">Log In</a>
+                    </p>
                 </form>
             </div>
         </div>
@@ -478,13 +551,7 @@
         function openModal(tab) {
             document.getElementById('authModal').classList.add('active');
             document.body.style.overflow = 'hidden';
-            if (tab === 'join') {
-                document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
-                document.querySelectorAll('.modal-tab')[1].classList.add('active');
-                document.getElementById('registerTab').classList.add('active');
-                document.getElementById('loginTab').classList.remove('active');
-            }
+            switchTab(tab === 'join' ? 'register' : 'login');
         }
         
         function closeModal() {
@@ -493,27 +560,21 @@
         }
         
         function switchTab(tab) {
-            // Update tabs
-            document.querySelectorAll('.modal-tab').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.modal-tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
+            document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.modal-error').forEach(e => e.style.display = 'none');
+
             if (tab === 'login') {
+                document.getElementById('tabLoginBtn').classList.add('active');
                 document.getElementById('loginTab').classList.add('active');
+                document.getElementById('modalTitle').textContent = 'Welcome Back';
+                document.getElementById('modalSubtitle').textContent = 'Sign in to access your picks';
             } else {
+                document.getElementById('tabRegisterBtn').classList.add('active');
                 document.getElementById('registerTab').classList.add('active');
+                document.getElementById('modalTitle').textContent = 'Create Account';
+                document.getElementById('modalSubtitle').textContent = 'Join INSPIN and start winning';
             }
-            
-            // Clear errors
-            document.querySelectorAll('.modal-error').forEach(error => {
-                error.style.display = 'none';
-            });
         }
         
         // Close modal on overlay click
@@ -527,6 +588,9 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
+            if (document.getElementById('rememberMe').checked) {
+                formData.set('remember', '1');
+            }
             const errorDiv = document.getElementById('loginError');
             
             fetch('/login', {
@@ -581,43 +645,14 @@
             });
         });
         
-        // Replace login link with modal trigger
         document.addEventListener('DOMContentLoaded', function() {
-            const loginLink = document.querySelector('.top-bar .auth a[href*="login"]');
-            if (loginLink) {
-                loginLink.href = '#';
-                loginLink.onclick = function(e) {
-                    e.preventDefault();
-                    openModal();
-                };
+            // Sign Up button in header → open register tab
+            const signupLink = document.querySelector('.header-signup');
+            if (signupLink && signupLink.getAttribute('href') !== '{{ route("join") }}') {
+                signupLink.addEventListener('click', function(e) {
+                    // Let it navigate to join page — no change needed
+                });
             }
-            
-            // Also replace Join Now link (optional - could keep as separate page)
-            const joinLink = document.querySelector('.top-bar .auth .join-btn');
-            if (joinLink) {
-                joinLink.href = '#';
-                joinLink.onclick = function(e) {
-                    e.preventDefault();
-                    openModal();
-                    switchTab('register');
-                    // Make register tab active
-                    document.querySelectorAll('.modal-tab').forEach((btn, index) => {
-                        btn.classList.toggle('active', index === 1);
-                    });
-                };
-            }
-            
-            // Replace simulate button login popup
-            const simulateButtons = document.querySelectorAll('button[onclick="simulatePick"]');
-            simulateButtons.forEach(btn => {
-                const originalOnclick = btn.getAttribute('onclick');
-                if (originalOnclick && originalOnclick.includes('showLoginPopup')) {
-                    btn.onclick = function(e) {
-                        e.preventDefault();
-                        openModal();
-                    };
-                }
-            });
         });
     </script>
 </body>
