@@ -31,6 +31,8 @@ class Pick extends Model
         'related_article_id',
         'is_active',
         'is_whale_exclusive',
+        'team1_percent',
+        'team2_percent',
     ];
 
     protected $casts = [
