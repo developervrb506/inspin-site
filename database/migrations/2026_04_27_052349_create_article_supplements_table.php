@@ -15,13 +15,14 @@ return new class extends Migration
     {
         Schema::create('article_supplements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('article_id')->constrained()->onDelete('cascade');
-            $table->string('type')->default('other'); // video, debate, infographic, flashcard, audio, other
+            $table->unsignedBigInteger('article_id');
+            $table->string('type')->default('other');
             $table->string('title')->nullable();
             $table->longText('embed_code')->nullable();
             $table->string('external_url')->nullable();
             $table->integer('sort_order')->default(0);
             $table->timestamps();
+            $table->index('article_id');
         });
     }
 
