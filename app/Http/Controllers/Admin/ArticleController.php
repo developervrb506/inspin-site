@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\ArticleSupplement;
 use App\Models\Pick;
 use App\Services\ClaudeService;
 use Illuminate\Http\RedirectResponse;
@@ -108,6 +109,7 @@ class ArticleController extends Controller
 
     public function edit(Article $article): View
     {
+        $article->load('supplements');
         return view('admin.articles.form', [
             'article' => $article,
             'picks'   => Pick::orderBy('game_date', 'desc')->get(),
@@ -209,5 +211,26 @@ class ArticleController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Could not parse PDF: ' . $e->getMessage()], 422);
         }
+    }
+
+    public function addSupplement(Request $request, Article $article): RedirectResponse
+    {
+        $validated = $request->validate([
+            'type'         => 'required|in:video,debate,infographic,flashcard,audio,other',
+            'title'        => 'nullable|string|max:255',
+            'embed_code'   => 'nullable|string',
+            'external_url' => 'nullable|url|max:500',
+            'sort_order'   => 'nullable|integer',
+        ]);
+
+        $article->supplements()->create($validated);
+
+        return back()->with('success', 'Supplement added successfully.');
+    }
+
+    public function deleteSupplement(Article $article, ArticleSupplement $supplement): RedirectResponse
+    {
+        $supplement->delete();
+        return back()->with('success', 'Supplement removed.');
     }
 }

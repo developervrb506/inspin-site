@@ -107,6 +107,7 @@ class PickController extends Controller
             'team2_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'team1_percent' => 'nullable|integer|min:0|max:100',
             'team2_percent' => 'nullable|integer|min:0|max:100',
+            'pick_type' => 'nullable|in:Pointspread,Moneyline,Total',
             'is_active' => 'boolean',
             'is_whale_exclusive' => 'boolean',
         ]);
@@ -171,6 +172,7 @@ class PickController extends Controller
             'team2_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'team1_percent' => 'nullable|integer|min:0|max:100',
             'team2_percent' => 'nullable|integer|min:0|max:100',
+            'pick_type' => 'nullable|in:Pointspread,Moneyline,Total',
             'is_active' => 'boolean',
             'is_whale_exclusive' => 'boolean',
         ]);

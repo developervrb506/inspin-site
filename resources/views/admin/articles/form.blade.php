@@ -173,6 +173,86 @@
             <a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Cancel</a>
         </div>
     </form>
+
+    {{-- ── NotebookLM Supplemental Content (only shown when editing existing article) ── --}}
+    @if($article->exists)
+    <div class="card" style="margin-top:28px;">
+        <div class="card-header">
+            <h2>📚 Supplemental Content <span style="font-size:13px;color:#64748b;font-weight:400;">(NotebookLM / Right Sidebar)</span></h2>
+        </div>
+        <div class="card-body">
+            <p style="color:#64748b;font-size:13px;margin-bottom:20px;">Add NotebookLM-generated content here. Each item appears stacked in the right sidebar on the article page. Note: NotebookLM has no public API — paste embed codes or URLs manually.</p>
+
+            {{-- Existing supplements --}}
+            @if($article->supplements->count() > 0)
+            <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                <thead>
+                    <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
+                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Type</th>
+                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Title</th>
+                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Order</th>
+                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($article->supplements as $sup)
+                    <tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:10px 12px;font-size:13px;">{{ $sup->type_icon }} {{ ucfirst($sup->type) }}</td>
+                        <td style="padding:10px 12px;font-size:13px;color:#374151;">{{ $sup->title ?: '—' }}</td>
+                        <td style="padding:10px 12px;font-size:13px;color:#64748b;">{{ $sup->sort_order }}</td>
+                        <td style="padding:10px 12px;">
+                            <form method="POST" action="{{ route('admin.articles.supplements.destroy', [$article, $sup]) }}" onsubmit="return confirm('Remove this supplement?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @else
+            <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;">No supplemental content yet. Add items below.</p>
+            @endif
+
+            {{-- Add new supplement --}}
+            <form method="POST" action="{{ route('admin.articles.supplements.store', $article) }}" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
+                @csrf
+                <div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:12px;align-items:end;flex-wrap:wrap;">
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Type</label>
+                        <select name="type" class="form-control" style="font-size:13px;">
+                            <option value="video">📺 Video Show</option>
+                            <option value="debate">💬 Debate</option>
+                            <option value="infographic">📊 Infographic</option>
+                            <option value="flashcard">🃏 Flashcards</option>
+                            <option value="audio">🎧 Audio</option>
+                            <option value="other">📎 Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Title (optional)</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Game Preview Video" style="font-size:13px;">
+                    </div>
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Order</label>
+                        <input type="number" name="sort_order" class="form-control" value="{{ $article->supplements->count() }}" style="font-size:13px;width:70px;">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="white-space:nowrap;">+ Add</button>
+                    </div>
+                </div>
+                <div style="margin-top:12px;">
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Embed Code <span style="font-weight:400;color:#64748b;">(paste iframe or script from NotebookLM)</span></label>
+                    <textarea name="embed_code" class="form-control" rows="3" placeholder='e.g. <iframe src="..." ...></iframe>' style="font-size:13px;font-family:monospace;"></textarea>
+                </div>
+                <div style="margin-top:10px;">
+                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Or External URL <span style="font-weight:400;color:#64748b;">(link to content)</span></label>
+                    <input type="url" name="external_url" class="form-control" placeholder="https://..." style="font-size:13px;">
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
 

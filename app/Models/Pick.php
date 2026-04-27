@@ -33,6 +33,7 @@ class Pick extends Model
         'is_whale_exclusive',
         'team1_percent',
         'team2_percent',
+        'pick_type',
     ];
 
     protected $casts = [

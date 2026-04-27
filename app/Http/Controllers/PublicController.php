@@ -63,6 +63,8 @@ class PublicController extends Controller
             abort(404);
         }
 
+        $article->load('supplements');
+
         $related = Article::published()
             ->where('id', '!=', $article->id)
             ->where('sport', $article->sport)

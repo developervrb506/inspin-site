@@ -209,8 +209,9 @@ body { background: #171818; }
             @foreach($expertPicks as $pick)
             @php
                 $timeStr   = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
-                $gameStart = \Carbon\Carbon::parse($pick->game_date->format('Y-m-d').' '.$timeStr);
-                $status    = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->isPast() ? 'LIVE' : 'UPCOMING');
+                $gameStart = \Carbon\Carbon::parse($pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
+                $now       = \Carbon\Carbon::now('America/New_York');
+                $status    = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->lt($now) ? 'LIVE' : 'UPCOMING');
                 $sportEmojis = ['MLB'=>'⚾','NFL'=>'🏈','NBA'=>'🏀','NHL'=>'🏒','NCAAF'=>'🏈','NCAAB'=>'🏀','MMA'=>'🥊','GOLF'=>'⛳'];
                 $sEmoji = $sportEmojis[$pick->sport] ?? '🏅';
                 $t1init = strtoupper(substr($pick->team1_name ?? 'TM',0,3));
