@@ -483,7 +483,10 @@
             <div id="loginTab" class="modal-tab-content active">
                 <form id="loginForm">
                     <input type="email" class="modal-input" placeholder="Email address" name="email" required autocomplete="email">
-                    <input type="password" class="modal-input" placeholder="Password" name="password" required autocomplete="current-password">
+                    <div style="position:relative;margin-bottom:12px;">
+                        <input type="password" id="loginPassword" class="modal-input" placeholder="Password" name="password" required autocomplete="current-password" style="margin-bottom:0;padding-right:44px;">
+                        <button type="button" onclick="togglePw('loginPassword',this)" tabindex="-1" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6e6e6e;font-size:17px;line-height:1;padding:0;" title="Show/hide password">👁</button>
+                    </div>
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
                         <div class="modal-remember">
                             <input type="checkbox" id="rememberMe" name="remember">
@@ -503,20 +506,44 @@
 
             <!-- Register Form -->
             <div id="registerTab" class="modal-tab-content">
-                <form id="registerForm">
-                    <input type="text" class="modal-input" placeholder="Full Name" name="name" required autocomplete="name">
-                    <input type="email" class="modal-input" placeholder="Email address" name="email" required autocomplete="email">
-                    <input type="tel" class="modal-input" placeholder="Phone (optional)" name="phone">
-                    <input type="password" class="modal-input" placeholder="Password" name="password" required autocomplete="new-password">
-                    <input type="password" class="modal-input" placeholder="Confirm Password" name="password_confirmation" required autocomplete="new-password">
-                    <button type="submit" class="modal-btn">Create Account</button>
-                    <div id="registerError" class="modal-error"></div>
+                {{-- Step 1: Disclaimer (shown first) --}}
+                <div id="registerDisclaimer">
+                    <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.2);border-radius:10px;padding:16px 18px;margin-bottom:16px;font-size:12.5px;color:#9a9a9a;line-height:1.75;">
+                        <strong style="color:#FDB515;display:block;font-size:13px;margin-bottom:8px;letter-spacing:.2px;">THIS IS NOT A GAMBLING SITE</strong>
+                        Information contained within this website is for news and entertainment purposes only. Use of this information in violation of State, Federal, or Local laws is strictly prohibited. Past performance is not a guarantee of future results.<br><br>
+                        Do you think you may have a gambling problem? If so, please contact a specialist. We are here for entertainment purposes, but your personal mental health and financial security are very important.<br><br>
+                        <strong style="color:#FFFCEE;">Billing:</strong> Any credit card charges will appear as <strong style="color:#FFFCEE;">"INSPIN"</strong> on your statement. For issues, call our 800# or use the ticket system.
+                    </div>
+                    <button type="button" onclick="showRegisterForm()" class="modal-btn">I Understand — Continue</button>
                     <div class="modal-divider"><span>or</span></div>
                     <p style="text-align:center;font-size:13px;color:#6e6e6e;margin:0;">
                         Already have an account?
                         <a href="#" class="modal-link" onclick="switchTab('login');return false;">Log In</a>
                     </p>
-                </form>
+                </div>
+                {{-- Step 2: Registration form (hidden until disclaimer accepted) --}}
+                <div id="registerFormFields" style="display:none;">
+                    <form id="registerForm">
+                        <input type="text" class="modal-input" placeholder="Full Name" name="name" required autocomplete="name">
+                        <input type="email" class="modal-input" placeholder="Email address" name="email" required autocomplete="email">
+                        <input type="tel" class="modal-input" placeholder="Phone (optional)" name="phone">
+                        <div style="position:relative;margin-bottom:12px;">
+                            <input type="password" id="regPassword" class="modal-input" placeholder="Password" name="password" required autocomplete="new-password" style="margin-bottom:0;padding-right:44px;">
+                            <button type="button" onclick="togglePw('regPassword',this)" tabindex="-1" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6e6e6e;font-size:17px;line-height:1;padding:0;" title="Show/hide password">👁</button>
+                        </div>
+                        <div style="position:relative;margin-bottom:12px;">
+                            <input type="password" id="regPasswordConfirm" class="modal-input" placeholder="Confirm Password" name="password_confirmation" required autocomplete="new-password" style="margin-bottom:0;padding-right:44px;">
+                            <button type="button" onclick="togglePw('regPasswordConfirm',this)" tabindex="-1" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6e6e6e;font-size:17px;line-height:1;padding:0;" title="Show/hide password">👁</button>
+                        </div>
+                        <button type="submit" class="modal-btn">Create Account</button>
+                        <div id="registerError" class="modal-error"></div>
+                        <div class="modal-divider"><span>or</span></div>
+                        <p style="text-align:center;font-size:13px;color:#6e6e6e;margin:0;">
+                            Already have an account?
+                            <a href="#" class="modal-link" onclick="switchTab('login');return false;">Log In</a>
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -563,10 +590,26 @@
             document.body.style.overflow = '';
         }
         
+        function togglePw(id, btn) {
+            var el = document.getElementById(id);
+            el.type = el.type === 'password' ? 'text' : 'password';
+            btn.style.opacity = el.type === 'text' ? '1' : '0.5';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('registerDisclaimer').style.display = 'none';
+            document.getElementById('registerFormFields').style.display = 'block';
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.modal-error').forEach(e => e.style.display = 'none');
+            // Reset register disclaimer on tab switch
+            var disc = document.getElementById('registerDisclaimer');
+            var fields = document.getElementById('registerFormFields');
+            if (disc) disc.style.display = 'block';
+            if (fields) fields.style.display = 'none';
 
             if (tab === 'login') {
                 document.getElementById('tabLoginBtn').classList.add('active');

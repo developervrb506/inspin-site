@@ -2,7 +2,12 @@
 @section('title', $article->title . ' - INSPIN')
 
 @section('content')
-<div class="article-detail">
+@php $hasSups = $article->supplements->count() > 0; @endphp
+<div style="background:#171818;min-height:60vh;">
+<div style="max-width:{{ $hasSups ? '1200px' : '800px' }};margin:0 auto;padding:52px 20px;display:{{ $hasSups ? 'flex' : 'block' }};gap:40px;align-items:flex-start;">
+
+{{-- Main article column --}}
+<div class="article-detail" style="flex:1;min-width:0;padding:0;background:none;min-height:unset;">
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
         @php $sp=strtolower($article->sport??'');$bc=$sp==='mlb'?'rgba(22,163,74,.15)':($sp==='nba'?'rgba(220,38,38,.15)':($sp==='nfl'?'rgba(29,78,216,.15)':'rgba(253,181,21,.12)'));$tc=$sp==='mlb'?'#4ade80':($sp==='nba'?'#f87171':($sp==='nfl'?'#93c5fd':'#FDB515')); @endphp
         <span style="background:{{ $bc }};color:{{ $tc }};padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">{{ $article->sport }}</span>
@@ -100,5 +105,37 @@
         </div>
     </div>
     @endif
-</div>
+</div>{{-- end article-detail --}}
+
+{{-- Supplements sidebar (only rendered if supplements exist) --}}
+@if($hasSups)
+<aside style="width:300px;flex-shrink:0;">
+    <div style="position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;">
+        <h3 style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:500;color:#FFFCEE;margin-bottom:4px;padding-bottom:10px;border-bottom:1px solid rgba(255,252,238,.08);">📚 More From This Game</h3>
+        @foreach($article->supplements as $sup)
+        <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;overflow:hidden;">
+            <div style="padding:12px 16px;border-bottom:1px solid rgba(255,252,238,.06);display:flex;align-items:center;gap:8px;">
+                <span style="font-size:18px;">{{ $sup->type_icon }}</span>
+                <div>
+                    <div style="font-size:11px;color:#6e6e6e;text-transform:uppercase;letter-spacing:.4px;">{{ ucfirst($sup->type) }}</div>
+                    @if($sup->title)<div style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif
+                </div>
+            </div>
+            @if($sup->embed_code)
+            <div style="padding:0;" class="sup-embed">{!! $sup->embed_code !!}</div>
+            @elseif($sup->external_url)
+            <div style="padding:14px 16px;">
+                <a href="{{ $sup->external_url }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#FDB515;font-size:13px;font-weight:600;text-decoration:none;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+                    View Content →
+                </a>
+            </div>
+            @endif
+        </div>
+        @endforeach
+    </div>
+</aside>
+@endif
+
+</div>{{-- end flex container --}}
+</div>{{-- end bg wrapper --}}
 @endsection

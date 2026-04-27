@@ -46,4 +46,10 @@ class Article extends Model
     {
         return $this->hasMany(Pick::class, 'related_article_id');
     }
+
+    // Relationship: NotebookLM supplemental content
+    public function supplements(): HasMany
+    {
+        return $this->hasMany(ArticleSupplement::class)->orderBy('sort_order');
+    }
 }

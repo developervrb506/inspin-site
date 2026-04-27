@@ -52,7 +52,7 @@
                         <div class="form-section-title">Team 1</div>
                         <div class="form-group" style="margin-bottom:12px;">
                             <label>Team Name <span class="required">*</span></label>
-                            <input type="text" name="team1_name" class="form-control" value="{{ old('team1_name', $pick->team1_name) }}" placeholder="e.g. Kansas City Chiefs">
+                            <input type="text" name="team1_name" id="team1Name" class="form-control" value="{{ old('team1_name', $pick->team1_name) }}" placeholder="e.g. Kansas City Chiefs" oninput="updatePercentLabels()">
                             @error('team1_name')<div class="form-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="form-group" style="margin-bottom:12px;">
@@ -60,8 +60,8 @@
                             <input type="number" name="team1_rotation" class="form-control" value="{{ old('team1_rotation', $pick->team1_rotation) }}" placeholder="e.g. 101">
                         </div>
                         <div class="form-group" style="margin-bottom:12px;">
-                            <label>Betting % (Team 1)</label>
-                            <input type="number" name="team1_percent" class="form-control" min="0" max="100" value="{{ old('team1_percent', $pick->team1_percent) }}" placeholder="e.g. 55">
+                            <label id="label1">Betting % (Team 1)</label>
+                            <input type="number" name="team1_percent" id="team1Percent" class="form-control" min="0" max="100" value="{{ old('team1_percent', $pick->team1_percent) }}" placeholder="e.g. 55">
                         </div>
                         <div class="form-group">
                             <label>Logo</label>
@@ -78,7 +78,7 @@
                         <div class="form-section-title">Team 2</div>
                         <div class="form-group" style="margin-bottom:12px;">
                             <label>Team Name <span class="required">*</span></label>
-                            <input type="text" name="team2_name" class="form-control" value="{{ old('team2_name', $pick->team2_name) }}" placeholder="e.g. Buffalo Bills">
+                            <input type="text" name="team2_name" id="team2Name" class="form-control" value="{{ old('team2_name', $pick->team2_name) }}" placeholder="e.g. Buffalo Bills" oninput="updatePercentLabels()">
                             @error('team2_name')<div class="form-error">{{ $message }}</div>@enderror
                         </div>
                         <div class="form-group" style="margin-bottom:12px;">
@@ -86,8 +86,8 @@
                             <input type="number" name="team2_rotation" class="form-control" value="{{ old('team2_rotation', $pick->team2_rotation) }}" placeholder="e.g. 102">
                         </div>
                         <div class="form-group" style="margin-bottom:12px;">
-                            <label>Betting % (Team 2)</label>
-                            <input type="number" name="team2_percent" class="form-control" min="0" max="100" value="{{ old('team2_percent', $pick->team2_percent) }}" placeholder="e.g. 45">
+                            <label id="label2">Betting % (Team 2)</label>
+                            <input type="number" name="team2_percent" id="team2Percent" class="form-control" min="0" max="100" value="{{ old('team2_percent', $pick->team2_percent) }}" placeholder="e.g. 45">
                         </div>
                         <div class="form-group">
                             <label>Logo</label>
@@ -108,6 +108,16 @@
         <div class="card" style="margin-bottom:20px;">
             <div class="card-header"><h2>Pick Details</h2></div>
             <div class="card-body">
+                <div class="form-group full" style="margin-bottom:16px;">
+                    <label>Bet Type</label>
+                    <select name="pick_type" id="pickType" class="form-control" onchange="updatePercentLabels()" style="max-width:240px;">
+                        <option value="">— Select Type —</option>
+                        <option value="Pointspread" {{ old('pick_type', $pick->pick_type) === 'Pointspread' ? 'selected' : '' }}>Pointspread</option>
+                        <option value="Moneyline" {{ old('pick_type', $pick->pick_type) === 'Moneyline' ? 'selected' : '' }}>Moneyline</option>
+                        <option value="Total" {{ old('pick_type', $pick->pick_type) === 'Total' ? 'selected' : '' }}>Total (Over/Under)</option>
+                    </select>
+                    <small style="color:#64748b;display:block;margin-top:4px;">Selecting a type will update the % labels on the Teams section above.</small>
+                </div>
                 <div class="form-group full" style="margin-bottom:16px;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                         <label style="margin:0;">Pick Recommendation <span class="required">*</span></label>
@@ -303,5 +313,35 @@ function toggleUnitsResult() {
 }
 document.getElementById('resultSelect').addEventListener('change', toggleUnitsResult);
 toggleUnitsResult();
+
+// Dynamic percent labels based on bet type
+function updatePercentLabels() {
+    var type = document.getElementById('pickType') ? document.getElementById('pickType').value : '';
+    var t1 = (document.getElementById('team1Name') ? document.getElementById('team1Name').value : '') || 'Team 1';
+    var t2 = (document.getElementById('team2Name') ? document.getElementById('team2Name').value : '') || 'Team 2';
+    var l1 = document.getElementById('label1');
+    var l2 = document.getElementById('label2');
+    if (!l1 || !l2) return;
+    if (type === 'Total') {
+        l1.textContent = 'Over %';
+        l2.textContent = 'Under %';
+        if (document.getElementById('team1Percent')) document.getElementById('team1Percent').placeholder = 'e.g. 72 (Over)';
+        if (document.getElementById('team2Percent')) document.getElementById('team2Percent').placeholder = 'e.g. 28 (Under)';
+    } else if (type === 'Moneyline') {
+        l1.textContent = t1 + ' Win %';
+        l2.textContent = t2 + ' Win %';
+        if (document.getElementById('team1Percent')) document.getElementById('team1Percent').placeholder = 'e.g. 65';
+        if (document.getElementById('team2Percent')) document.getElementById('team2Percent').placeholder = 'e.g. 35';
+    } else if (type === 'Pointspread') {
+        l1.textContent = t1 + ' (Favored) %';
+        l2.textContent = t2 + ' (Underdog) %';
+        if (document.getElementById('team1Percent')) document.getElementById('team1Percent').placeholder = 'e.g. 60';
+        if (document.getElementById('team2Percent')) document.getElementById('team2Percent').placeholder = 'e.g. 40';
+    } else {
+        l1.textContent = 'Betting % (Team 1)';
+        l2.textContent = 'Betting % (Team 2)';
+    }
+}
+document.addEventListener('DOMContentLoaded', updatePercentLabels);
 </script>
 @endpush
