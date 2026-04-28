@@ -1,44 +1,40 @@
 @if ($paginator->hasPages())
-<nav style="display:flex;gap:4px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
-    {{-- Previous Page Link --}}
+@php
+    $btn     = 'display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:36px;padding:0 12px;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;transition:all .18s;';
+    $active  = $btn . 'background:#FDB515;border:1px solid #FDB515;color:#171818;font-weight:700;';
+    $normal  = $btn . 'background:#212121;border:1px solid rgba(255,252,238,.1);color:#9a9a9a;';
+    $disabled= $btn . 'background:#1a1a1a;border:1px solid rgba(255,252,238,.06);color:#3a3a3a;pointer-events:none;cursor:default;';
+    $hover   = 'onmouseover="this.style.background=\'#2a2a2a\';this.style.borderColor=\'rgba(253,181,21,.3)\';this.style.color=\'#FFFCEE\'" onmouseout="this.style.background=\'#212121\';this.style.borderColor=\'rgba(255,252,238,.1)\';this.style.color=\'#9a9a9a\'"';
+@endphp
+<nav style="display:flex;gap:6px;justify-content:center;margin-top:32px;flex-wrap:wrap;align-items:center;">
+    {{-- Previous --}}
     @if ($paginator->onFirstPage())
-        <span style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#cbd5e1;pointer-events:none;">
-            &lsaquo;
-        </span>
+        <span style="{{ $disabled }}">‹</span>
     @else
-        <a href="{{ $paginator->previousPageUrl() }}" style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#64748b;text-decoration:none;">
-            &lsaquo;
-        </a>
+        <a href="{{ $paginator->previousPageUrl() }}" style="{{ $normal }}" {!! $hover !!}>‹</a>
     @endif
 
-    {{-- Pagination Elements --}}
+    {{-- Pages --}}
     @foreach ($elements as $element)
-        {{-- "Three Dots" Separator --}}
         @if (is_string($element))
-            <span style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#94a3b8;">{{ $element }}</span>
+            <span style="{{ $disabled }}">{{ $element }}</span>
         @endif
-
-        {{-- Array Of Links --}}
         @if (is_array($element))
             @foreach ($element as $page => $url)
                 @if ($page == $paginator->currentPage())
-                    <span style="padding:6px 12px;border-radius:6px;font-size:12px;background:#4f46e5;border:1px solid #4f46e5;color:#fff;font-weight:600;">{{ $page }}</span>
+                    <span style="{{ $active }}">{{ $page }}</span>
                 @else
-                    <a href="{{ $url }}" style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#64748b;text-decoration:none;">{{ $page }}</a>
+                    <a href="{{ $url }}" style="{{ $normal }}" {!! $hover !!}>{{ $page }}</a>
                 @endif
             @endforeach
         @endif
     @endforeach
 
-    {{-- Next Page Link --}}
+    {{-- Next --}}
     @if ($paginator->hasMorePages())
-        <a href="{{ $paginator->nextPageUrl() }}" style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#64748b;text-decoration:none;">
-            &rsaquo;
-        </a>
+        <a href="{{ $paginator->nextPageUrl() }}" style="{{ $normal }}" {!! $hover !!}>›</a>
     @else
-        <span style="padding:6px 12px;border-radius:6px;font-size:12px;background:#fff;border:1px solid #e2e8f0;color:#cbd5e1;pointer-events:none;">
-            &rsaquo;
-        </span>
+        <span style="{{ $disabled }}">›</span>
     @endif
 </nav>
 @endif

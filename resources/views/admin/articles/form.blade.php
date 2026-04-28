@@ -174,36 +174,52 @@
         </div>
     </form>
 
-    {{-- ── NotebookLM Supplemental Content (only shown when editing existing article) ── --}}
+    {{-- ── Article Sidebar Content ── --}}
     @if($article->exists)
     <div class="card" style="margin-top:28px;">
-        <div class="card-header">
-            <h2>📚 Supplemental Content <span style="font-size:13px;color:#64748b;font-weight:400;">(NotebookLM / Right Sidebar)</span></h2>
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <h2>📚 Article Sidebar Content</h2>
+            <button type="button" id="genSidebarBtn" onclick="generateSidebar()"
+                style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                ✨ Auto-Generate with Claude
+            </button>
         </div>
         <div class="card-body">
-            <p style="color:#64748b;font-size:13px;margin-bottom:20px;">Add NotebookLM-generated content here. Each item appears stacked in the right sidebar on the article page. Note: NotebookLM has no public API — paste embed codes or URLs manually.</p>
+
+            <div id="genStatus" style="display:none;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;"></div>
 
             {{-- Existing supplements --}}
             @if($article->supplements->count() > 0)
-            <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+            <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
                 <thead>
                     <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
                         <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Type</th>
-                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Title</th>
-                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Order</th>
+                        <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Title / Content</th>
                         <th style="padding:10px 12px;text-align:left;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($article->supplements as $sup)
                     <tr style="border-bottom:1px solid #f1f5f9;">
-                        <td style="padding:10px 12px;font-size:13px;">{{ $sup->type_icon }} {{ ucfirst($sup->type) }}</td>
-                        <td style="padding:10px 12px;font-size:13px;color:#374151;">{{ $sup->title ?: '—' }}</td>
-                        <td style="padding:10px 12px;font-size:13px;color:#64748b;">{{ $sup->sort_order }}</td>
+                        <td style="padding:10px 12px;font-size:13px;white-space:nowrap;">{{ $sup->type_icon }} {{ $sup->type === 'ai_generated' ? 'AI Analysis' : ucfirst($sup->type) }}</td>
+                        <td style="padding:10px 12px;font-size:13px;color:#374151;">
+                            @if($sup->type === 'ai_generated')
+                                <span style="color:#6366f1;font-size:12px;">✨ Claude-generated insights, debate & stats</span>
+                            @elseif($sup->image_path)
+                                <img src="{{ asset('storage/'.$sup->image_path) }}" style="height:40px;border-radius:4px;"> {{ $sup->title }}
+                            @elseif($sup->external_url)
+                                <a href="{{ $sup->external_url }}" target="_blank" style="color:#2563eb;font-size:12px;">{{ Str::limit($sup->external_url, 50) }}</a>
+                            @elseif($sup->embed_code)
+                                <span style="color:#64748b;font-size:12px;font-family:monospace;">{{ Str::limit($sup->embed_code, 50) }}</span>
+                            @else
+                                {{ $sup->title ?: '—' }}
+                            @endif
+                        </td>
                         <td style="padding:10px 12px;">
-                            <form method="POST" action="{{ route('admin.articles.supplements.destroy', [$article, $sup]) }}" onsubmit="return confirm('Remove this supplement?')">
+                            <form method="POST" action="{{ route('admin.articles.supplements.destroy', [$article, $sup]) }}" onsubmit="return confirm('Remove this item?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>
+                                <button type="submit" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;">Remove</button>
                             </form>
                         </td>
                     </tr>
@@ -211,47 +227,108 @@
                 </tbody>
             </table>
             @else
-            <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;">No supplemental content yet. Add items below.</p>
+            <p style="color:#94a3b8;font-size:13px;margin-bottom:20px;">No sidebar content yet. Click "Auto-Generate with Claude" above, or add items manually below.</p>
             @endif
 
-            {{-- Add new supplement --}}
-            <form method="POST" action="{{ route('admin.articles.supplements.store', $article) }}" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-                @csrf
-                <div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:12px;align-items:end;flex-wrap:wrap;">
-                    <div>
-                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Type</label>
-                        <select name="type" class="form-control" style="font-size:13px;">
-                            <option value="video">📺 Video Show</option>
-                            <option value="debate">💬 Debate</option>
-                            <option value="infographic">📊 Infographic</option>
-                            <option value="flashcard">🃏 Flashcards</option>
-                            <option value="audio">🎧 Audio</option>
-                            <option value="other">📎 Other</option>
-                        </select>
+            {{-- Manual add form --}}
+            <details style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px;">
+                <summary style="font-size:13px;font-weight:700;color:#374151;cursor:pointer;list-style:none;">+ Add Manual Content (Audio / Video / Infographic)</summary>
+                <form method="POST" action="{{ route('admin.articles.supplements.store', $article) }}" enctype="multipart/form-data" style="margin-top:16px;">
+                    @csrf
+                    <div style="display:grid;grid-template-columns:160px 1fr;gap:12px;margin-bottom:12px;">
+                        <div>
+                            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Type</label>
+                            <select name="type" id="supType" class="form-control" style="font-size:13px;" onchange="updateSupForm()">
+                                <option value="audio">🎧 Audio (NotebookLM)</option>
+                                <option value="video">📺 Video / YouTube</option>
+                                <option value="infographic">📊 Infographic (Image)</option>
+                                <option value="other">📎 Other Link</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Title (optional)</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Game Audio Overview" style="font-size:13px;">
+                        </div>
                     </div>
-                    <div>
-                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Title (optional)</label>
-                        <input type="text" name="title" class="form-control" placeholder="e.g. Game Preview Video" style="font-size:13px;">
+
+                    {{-- Audio / Other: URL field --}}
+                    <div id="supUrlWrap" style="margin-bottom:12px;">
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;" id="supUrlLabel">NotebookLM Share Link</label>
+                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;" id="supUrlHint">In NotebookLM → Audio Overview → click the Share icon → copy the link and paste it here.</p>
+                        <input type="url" name="external_url" class="form-control" placeholder="https://notebooklm.google.com/..." style="font-size:13px;">
                     </div>
-                    <div>
-                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Order</label>
-                        <input type="number" name="sort_order" class="form-control" value="{{ $article->supplements->count() }}" style="font-size:13px;width:70px;">
+
+                    {{-- Video: embed code --}}
+                    <div id="supEmbedWrap" style="display:none;margin-bottom:12px;">
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">YouTube Embed Code</label>
+                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;">On YouTube → Share → Embed → copy the &lt;iframe&gt; code and paste it here.</p>
+                        <textarea name="embed_code" class="form-control" rows="3" placeholder='<iframe src="https://www.youtube.com/embed/..." ...></iframe>' style="font-size:12px;font-family:monospace;"></textarea>
                     </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary" style="white-space:nowrap;">+ Add</button>
+
+                    {{-- Infographic: image upload --}}
+                    <div id="supImageWrap" style="display:none;margin-bottom:12px;">
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Upload Infographic Image</label>
+                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;">In NotebookLM → Infographic → Download the image → upload it here.</p>
+                        <input type="file" name="image" class="form-control" accept="image/*" style="font-size:13px;">
                     </div>
-                </div>
-                <div style="margin-top:12px;">
-                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Embed Code <span style="font-weight:400;color:#64748b;">(paste iframe or script from NotebookLM)</span></label>
-                    <textarea name="embed_code" class="form-control" rows="3" placeholder='e.g. <iframe src="..." ...></iframe>' style="font-size:13px;font-family:monospace;"></textarea>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Or External URL <span style="font-weight:400;color:#64748b;">(link to content)</span></label>
-                    <input type="url" name="external_url" class="form-control" placeholder="https://..." style="font-size:13px;">
-                </div>
-            </form>
+
+                    <input type="hidden" name="sort_order" value="{{ $article->supplements->count() }}">
+                    <button type="submit" class="btn btn-primary">+ Add to Sidebar</button>
+                </form>
+            </details>
         </div>
     </div>
+
+    <script>
+    function updateSupForm() {
+        var type = document.getElementById('supType').value;
+        document.getElementById('supUrlWrap').style.display   = (type === 'audio' || type === 'other') ? 'block' : 'none';
+        document.getElementById('supEmbedWrap').style.display = (type === 'video') ? 'block' : 'none';
+        document.getElementById('supImageWrap').style.display = (type === 'infographic') ? 'block' : 'none';
+        if (type === 'other') {
+            document.getElementById('supUrlLabel').textContent = 'External Link URL';
+            document.getElementById('supUrlHint').textContent  = 'Paste any URL to link to external content.';
+        } else {
+            document.getElementById('supUrlLabel').textContent = 'NotebookLM Share Link';
+            document.getElementById('supUrlHint').textContent  = 'In NotebookLM → Audio Overview → Share icon → copy the link.';
+        }
+    }
+
+    function generateSidebar() {
+        var btn = document.getElementById('genSidebarBtn');
+        var status = document.getElementById('genStatus');
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:15px;height:15px;animation:spin 1s linear infinite;"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Generating...';
+        status.style.display = 'none';
+
+        fetch('{{ route("admin.articles.supplements.generate", $article) }}', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                status.style.background = '#dcfce7'; status.style.color = '#166534'; status.style.border = '1px solid #bbf7d0';
+                status.textContent = '✓ Sidebar generated! Refresh the page to see the content listed above, then view the article to see the sidebar.';
+                status.style.display = 'block';
+            } else {
+                status.style.background = '#fee2e2'; status.style.color = '#991b1b'; status.style.border = '1px solid #fecaca';
+                status.textContent = '✗ ' + (data.error || 'Generation failed.');
+                status.style.display = 'block';
+            }
+        })
+        .catch(() => {
+            status.style.background = '#fee2e2'; status.style.color = '#991b1b'; status.style.border = '1px solid #fecaca';
+            status.textContent = '✗ Network error. Please try again.';
+            status.style.display = 'block';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> ✨ Auto-Generate with Claude';
+        });
+    }
+    </script>
     @endif
 </div>
 @endsection

@@ -220,17 +220,82 @@ class ArticleController extends Controller
             'title'        => 'nullable|string|max:255',
             'embed_code'   => 'nullable|string',
             'external_url' => 'nullable|url|max:500',
+            'image'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
             'sort_order'   => 'nullable|integer',
         ]);
 
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('uploads/supplements', 'public');
+        }
+        unset($validated['image']);
+
         $article->supplements()->create($validated);
 
-        return back()->with('success', 'Supplement added successfully.');
+        return back()->with('success', 'Content added successfully.');
     }
 
     public function deleteSupplement(Article $article, ArticleSupplement $supplement): RedirectResponse
     {
+        if ($supplement->image_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($supplement->image_path);
+        }
         $supplement->delete();
-        return back()->with('success', 'Supplement removed.');
+        return back()->with('success', 'Content removed.');
+    }
+
+    public function generateSidebar(Request $request, Article $article)
+    {
+        $apiKey = config('services.anthropic.api_key') ?? env('ANTHROPIC_API_KEY');
+        if (!$apiKey) {
+            return response()->json(['error' => 'Claude API key not configured.'], 422);
+        }
+
+        $content = strip_tags($article->content ?? '');
+        if (strlen($content) < 100) {
+            return response()->json(['error' => 'Article content is too short to analyze.'], 422);
+        }
+
+        $prompt = "You are a professional sports betting analyst. Read this article and return ONLY valid JSON (no markdown, no extra text) in this exact format:
+{
+  \"insights\": [\"insight 1\", \"insight 2\", \"insight 3\"],
+  \"debate\": {\"sharp\": \"one sentence about sharp money angle\", \"public\": \"one sentence about public betting angle\"},
+  \"stats\": [\"key stat 1\", \"key stat 2\", \"key stat 3\"]
+}
+
+Article:
+" . substr($content, 0, 3000);
+
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'x-api-key'         => $apiKey,
+            'anthropic-version' => '2023-06-01',
+            'content-type'      => 'application/json',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-haiku-4-5-20251001',
+            'max_tokens' => 600,
+            'messages'   => [['role' => 'user', 'content' => $prompt]],
+        ]);
+
+        if (!$response->successful()) {
+            return response()->json(['error' => 'Claude API error: ' . $response->body()], 422);
+        }
+
+        $text = $response->json('content.0.text') ?? '';
+        $data = json_decode(trim($text), true);
+        if (!$data) {
+            return response()->json(['error' => 'Could not parse Claude response.'], 422);
+        }
+
+        // Remove old AI-generated supplements
+        $article->supplements()->where('type', 'ai_generated')->delete();
+
+        // Save as one supplement with type ai_generated
+        $article->supplements()->create([
+            'type'       => 'ai_generated',
+            'title'      => 'AI Analysis',
+            'ai_content' => json_encode($data),
+            'sort_order' => 0,
+        ]);
+
+        return response()->json(['success' => true, 'data' => $data]);
     }
 }

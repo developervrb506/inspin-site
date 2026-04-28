@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'INSPIN - Sports Betting Analysis & Picks')</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/inspin Logo3.png') }}">
     <meta name="description" content="@yield('meta', 'INSPIN - Expert sports betting analysis, daily picks, betting consensus, live odds, and trends for NFL, NBA, MLB, NHL.')">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,8 +43,8 @@
         .header-auth { display: flex; gap: 18px; align-items: center; flex-shrink: 0; }
         .header-login { color: #FFFCEE; font-size: 13.5px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-decoration: none; transition: color 0.15s; cursor: pointer; background: none; border: none; padding: 0; opacity: 0.75; }
         .header-login:hover { color: #FFFCEE; opacity: 1; }
-        .header-signup { display: inline-block; padding: 8px 22px; border: 1px solid #FDB515; border-radius: 50px; color: #FDB515; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: background 0.18s, filter 0.18s; white-space: nowrap; filter: drop-shadow(0px 0px 9.4px #FDB515); }
-        .header-signup:hover { background: rgba(253,181,21,0.1); color: #FDB515; }
+        .header-signup { display: inline-block; padding: 8px 22px; border: 1px solid rgba(253,181,21,0.5); border-radius: 50px; color: #FDB515; font-size: 13.5px; font-weight: 600; text-decoration: none; transition: background 0.18s, border-color 0.18s; white-space: nowrap; background: rgba(253,181,21,0.08); }
+        .header-signup:hover { background: rgba(253,181,21,0.16); border-color: #FDB515; color: #FDB515; }
         .header-user-name { color: #a1a1aa; font-size: 13px; }
         .header-dash-link { color: #d4d4d8; font-size: 13px; font-weight: 600; text-decoration: none; transition: color .15s; }
         .header-dash-link:hover { color: var(--gold); }
@@ -313,7 +316,7 @@
     @stack('styles')
     <style>
         /* ===== MODAL — dark Figma theme ===== */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: flex-start; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow-y: auto; padding: 24px 16px; }
         .modal-overlay.active { display: flex; }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .modal-box {
@@ -322,11 +325,12 @@
             border-radius: 20px;
             padding: 36px 32px 32px;
             max-width: 420px;
-            width: 92%;
+            width: 100%;
             box-shadow: 0 0 60px rgba(253,181,21,0.08), 0 32px 80px rgba(0,0,0,0.7);
             animation: modalIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
+            margin: auto;
         }
         .modal-box::before {
             content: '';
@@ -422,7 +426,7 @@
                     </form>
                 @else
                     <button onclick="openModal()" class="header-login">Log In</button>
-                    <a href="{{ route('join') }}" class="header-signup">Sign Up</a>
+                    <button onclick="openModal('join')" class="header-signup" style="cursor:pointer;">Join Now</button>
                 @endauth
             </div>
             <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Toggle navigation">
@@ -514,7 +518,19 @@
                         Do you think you may have a gambling problem? If so, please contact a specialist. We are here for entertainment purposes, but your personal mental health and financial security are very important.<br><br>
                         <strong style="color:#FFFCEE;">Billing:</strong> Any credit card charges will appear as <strong style="color:#FFFCEE;">"INSPIN"</strong> on your statement. For issues, call our 800# or use the ticket system.
                     </div>
-                    <button type="button" onclick="showRegisterForm()" class="modal-btn">I Understand — Continue</button>
+                    {{-- Checkboxes --}}
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                            <input type="checkbox" id="agreeTerms" style="width:16px;height:16px;accent-color:#FDB515;flex-shrink:0;margin-top:2px;">
+                            <span style="font-size:13px;color:#9a9a9a;line-height:1.5;">I agree to the <a href="{{ route('terms') }}" target="_blank" style="color:#FDB515;text-decoration:underline;text-underline-offset:2px;">Terms of Service</a></span>
+                        </label>
+                        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
+                            <input type="checkbox" id="agreePrivacy" style="width:16px;height:16px;accent-color:#FDB515;flex-shrink:0;margin-top:2px;">
+                            <span style="font-size:13px;color:#9a9a9a;line-height:1.5;">I agree to the <a href="{{ route('privacy') }}" target="_blank" style="color:#FDB515;text-decoration:underline;text-underline-offset:2px;">Privacy Policy</a></span>
+                        </label>
+                    </div>
+                    <div id="checkboxError" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none;">Please agree to both the Terms of Service and Privacy Policy to continue.</div>
+                    <button type="button" onclick="checkAndContinue()" class="modal-btn">I Understand — Continue</button>
                     <div class="modal-divider"><span>or</span></div>
                     <p style="text-align:center;font-size:13px;color:#6e6e6e;margin:0;">
                         Already have an account?
@@ -601,6 +617,18 @@
             document.getElementById('registerFormFields').style.display = 'block';
         }
 
+        function checkAndContinue() {
+            var terms = document.getElementById('agreeTerms');
+            var privacy = document.getElementById('agreePrivacy');
+            var err = document.getElementById('checkboxError');
+            if (!terms.checked || !privacy.checked) {
+                err.style.display = 'block';
+                return;
+            }
+            err.style.display = 'none';
+            showRegisterForm();
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
@@ -610,6 +638,10 @@
             var fields = document.getElementById('registerFormFields');
             if (disc) disc.style.display = 'block';
             if (fields) fields.style.display = 'none';
+            // Uncheck checkboxes
+            var t = document.getElementById('agreeTerms'); if (t) t.checked = false;
+            var p = document.getElementById('agreePrivacy'); if (p) p.checked = false;
+            var e = document.getElementById('checkboxError'); if (e) e.style.display = 'none';
 
             if (tab === 'login') {
                 document.getElementById('tabLoginBtn').classList.add('active');
@@ -692,15 +724,6 @@
             });
         });
         
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sign Up button in header → open register tab
-            const signupLink = document.querySelector('.header-signup');
-            if (signupLink && signupLink.getAttribute('href') !== '{{ route("join") }}') {
-                signupLink.addEventListener('click', function(e) {
-                    // Let it navigate to join page — no change needed
-                });
-            }
-        });
     </script>
 </body>
 </html>

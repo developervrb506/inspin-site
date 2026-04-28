@@ -58,9 +58,10 @@
                     <div style="display:flex;gap:8px;align-items:center;">
                         @php
                             $tStr=$linkedPick->game_time?\Carbon\Carbon::parse($linkedPick->game_time)->format('H:i:s'):'00:00:00';
-                            $gStart=\Carbon\Carbon::parse($linkedPick->game_date->format('Y-m-d').' '.$tStr);
-                            $pStatus=$linkedPick->result!=='pending'?'GRADED':($gStart->isPast()?'LIVE':'UPCOMING');
-                            $pColor=$pStatus==='UPCOMING'?'#00D15B':($pStatus==='LIVE'?'#ef4444':'#4a4a4a');
+                            $gStart=\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$linkedPick->game_date->format('Y-m-d').' '.$tStr,'America/New_York');
+                            $pNow=\Carbon\Carbon::now('America/New_York');
+                            $pStatus=$linkedPick->result!=='pending'?'Graded':($gStart->lte($pNow)?'Started':'Active');
+                            $pColor=$pStatus==='Active'?'#00D15B':($pStatus==='Started'?'#ef4444':'#4a4a4a');
                         @endphp
                         <span style="background:rgba(253,181,21,.1);color:#FDB515;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;">{{ $linkedPick->sport }}</span>
                         <span style="color:{{ $pColor }};font-size:11px;font-weight:700;">{{ $pStatus }}</span>
@@ -114,22 +115,68 @@
         <h3 style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:500;color:#FFFCEE;margin-bottom:4px;padding-bottom:10px;border-bottom:1px solid rgba(255,252,238,.08);">📚 More From This Game</h3>
         @foreach($article->supplements as $sup)
         <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;overflow:hidden;">
+
+            @if($sup->type === 'ai_generated' && $sup->ai_content)
+            @php $ai = json_decode($sup->ai_content, true); @endphp
+            {{-- Claude AI Analysis card --}}
+            @if(!empty($ai['insights']))
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);">
+                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px;">✨ Key Insights</div>
+                @foreach($ai['insights'] as $ins)
+                <div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:#c0c0c0;line-height:1.5;">
+                    <span style="color:#FDB515;flex-shrink:0;">•</span><span>{{ $ins }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
+            @if(!empty($ai['debate']))
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);">
+                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">💬 Sharp vs Public</div>
+                <div style="margin-bottom:8px;">
+                    <div style="font-size:10px;color:#00D15B;font-weight:700;margin-bottom:3px;">SHARP MONEY</div>
+                    <div style="font-size:12.5px;color:#c0c0c0;line-height:1.5;">{{ $ai['debate']['sharp'] ?? '' }}</div>
+                </div>
+                <div>
+                    <div style="font-size:10px;color:#FDB515;font-weight:700;margin-bottom:3px;">PUBLIC BETTORS</div>
+                    <div style="font-size:12.5px;color:#c0c0c0;line-height:1.5;">{{ $ai['debate']['public'] ?? '' }}</div>
+                </div>
+            </div>
+            @endif
+            @if(!empty($ai['stats']))
+            <div style="padding:14px 16px;">
+                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px;">🃏 Quick Stats</div>
+                @foreach($ai['stats'] as $stat)
+                <div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:#c0c0c0;line-height:1.5;">
+                    <span style="color:#FDB515;flex-shrink:0;">›</span><span>{{ $stat }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            @else
+            {{-- Manual supplement (audio, video, image, link) --}}
             <div style="padding:12px 16px;border-bottom:1px solid rgba(255,252,238,.06);display:flex;align-items:center;gap:8px;">
                 <span style="font-size:18px;">{{ $sup->type_icon }}</span>
                 <div>
-                    <div style="font-size:11px;color:#6e6e6e;text-transform:uppercase;letter-spacing:.4px;">{{ ucfirst($sup->type) }}</div>
+                    <div style="font-size:10px;color:#6e6e6e;text-transform:uppercase;letter-spacing:.4px;">{{ ucfirst($sup->type) }}</div>
                     @if($sup->title)<div style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif
                 </div>
             </div>
-            @if($sup->embed_code)
-            <div style="padding:0;" class="sup-embed">{!! $sup->embed_code !!}</div>
+            @if($sup->image_path)
+                <img src="{{ asset('storage/'.$sup->image_path) }}" alt="{{ $sup->title }}" style="width:100%;display:block;border-radius:0 0 12px 12px;">
+            @elseif($sup->embed_code)
+                <div style="padding:0;">{!! $sup->embed_code !!}</div>
             @elseif($sup->external_url)
-            <div style="padding:14px 16px;">
-                <a href="{{ $sup->external_url }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:#FDB515;font-size:13px;font-weight:600;text-decoration:none;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
-                    View Content →
-                </a>
-            </div>
+                <div style="padding:14px 16px;">
+                    <a href="{{ $sup->external_url }}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:8px;background:rgba(253,181,21,.08);border:1px solid rgba(253,181,21,.3);color:#FDB515;font-size:13px;font-weight:600;text-decoration:none;padding:9px 16px;border-radius:8px;width:100%;justify-content:center;"
+                       onmouseover="this.style.background='rgba(253,181,21,.16)'" onmouseout="this.style.background='rgba(253,181,21,.08)'">
+                        {{ $sup->type === 'audio' ? '🎧 Listen Now' : ($sup->type === 'video' ? '📺 Watch Now' : '🔗 View Content') }} →
+                    </a>
+                </div>
             @endif
+            @endif
+
         </div>
         @endforeach
     </div>

@@ -31,7 +31,8 @@ class BettingConsensus extends Model
 
     public function scopeSport($query, $sport)
     {
-        return $query->where('sport', $sport);
+        // Filter by league column (NFL, NBA, MLB, NHL) not sport column (Basketball, Football)
+        return $query->where('league', $sport);
     }
 
     public function scopeLeague($query, $league)
