@@ -251,17 +251,17 @@
                         </div>
                     </div>
 
-                    {{-- Audio / Other: URL field --}}
+                    {{-- URL field — shown for Audio, Video, Other --}}
                     <div id="supUrlWrap" style="margin-bottom:12px;">
-                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;" id="supUrlLabel">NotebookLM Share Link</label>
-                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;" id="supUrlHint">In NotebookLM → Audio Overview → click the Share icon → copy the link and paste it here.</p>
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;" id="supUrlLabel">Share Link / URL</label>
+                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;" id="supUrlHint">Paste the NotebookLM share link here — works for Audio, Video, and any other URL.</p>
                         <input type="url" name="external_url" class="form-control" placeholder="https://notebooklm.google.com/..." style="font-size:13px;">
                     </div>
 
-                    {{-- Video: embed code --}}
+                    {{-- Video only: optional YouTube iframe embed --}}
                     <div id="supEmbedWrap" style="display:none;margin-bottom:12px;">
-                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">YouTube Embed Code</label>
-                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;">On YouTube → Share → Embed → copy the &lt;iframe&gt; code and paste it here.</p>
+                        <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">YouTube Embed Code <span style="font-weight:400;color:#94a3b8;">(optional)</span></label>
+                        <p style="font-size:11px;color:#64748b;margin-bottom:6px;">Only needed if you have a YouTube video. On YouTube → Share → Embed → copy the &lt;iframe&gt; code. <strong>For NotebookLM links, use the URL field above instead.</strong></p>
                         <textarea name="embed_code" class="form-control" rows="3" placeholder='<iframe src="https://www.youtube.com/embed/..." ...></iframe>' style="font-size:12px;font-family:monospace;"></textarea>
                     </div>
 
@@ -282,7 +282,9 @@
     <script>
     function updateSupForm() {
         var type = document.getElementById('supType').value;
-        document.getElementById('supUrlWrap').style.display   = (type === 'audio' || type === 'other') ? 'block' : 'none';
+        // Audio/Other/Video all show the URL field (NotebookLM share links or any URL)
+        document.getElementById('supUrlWrap').style.display   = (type !== 'infographic') ? 'block' : 'none';
+        // Only video additionally shows embed code field (for YouTube iframes)
         document.getElementById('supEmbedWrap').style.display = (type === 'video') ? 'block' : 'none';
         document.getElementById('supImageWrap').style.display = (type === 'infographic') ? 'block' : 'none';
         if (type === 'other') {

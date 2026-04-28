@@ -162,16 +162,23 @@
                     @if($sup->title)<div style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif
                 </div>
             </div>
+            @php
+                $embedIsUrl = $sup->embed_code && (str_starts_with(trim($sup->embed_code), 'http://') || str_starts_with(trim($sup->embed_code), 'https://'));
+                $linkUrl = $embedIsUrl ? trim($sup->embed_code) : $sup->external_url;
+                $btnLabel = $sup->type === 'audio' ? '🎧 Listen Now' : ($sup->type === 'video' ? '📺 Watch Now' : '🔗 View Content');
+            @endphp
             @if($sup->image_path)
                 <img src="{{ asset('storage/'.$sup->image_path) }}" alt="{{ $sup->title }}" style="width:100%;display:block;border-radius:0 0 12px 12px;">
-            @elseif($sup->embed_code)
+            @elseif($sup->embed_code && !$embedIsUrl)
+                {{-- Real embed code (iframe etc) --}}
                 <div style="padding:0;">{!! $sup->embed_code !!}</div>
-            @elseif($sup->external_url)
+            @elseif($linkUrl)
+                {{-- URL (either external_url field OR a URL accidentally pasted in embed_code) --}}
                 <div style="padding:14px 16px;">
-                    <a href="{{ $sup->external_url }}" target="_blank" rel="noopener"
+                    <a href="{{ $linkUrl }}" target="_blank" rel="noopener"
                        style="display:inline-flex;align-items:center;gap:8px;background:rgba(253,181,21,.08);border:1px solid rgba(253,181,21,.3);color:#FDB515;font-size:13px;font-weight:600;text-decoration:none;padding:9px 16px;border-radius:8px;width:100%;justify-content:center;"
                        onmouseover="this.style.background='rgba(253,181,21,.16)'" onmouseout="this.style.background='rgba(253,181,21,.08)'">
-                        {{ $sup->type === 'audio' ? '🎧 Listen Now' : ($sup->type === 'video' ? '📺 Watch Now' : '🔗 View Content') }} →
+                        {{ $btnLabel }} →
                     </a>
                 </div>
             @endif
