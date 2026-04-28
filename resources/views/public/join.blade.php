@@ -74,12 +74,12 @@
                     @endforeach
                 </ul>
 
-                <a href="{{ route('register') }}"
-                   style="display:block;text-align:center;padding:12px;border-radius:50px;font-weight:600;font-size:14px;text-decoration:none;transition:background .18s;border:1px solid {{ $isFree?'#22c55e':'#FDB515' }};color:{{ $isFree?'#22c55e':'#FDB515' }};background:transparent;"
+                <button onclick="openModal('join')"
+                   style="display:block;width:100%;text-align:center;padding:12px;border-radius:50px;font-weight:600;font-size:14px;cursor:pointer;transition:background .18s;border:1px solid {{ $isFree?'#22c55e':'#FDB515' }};color:{{ $isFree?'#22c55e':'#FDB515' }};background:transparent;"
                    onmouseover="this.style.background='{{ $isFree?'rgba(34,197,94,.1)':'rgba(253,181,21,.1)' }}'"
                    onmouseout="this.style.background='transparent'">
                     {{ $isFree ? 'Start Free Trial' : 'Get Started' }}
-                </a>
+                </button>
             </div>
             @endforeach
         </div>
@@ -87,7 +87,7 @@
         {{-- Whale Banner --}}
         @php $whalePkg = $whaleRegular ?? $whalePackages->first(); @endphp
         @if($whalePkg)
-        <a href="{{ route('register') }}" style="display:block;text-decoration:none;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(253,181,21,.2);box-shadow:0 0 40px rgba(253,181,21,.06);">
+        <div onclick="openModal('join')" style="cursor:pointer;display:block;text-decoration:none;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(253,181,21,.2);box-shadow:0 0 40px rgba(253,181,21,.06);">
             <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at 80% 50%,rgba(253,181,21,.08) 0%,transparent 65%);pointer-events:none;"></div>
             <div class="whale-inner" style="display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1;flex-wrap:wrap;">
                 <div style="display:flex;align-items:center;gap:20px;">
@@ -108,7 +108,7 @@
                     <div style="background:#FDB515;color:#171818;padding:12px 28px;border-radius:50px;font-weight:700;font-size:14px;display:inline-block;box-shadow:0 0 20px rgba(253,181,21,.35);">Become a Whale →</div>
                 </div>
             </div>
-        </a>
+        </div>
         @endif
 
         <p style="text-align:center;color:#6e6e6e;margin-top:20px;font-size:14px;">

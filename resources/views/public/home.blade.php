@@ -209,9 +209,9 @@ body { background: #171818; }
             @foreach($expertPicks as $pick)
             @php
                 $timeStr   = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
-                $gameStart = \Carbon\Carbon::parse($pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
+                $gameStart = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
                 $now       = \Carbon\Carbon::now('America/New_York');
-                $status    = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->lt($now) ? 'LIVE' : 'UPCOMING');
+                $status    = $pick->result !== 'pending' ? 'Graded' : ($gameStart->lte($now) ? 'Started' : 'Active');
                 $sportEmojis = ['MLB'=>'⚾','NFL'=>'🏈','NBA'=>'🏀','NHL'=>'🏒','NCAAF'=>'🏈','NCAAB'=>'🏀','MMA'=>'🥊','GOLF'=>'⛳'];
                 $sEmoji = $sportEmojis[$pick->sport] ?? '🏅';
                 $t1init = strtoupper(substr($pick->team1_name ?? 'TM',0,3));
@@ -235,15 +235,15 @@ body { background: #171818; }
 
                 {{-- Row 2: status + time --}}
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:16px;">
-                    @if($status==='LIVE')
+                    @if($status==='Started')
                         <span class="live-dot"></span>
-                        <span style="color:#ef4444;font-size:12px;font-weight:700;letter-spacing:.3px;">LIVE</span>
-                    @elseif($status==='UPCOMING')
+                        <span style="color:#ef4444;font-size:12px;font-weight:700;letter-spacing:.3px;">Started</span>
+                    @elseif($status==='Active')
                         <span style="width:8px;height:8px;border-radius:50%;background:#00D15B;display:inline-block;flex-shrink:0;"></span>
-                        <span style="color:#00D15B;font-size:12px;font-weight:700;">UPCOMING</span>
+                        <span style="color:#00D15B;font-size:12px;font-weight:700;">Active</span>
                     @else
                         <span style="width:8px;height:8px;border-radius:50%;background:#4a4a4a;display:inline-block;flex-shrink:0;"></span>
-                        <span style="color:#4a4a4a;font-size:12px;font-weight:700;">GRADED</span>
+                        <span style="color:#4a4a4a;font-size:12px;font-weight:700;">Graded</span>
                     @endif
                     <span style="color:#6e6e6e;font-size:12px;">
                         {{ $pick->game_date?->format('M d') }}{{ $pick->game_time ? ' @ '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A') : '' }}

@@ -34,6 +34,8 @@ Route::get('/about', [PublicController::class, 'about'])->name('about');
 Route::get('/reviews', function () { return view('public.reviews'); })->name('reviews');
 Route::get('/betting-tools', function () { return view('public.tools'); })->name('tools');
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');
+Route::get('/terms-of-service', function () { return view('public.terms'); })->name('terms');
+Route::get('/privacy-policy', function () { return view('public.privacy'); })->name('privacy');
 
 // ==========================================
 // AUTH ROUTES (guests only)

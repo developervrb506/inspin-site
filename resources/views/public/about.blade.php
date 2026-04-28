@@ -11,9 +11,17 @@
         <h2>Our Simulation Model</h2>
         <p>The INSPIN simulation model simulates every NFL, NBA, MLB, and NHL game thousands of times. Over the last three years, our model has been up over <strong style="color:#FDB515;">150 units</strong>. A $100 bettor would have netted a profit of $15,000+ and a $1,000 bettor would have won $150,000+.</p>
         <h2>What We Offer</h2>
-        <p>We offer picks on NFL, NBA, MLB, NHL, XFL, PGA Golf, and NCAA Basketball and Football. Our packages start at just $99.99 per month and give you access to all of our simulations, consensus data, betting trends, and expert analysis.</p>
+        <p>We offer picks on NFL, NBA, MLB, NHL, XFL, PGA Golf, and NCAA Basketball and Football. Our packages start at just <strong style="color:#FDB515;">$24.99 per month</strong> and give you access to all of our simulations, consensus data, betting trends, and expert analysis.</p>
+        <div style="margin:24px 0;padding:20px 24px;background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.2);border-radius:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+                <div style="color:#FDB515;font-weight:700;font-size:15px;margin-bottom:4px;">No Credit Card Needed</div>
+                <div style="color:#9a9a9a;font-size:14px;">Try INSPIN Free for 7 Days — Get Started today with our Free Trial</div>
+            </div>
+            <button onclick="openModal('join')" style="padding:12px 28px;background:#FDB515;color:#171818;border:none;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;box-shadow:0 0 16px rgba(253,181,21,.3);">Join Now</button>
+        </div>
         <h2>Our Commitment</h2>
         <p>Our team is committed to providing you with the highest level of customer service and support. From our user-friendly website to our 24/7 customer service, we are here to help you succeed.</p>
+        <p style="color:#FFFCEE;">If you purchase a package and do not show a net profit at the end of your time period, your package will automatically renew for <strong style="color:#FDB515;">FREE</strong> until you are a winning player following our selections.</p>
     @endif
 
     @if($experts->count() > 0)

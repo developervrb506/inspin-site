@@ -35,9 +35,9 @@
             @foreach($picks as $pick)
             @php
                 $timeStr = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
-                $gameStart = \Carbon\Carbon::parse($pick->game_date->format('Y-m-d') . ' ' . $timeStr, 'America/New_York');
+                $gameStart = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $pick->game_date->format('Y-m-d') . ' ' . $timeStr, 'America/New_York');
                 $now = \Carbon\Carbon::now('America/New_York');
-                $status = $pick->result !== 'pending' ? 'GRADED' : ($gameStart->lt($now) ? 'LIVE' : 'UPCOMING');
+                $status = $pick->result !== 'pending' ? 'Graded' : ($gameStart->lte($now) ? 'Started' : 'Active');
                 $sportEmojis = ['MLB'=>'⚾','NFL'=>'🏈','NBA'=>'🏀','NHL'=>'🏒','NCAAF'=>'🏈','NCAAB'=>'🏀','MMA'=>'🥊','GOLF'=>'⛳'];
                 $sEmoji = $sportEmojis[$pick->sport] ?? '🏅';
                 $t1init = strtoupper(substr($pick->team1_name ?? 'TM', 0, 2));
@@ -54,7 +54,7 @@
                             <div>
                                 <div style="color:#FFFCEE;font-size:14px;font-weight:600;">{{ $pick->sport }}</div>
                                 <div style="display:flex;gap:5px;margin-top:2px;">
-                                    @php $sc = ['LIVE'=>'#ef4444','UPCOMING'=>'#00D15B','GRADED'=>'#4a4a4a']; @endphp
+                                    @php $sc = ['Started'=>'#ef4444','Active'=>'#00D15B','Graded'=>'#4a4a4a']; @endphp
                                     <span style="font-size:10px;font-weight:700;color:{{ $sc[$status] ?? '#6e6e6e' }};letter-spacing:.4px;">{{ $status }}</span>
                                     @if($pick->is_whale_exclusive)
                                         <span style="font-size:10px;font-weight:700;color:#FDB515;letter-spacing:.4px;">· WHALE</span>
@@ -74,7 +74,7 @@
 
                     {{-- Date/Time --}}
                     <div style="color:#6e6e6e;font-size:12px;margin-bottom:14px;">
-                        @if($status === 'LIVE')<span class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444;margin-right:5px;animation:livePulse 1.4s infinite;"></span>@endif
+                        @if($status === 'Started')<span class="live-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4444;margin-right:5px;animation:livePulse 1.4s infinite;"></span>@endif
                         {{ $pick->game_date?->format('M d, Y') }}{{ $pick->game_time ? ' @ '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A').' ET' : '' }}
                         @if($pick->venue) · <span style="color:#4a4a4a;">{{ $pick->venue }}</span>@endif
                     </div>
@@ -113,14 +113,10 @@
                         </div>
                     </div>
 
-                    {{-- Pick — 1★ free, 2+★ require login --}}
-                    @if($pick->stars == 1 || auth()->check())
+                    {{-- Pick — all picks require login --}}
+                    @auth
                     <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:12px 16px;margin-bottom:10px;">
-                        @if($pick->stars == 1 && !auth()->check())
-                        <div style="font-size:10px;color:#00D15B;text-transform:uppercase;font-weight:700;margin-bottom:4px;letter-spacing:.4px;">Free Pick ★</div>
-                        @else
                         <div style="font-size:10px;color:#FDB515;text-transform:uppercase;font-weight:700;margin-bottom:4px;letter-spacing:.4px;">The Pick</div>
-                        @endif
                         <div style="font-size:15px;font-weight:600;color:#FFFCEE;">{{ $pick->pick }}</div>
                         @if($pick->units_result !== null)
                             <div style="margin-top:5px;font-size:12px;font-weight:600;color:{{ $pick->result==='win'?'#00D15B':($pick->result==='loss'?'#ef4444':'#FDB515') }};">
@@ -129,16 +125,16 @@
                         @endif
                     </div>
                     @else
-                    <div style="background:rgba(253,181,21,.04);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-align:center;">
-                        <div style="font-size:18px;margin-bottom:6px;">🔒</div>
-                        <div style="font-size:13px;font-weight:700;color:#FFFCEE;margin-bottom:4px;">{{ $pick->stars }}★ Premium Pick</div>
+                    <div style="background:rgba(253,181,21,.04);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:16px;margin-bottom:10px;text-align:center;">
+                        <div style="font-size:20px;margin-bottom:6px;">🔒</div>
+                        <div style="font-size:13px;font-weight:700;color:#FFFCEE;margin-bottom:4px;">Members Only Pick</div>
                         <div style="font-size:12px;color:#6e6e6e;margin-bottom:12px;">Login or subscribe to unlock this pick</div>
                         <div style="display:flex;gap:8px;justify-content:center;">
-                            <button onclick="openModal()" style="padding:8px 18px;background:transparent;color:#FDB515;border:1px solid #FDB515;border-radius:50px;font-weight:600;cursor:pointer;font-size:12px;">Log In</button>
-                            <a href="{{ route('join') }}" style="padding:8px 18px;background:#FDB515;color:#171818;border-radius:50px;font-weight:700;text-decoration:none;font-size:12px;">Subscribe</a>
+                            <button onclick="openModal()" style="padding:9px 20px;background:transparent;color:#FDB515;border:1px solid #FDB515;border-radius:50px;font-weight:600;cursor:pointer;font-size:12px;">Log In</button>
+                            <button onclick="openModal('join')" style="padding:9px 20px;background:#FDB515;color:#171818;border-radius:50px;font-weight:700;border:none;cursor:pointer;font-size:12px;">Subscribe</button>
                         </div>
                     </div>
-                    @endif
+                    @endauth
 
                     @if($pick->expert_name)
                     <div style="padding-top:10px;border-top:1px solid rgba(255,252,238,.06);display:flex;align-items:center;gap:8px;">

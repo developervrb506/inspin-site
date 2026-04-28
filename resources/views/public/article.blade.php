@@ -58,9 +58,10 @@
                     <div style="display:flex;gap:8px;align-items:center;">
                         @php
                             $tStr=$linkedPick->game_time?\Carbon\Carbon::parse($linkedPick->game_time)->format('H:i:s'):'00:00:00';
-                            $gStart=\Carbon\Carbon::parse($linkedPick->game_date->format('Y-m-d').' '.$tStr);
-                            $pStatus=$linkedPick->result!=='pending'?'GRADED':($gStart->isPast()?'LIVE':'UPCOMING');
-                            $pColor=$pStatus==='UPCOMING'?'#00D15B':($pStatus==='LIVE'?'#ef4444':'#4a4a4a');
+                            $gStart=\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$linkedPick->game_date->format('Y-m-d').' '.$tStr,'America/New_York');
+                            $pNow=\Carbon\Carbon::now('America/New_York');
+                            $pStatus=$linkedPick->result!=='pending'?'Graded':($gStart->lte($pNow)?'Started':'Active');
+                            $pColor=$pStatus==='Active'?'#00D15B':($pStatus==='Started'?'#ef4444':'#4a4a4a');
                         @endphp
                         <span style="background:rgba(253,181,21,.1);color:#FDB515;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;">{{ $linkedPick->sport }}</span>
                         <span style="color:{{ $pColor }};font-size:11px;font-weight:700;">{{ $pStatus }}</span>
