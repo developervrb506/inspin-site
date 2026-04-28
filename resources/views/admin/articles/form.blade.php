@@ -330,7 +330,6 @@
     }
     </script>
     @endif
-    @endif
 </div>
 @endsection
 
