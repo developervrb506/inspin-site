@@ -122,12 +122,15 @@ class StreakService
             foreach ($periods as $period => $data) {
                 if ($data['is_hot']) {
                     $hotStreaks[] = [
-                        'sport' => $sport,
-                        'period' => $period,
-                        'streak' => $data['current_streak'],
-                        'win_rate' => $data['win_rate'],
-                        'units' => $data['total_units'],
-                        'picks' => $data['total_picks'],
+                        'sport'        => $sport,
+                        'period'       => $period,
+                        'streak'       => $data['current_streak'],
+                        'win_rate'     => $data['win_rate'],
+                        'units'        => $data['total_units'],
+                        'picks'        => $data['total_picks'],
+                        'total_wins'   => $data['total_wins'],
+                        'total_losses' => $data['total_losses'],
+                        'total_pushes' => $data['total_pushes'],
                     ];
                 }
             }
