@@ -107,6 +107,7 @@ Route::middleware('admin')->group(function () {
         Route::resource('articles', AdminArticleController::class)->except(['show']);
         Route::post('articles/{article}/supplements', [AdminArticleController::class, 'addSupplement'])->name('articles.supplements.store');
         Route::delete('articles/{article}/supplements/{supplement}', [AdminArticleController::class, 'deleteSupplement'])->name('articles.supplements.destroy');
+        Route::post('articles/{article}/generate-sidebar', [AdminArticleController::class, 'generateSidebar'])->name('articles.supplements.generate');
         Route::resource('experts', AdminExpertController::class)->except(['show']);
         Route::resource('users', AdminUserController::class)->except(['create', 'store', 'show']);
         Route::resource('whale-packages', AdminWhalePackageController::class)->except(['show']);
