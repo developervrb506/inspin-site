@@ -30,22 +30,57 @@
         <p style="color:#6e6e6e;margin-bottom:32px;">Our team of professional handicappers brings decades of combined experience to every pick.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;">
             @foreach($experts as $expert)
+            @php $eid = 'bio-'.$expert->id; @endphp
             <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(253,181,21,.3)'" onmouseout="this.style.borderColor='rgba(255,252,238,.08)'">
+
+                {{-- Avatar with onerror fallback --}}
                 @if($expert->avatar)
-                    <img src="{{ asset('storage/uploads/experts/'.$expert->avatar) }}" alt="{{ $expert->name }}" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(253,181,21,.3);margin-bottom:16px;">
+                    <img src="{{ asset('storage/uploads/experts/'.$expert->avatar) }}"
+                         alt="{{ $expert->name }}"
+                         style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(253,181,21,.3);margin-bottom:16px;"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div style="display:none;width:88px;height:88px;border-radius:50%;background:#FDB515;align-items:center;justify-content:center;color:#171818;font-weight:800;font-size:28px;margin-bottom:16px;">{{ strtoupper(substr($expert->name,0,1)) }}</div>
                 @else
                     <div style="width:88px;height:88px;border-radius:50%;background:#FDB515;display:flex;align-items:center;justify-content:center;color:#171818;font-weight:800;font-size:28px;margin-bottom:16px;">{{ strtoupper(substr($expert->name,0,1)) }}</div>
                 @endif
+
                 <div style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:500;color:#FFFCEE;margin-bottom:4px;">{{ $expert->name }}</div>
+
                 @if($expert->specialty)
                     <div style="font-size:11px;color:#FDB515;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">{{ $expert->specialty }}</div>
                 @endif
+
                 @if($expert->bio)
-                    <p style="color:#6e6e6e;font-size:13px;line-height:1.6;margin:0;">{{ $expert->bio }}</p>
+                @php $longBio = strlen($expert->bio) > 180; @endphp
+                <div id="{{ $eid }}" style="color:#6e6e6e;font-size:13px;line-height:1.65;margin:0;overflow:hidden;{{ $longBio ? 'display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;' : '' }}">{{ $expert->bio }}</div>
+                @if($longBio)
+                <button onclick="toggleBio('{{ $eid }}', this)"
+                    style="margin-top:10px;background:none;border:none;color:#FDB515;font-size:12px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px;">
+                    Show More
+                </button>
+                @endif
                 @endif
             </div>
             @endforeach
         </div>
+
+        <script>
+        function toggleBio(id, btn) {
+            var el = document.getElementById(id);
+            var expanded = el.style.webkitLineClamp === 'unset' || el.style.webkitLineClamp === '';
+            if (expanded) {
+                el.style.webkitLineClamp = '4';
+                el.style.display = '-webkit-box';
+                el.style.overflow = 'hidden';
+                btn.textContent = 'Show More';
+            } else {
+                el.style.webkitLineClamp = 'unset';
+                el.style.display = 'block';
+                el.style.overflow = 'visible';
+                btn.textContent = 'Show Less';
+            }
+        }
+        </script>
     </div>
     @endif
 
