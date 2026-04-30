@@ -191,9 +191,21 @@
         .article-detail .meta { display: flex; gap: 16px; font-size: 13px; color: #6e6e6e; margin-bottom: 28px; }
         .article-detail .content { color: #c0c0c0; line-height: 1.85; }
         .article-detail .content p { margin-bottom: 16px; }
-        .article-detail .content h2, .article-detail .content h3 { color: #FFFCEE; font-family: 'Clash Display', sans-serif; font-weight: 500; margin: 24px 0 12px; }
+        .article-detail .content h2, .article-detail .content h3 { color: #FFFCEE; font-family: 'Clash Display', sans-serif; font-weight: 500; margin: 28px 0 14px; }
         .article-detail .content a { color: #FDB515; }
         .article-detail .content strong { color: #FFFCEE; }
+        .article-detail .content ul, .article-detail .content ol { padding-left: 20px; margin-bottom: 16px; }
+        .article-detail .content li { margin-bottom: 6px; }
+        /* ── Article tables (Betting Analysis etc) ── */
+        .article-detail .content table { width: 100%; border-collapse: collapse; margin: 24px 0; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,252,238,.08); }
+        .article-detail .content table thead tr { background: #1e1e1e; }
+        .article-detail .content table thead th { padding: 11px 16px; text-align: left; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #FDB515; border-bottom: 1px solid rgba(255,252,238,.1); white-space: nowrap; }
+        .article-detail .content table tbody tr { background: #212121; transition: background .15s; }
+        .article-detail .content table tbody tr:nth-child(even) { background: #1a1a1a; }
+        .article-detail .content table tbody tr:hover { background: #272727; }
+        .article-detail .content table tbody td { padding: 10px 16px; font-size: 13.5px; color: #c0c0c0; border-bottom: 1px solid rgba(255,252,238,.05); }
+        .article-detail .content table tbody tr:last-child td { border-bottom: none; }
+        .article-detail .content table tbody td:first-child { color: #FFFCEE; font-weight: 600; }
 
         /* ===== PAGINATION ===== */
         .pagination { display: flex; gap: 4px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
@@ -725,5 +737,6 @@
         });
         
     </script>
+    @stack('scripts')
 </body>
 </html>

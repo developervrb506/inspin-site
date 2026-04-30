@@ -112,66 +112,167 @@
 @if($hasSups)
 <aside style="width:300px;flex-shrink:0;">
     <div style="position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;">
-        <h3 style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:500;color:#FFFCEE;margin-bottom:4px;padding-bottom:10px;border-bottom:1px solid rgba(255,252,238,.08);">📚 More From This Game</h3>
+        <div style="padding-bottom:12px;border-bottom:1px solid rgba(255,252,238,.08);margin-bottom:4px;">
+            <div style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:500;color:#FFFCEE;">Game Analysis</div>
+            <div style="font-size:11px;color:#6e6e6e;margin-top:2px;">AI-powered breakdown · Audio · Flashcards</div>
+        </div>
         @foreach($article->supplements as $sup)
         <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;overflow:hidden;">
 
             @if($sup->type === 'ai_generated' && $sup->ai_content)
-            @php $ai = json_decode($sup->ai_content, true); @endphp
-            {{-- Claude AI Analysis card --}}
+            @php $ai = json_decode($sup->ai_content, true); $aiIdx = $loop->index; @endphp
+
+            {{-- Executive Summary --}}
+            @if(!empty($ai['executive_summary']))
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);background:rgba(253,181,21,.03);">
+                <div style="font-size:10px;color:#FDB515;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:7px;">📋 Executive Summary</div>
+                <p style="font-size:13px;color:#c0c0c0;line-height:1.65;margin:0;">{{ $ai['executive_summary'] }}</p>
+            </div>
+            @endif
+
+            {{-- Tweet summary --}}
+            @if(!empty($ai['tweet']))
+            <div style="padding:12px 16px;border-bottom:1px solid rgba(255,252,238,.06);background:rgba(29,161,242,.04);">
+                <div style="font-size:10px;color:#1da1f2;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:6px;">🐦 Quick Take</div>
+                <p style="font-size:12.5px;color:#FFFCEE;line-height:1.5;margin:0;font-style:italic;">"{{ $ai['tweet'] }}"</p>
+            </div>
+            @endif
+
+            {{-- Key Insights --}}
             @if(!empty($ai['insights']))
             <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);">
-                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px;">✨ Key Insights</div>
+                <div style="font-size:10px;color:#6366f1;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:8px;">✨ Key Insights</div>
                 @foreach($ai['insights'] as $ins)
-                <div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:#c0c0c0;line-height:1.5;">
-                    <span style="color:#FDB515;flex-shrink:0;">•</span><span>{{ $ins }}</span>
+                <div style="display:flex;gap:8px;margin-bottom:7px;font-size:12.5px;color:#c0c0c0;line-height:1.5;">
+                    <span style="color:#FDB515;flex-shrink:0;margin-top:1px;">•</span><span>{{ $ins }}</span>
                 </div>
                 @endforeach
             </div>
             @endif
+
+            {{-- Sharp vs Public --}}
             @if(!empty($ai['debate']))
             <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);">
-                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:10px;">💬 Sharp vs Public</div>
-                <div style="margin-bottom:8px;">
-                    <div style="font-size:10px;color:#00D15B;font-weight:700;margin-bottom:3px;">SHARP MONEY</div>
+                <div style="font-size:10px;color:#6366f1;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;">💬 Sharp vs Public</div>
+                <div style="background:rgba(0,209,91,.06);border-left:3px solid #00D15B;padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:8px;">
+                    <div style="font-size:9px;color:#00D15B;font-weight:700;margin-bottom:3px;letter-spacing:.4px;">SHARP MONEY</div>
                     <div style="font-size:12.5px;color:#c0c0c0;line-height:1.5;">{{ $ai['debate']['sharp'] ?? '' }}</div>
                 </div>
-                <div>
-                    <div style="font-size:10px;color:#FDB515;font-weight:700;margin-bottom:3px;">PUBLIC BETTORS</div>
+                <div style="background:rgba(253,181,21,.06);border-left:3px solid #FDB515;padding:8px 12px;border-radius:0 6px 6px 0;">
+                    <div style="font-size:9px;color:#FDB515;font-weight:700;margin-bottom:3px;letter-spacing:.4px;">PUBLIC BETTORS</div>
                     <div style="font-size:12.5px;color:#c0c0c0;line-height:1.5;">{{ $ai['debate']['public'] ?? '' }}</div>
                 </div>
             </div>
             @endif
+
+            {{-- Quick Stats --}}
             @if(!empty($ai['stats']))
-            <div style="padding:14px 16px;">
-                <div style="font-size:11px;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:8px;">🃏 Quick Stats</div>
+            <div style="padding:14px 16px;border-bottom:1px solid rgba(255,252,238,.06);">
+                <div style="font-size:10px;color:#6366f1;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:8px;">📊 Quick Stats</div>
                 @foreach($ai['stats'] as $stat)
-                <div style="display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:#c0c0c0;line-height:1.5;">
-                    <span style="color:#FDB515;flex-shrink:0;">›</span><span>{{ $stat }}</span>
+                <div style="display:flex;gap:8px;margin-bottom:6px;font-size:12.5px;color:#c0c0c0;line-height:1.5;">
+                    <span style="color:#3b82f6;flex-shrink:0;">›</span><span>{{ $stat }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
+            {{-- Flashcards --}}
+            @if(!empty($ai['flashcards']))
+            <div style="padding:14px 16px;">
+                <div style="font-size:10px;color:#6366f1;text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px;">🃏 Flashcards <span style="color:#4a4a4a;font-weight:400;font-size:9px;">(tap to reveal)</span></div>
+                @foreach($ai['flashcards'] as $fi => $card)
+                @php $cid = 'fc-'.$aiIdx.'-'.$fi; @endphp
+                <div style="background:#1a1a1a;border:1px solid rgba(255,252,238,.07);border-radius:8px;margin-bottom:8px;overflow:hidden;">
+                    <button onclick="toggleFlashcard('{{ $cid }}')"
+                        style="width:100%;text-align:left;background:none;border:none;padding:10px 14px;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+                        <span style="font-size:12.5px;color:#FFFCEE;font-weight:600;line-height:1.4;">{{ $card['q'] ?? '' }}</span>
+                        <span id="{{ $cid }}-icon" style="color:#FDB515;font-size:16px;flex-shrink:0;line-height:1;transition:transform .2s;">+</span>
+                    </button>
+                    <div id="{{ $cid }}" style="display:none;padding:0 14px 12px;font-size:12.5px;color:#9a9a9a;line-height:1.6;border-top:1px solid rgba(255,252,238,.05);">
+                        <div style="padding-top:10px;">{{ $card['a'] ?? '' }}</div>
+                    </div>
                 </div>
                 @endforeach
             </div>
             @endif
 
             @else
+            @php
+                $embedIsUrl = $sup->embed_code && (str_starts_with(trim($sup->embed_code), 'http://') || str_starts_with(trim($sup->embed_code), 'https://'));
+                $linkUrl = $embedIsUrl ? trim($sup->embed_code) : $sup->external_url;
+                $isVideo = $sup->type === 'video';
+                $isAudio = $sup->type === 'audio';
+                $typeColors = ['video'=>['#a855f7','rgba(168,85,247,.08)'],'audio'=>['#00D15B','rgba(0,209,91,.08)'],'infographic'=>['#3b82f6','rgba(59,130,246,.08)'],'debate'=>['#FDB515','rgba(253,181,21,.08)']];
+                $tc = $typeColors[$sup->type] ?? ['#9a9a9a','rgba(255,252,238,.05)'];
+            @endphp
+
             {{-- Manual supplement (audio, video, image, link) --}}
-            <div style="padding:12px 16px;border-bottom:1px solid rgba(255,252,238,.06);display:flex;align-items:center;gap:8px;">
-                <span style="font-size:18px;">{{ $sup->type_icon }}</span>
-                <div>
-                    <div style="font-size:10px;color:#6e6e6e;text-transform:uppercase;letter-spacing:.4px;">{{ ucfirst($sup->type) }}</div>
-                    @if($sup->title)<div style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif
+
+            @if($isAudio && $sup->image_path)
+                {{-- AI-generated audio: premium player card --}}
+                <div style="background:linear-gradient(135deg,rgba(0,209,91,.08) 0%,rgba(0,0,0,0) 100%);border-bottom:1px solid rgba(0,209,91,.12);padding:16px 18px 14px;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:13px;">
+                        <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,209,91,.15);border:1.5px solid rgba(0,209,91,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 14px rgba(0,209,91,.2);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D15B" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-size:13px;font-weight:700;color:#FFFCEE;letter-spacing:-.1px;">Listen to This Analysis</div>
+                            <div style="font-size:10px;color:#00D15B;margin-top:2px;font-weight:500;">● Audio Summary · ~2 min</div>
+                        </div>
+                    </div>
+                    <audio controls style="width:100%;height:38px;border-radius:50px;outline:none;accent-color:#00D15B;">
+                        <source src="{{ asset('storage/'.$sup->image_path) }}" type="audio/mpeg">
+                    </audio>
                 </div>
-            </div>
-            @if($sup->image_path)
+
+            @elseif($sup->image_path)
+                {{-- Infographic: full image display --}}
+                <div style="padding:12px 16px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,252,238,.06);">
+                    <span style="width:28px;height:28px;border-radius:6px;background:{{ $tc[1] }};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">{{ $sup->type_icon }}</span>
+                    <div>
+                        <div style="font-size:9px;color:{{ $tc[0] }};text-transform:uppercase;letter-spacing:.6px;font-weight:700;">{{ ucfirst($sup->type) }}</div>
+                        @if($sup->title)<div style="font-size:12px;font-weight:600;color:#FFFCEE;line-height:1.3;">{{ $sup->title }}</div>@endif
+                    </div>
+                </div>
                 <img src="{{ asset('storage/'.$sup->image_path) }}" alt="{{ $sup->title }}" style="width:100%;display:block;border-radius:0 0 12px 12px;">
-            @elseif($sup->embed_code)
+
+            @elseif($sup->embed_code && !$embedIsUrl)
+                {{-- Real iframe embed --}}
+                <div style="padding:10px 14px 8px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,252,238,.06);">
+                    <span style="width:28px;height:28px;border-radius:6px;background:{{ $tc[1] }};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">{{ $sup->type_icon }}</span>
+                    @if($sup->title)<div style="font-size:12px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif
+                </div>
                 <div style="padding:0;">{!! $sup->embed_code !!}</div>
-            @elseif($sup->external_url)
-                <div style="padding:14px 16px;">
-                    <a href="{{ $sup->external_url }}" target="_blank" rel="noopener"
-                       style="display:inline-flex;align-items:center;gap:8px;background:rgba(253,181,21,.08);border:1px solid rgba(253,181,21,.3);color:#FDB515;font-size:13px;font-weight:600;text-decoration:none;padding:9px 16px;border-radius:8px;width:100%;justify-content:center;"
-                       onmouseover="this.style.background='rgba(253,181,21,.16)'" onmouseout="this.style.background='rgba(253,181,21,.08)'">
-                        {{ $sup->type === 'audio' ? '🎧 Listen Now' : ($sup->type === 'video' ? '📺 Watch Now' : '🔗 View Content') }} →
+
+            @elseif($linkUrl)
+                {{-- Link-based content (NotebookLM URL, audio link, video link) --}}
+                <div style="padding:16px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                        <div style="width:32px;height:32px;border-radius:8px;background:{{ $tc[1] }};border:1px solid {{ $tc[0] }}33;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
+                            @if($isVideo)
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $tc[0] }}"><path d="M8 5v14l11-7z"/></svg>
+                            @elseif($isAudio)
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ $tc[0] }}" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                            @else
+                                <span style="font-size:13px;">{{ $sup->type_icon }}</span>
+                            @endif
+                        </div>
+                        <div>
+                            <div style="font-size:9px;color:{{ $tc[0] }};text-transform:uppercase;letter-spacing:.7px;font-weight:700;">{{ ucfirst($sup->type) }}</div>
+                            @if($sup->title)<div style="font-size:13px;font-weight:600;color:#FFFCEE;line-height:1.3;">{{ $sup->title }}</div>@endif
+                        </div>
+                    </div>
+                    <a href="{{ $linkUrl }}" target="_blank" rel="noopener"
+                       style="display:flex;align-items:center;justify-content:center;gap:8px;background:{{ $tc[0] }};color:#171818;font-size:13px;font-weight:700;text-decoration:none;padding:10px 16px;border-radius:8px;width:100%;transition:opacity .18s;"
+                       onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        @if($isVideo)
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#171818"><path d="M8 5v14l11-7z"/></svg> Watch Now
+                        @elseif($isAudio)
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#171818" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg> Listen Now
+                        @else
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#171818" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> View Content
+                        @endif
                     </a>
                 </div>
             @endif
@@ -185,4 +286,17 @@
 
 </div>{{-- end flex container --}}
 </div>{{-- end bg wrapper --}}
+
+@push('scripts')
+<script>
+function toggleFlashcard(id) {
+    var el  = document.getElementById(id);
+    var ico = document.getElementById(id + '-icon');
+    var open = el.style.display !== 'none';
+    el.style.display  = open ? 'none' : 'block';
+    ico.textContent   = open ? '+' : '×';
+    ico.style.transform = open ? 'rotate(0deg)' : 'rotate(45deg)';
+}
+</script>
+@endpush
 @endsection
