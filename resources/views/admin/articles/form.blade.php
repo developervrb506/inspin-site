@@ -312,7 +312,8 @@
         .then(data => {
             if (data.success) {
                 status.style.background = '#dcfce7'; status.style.color = '#166534'; status.style.border = '1px solid #bbf7d0';
-                status.textContent = '✓ Sidebar generated! Refresh the page to see the content listed above, then view the article to see the sidebar.';
+                var audioMsg = data.audio_path ? ' 🎧 Audio narration also generated!' : '';
+                status.textContent = '✓ Sidebar generated!' + audioMsg + ' Refresh the page to see the content, then view the article to see the sidebar.';
                 status.style.display = 'block';
             } else {
                 status.style.background = '#fee2e2'; status.style.color = '#991b1b'; status.style.border = '1px solid #fecaca';
