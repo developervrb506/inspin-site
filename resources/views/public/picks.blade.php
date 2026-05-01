@@ -1,6 +1,15 @@
 @extends('layouts.public')
 @section('title', 'Picks - INSPIN')
 
+@push('styles')
+<style>
+@media(max-width:600px){
+    .grid.grid-2 { grid-template-columns:1fr !important; }
+    .home-pick-card, .card { padding:16px !important; }
+}
+</style>
+@endpush
+
 @section('content')
 <div class="section">
     <div class="container">

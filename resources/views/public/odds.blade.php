@@ -30,6 +30,14 @@
     gap:0;
 }
 @media(max-width:700px){ .odds-body { grid-template-columns:1fr; } }
+@media(max-width:600px){
+    .odds-col { border-left:none; border-top:1px solid rgba(255,252,238,.04); }
+    .odds-col:first-child { border-top:none; }
+    .odds-col-header { padding:5px 14px; }
+    .odds-val { padding:7px 14px; }
+    .odds-header { padding:10px 14px; flex-wrap:wrap; gap:6px; }
+    .odds-team-row { padding:8px 14px; }
+}
 
 .odds-team-col { padding:0; }
 .odds-team-row {

@@ -36,6 +36,7 @@ Route::get('/betting-tools', function () { return view('public.tools'); })->name
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');
 Route::get('/terms-of-service', function () { return view('public.terms'); })->name('terms');
 Route::get('/privacy-policy', function () { return view('public.privacy'); })->name('privacy');
+Route::post('/chat', [\App\Http\Controllers\ChatController::class, 'respond'])->name('chat');
 
 // ==========================================
 // AUTH ROUTES (guests only)

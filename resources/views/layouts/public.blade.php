@@ -323,6 +323,28 @@
             .hero p { font-size: 13.5px; }
             .section-title { font-size: 1.3rem; }
             .top-bar .auth { gap: 10px; }
+            /* Page & article detail */
+            .page { padding: 32px 16px; }
+            .article-detail { padding: 32px 16px; }
+            .article-detail h1 { font-size: 1.5rem; }
+            /* Tables horizontal scroll */
+            .c-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            /* Sport filter wrap */
+            .sport-filter { gap: 6px; }
+            .sport-filter a { padding: 6px 12px; font-size: 12px; }
+            /* Footer */
+            .footer-copy { font-size: 11px; }
+        }
+
+        /* ===== CHAT WIDGET MOBILE ===== */
+        @media (max-width: 520px) {
+            #chatPanel {
+                right: 0; left: 0; bottom: 0;
+                width: 100%; max-height: 75vh;
+                border-radius: 20px 20px 0 0;
+                border-left: none; border-right: none; border-bottom: none;
+            }
+            #chatBtn { bottom: 16px; right: 16px; width: 50px; height: 50px; }
         }
     </style>
     @stack('styles')
@@ -738,5 +760,281 @@
         
     </script>
     @stack('scripts')
+
+    {{-- ═══ INSPIN AI CHAT WIDGET ═══ --}}
+    <style>
+        #chatBtn {
+            position:fixed; bottom:24px; right:24px; z-index:9000;
+            width:54px; height:54px; border-radius:50%;
+            background:linear-gradient(135deg,#FDB515,#e09c0d);
+            border:none; cursor:pointer;
+            box-shadow:0 4px 20px rgba(253,181,21,.45), 0 0 0 0 rgba(253,181,21,.4);
+            display:flex; align-items:center; justify-content:center;
+            transition:transform .2s, box-shadow .2s;
+            animation:chatPulse 2.5s infinite;
+        }
+        #chatBtn:hover { transform:scale(1.08); box-shadow:0 6px 28px rgba(253,181,21,.6); animation:none; }
+        @keyframes chatPulse {
+            0%,100% { box-shadow:0 4px 20px rgba(253,181,21,.45),0 0 0 0 rgba(253,181,21,.35); }
+            50%      { box-shadow:0 4px 20px rgba(253,181,21,.45),0 0 0 10px rgba(253,181,21,0); }
+        }
+        #chatBadge {
+            position:absolute; top:-4px; right:-4px;
+            width:18px; height:18px; border-radius:50%;
+            background:#ef4444; color:#fff; font-size:10px; font-weight:700;
+            display:flex; align-items:center; justify-content:center;
+            border:2px solid #171818;
+        }
+        #chatPanel {
+            position:fixed; bottom:88px; right:24px; z-index:8999;
+            width:340px; max-height:520px;
+            background:#1a1a1a; border:1px solid rgba(253,181,21,.2);
+            border-radius:16px; overflow:hidden;
+            box-shadow:0 20px 60px rgba(0,0,0,.7), 0 0 40px rgba(253,181,21,.06);
+            display:none; flex-direction:column;
+            animation:chatSlideIn .22s cubic-bezier(.34,1.56,.64,1);
+        }
+        #chatPanel.open { display:flex; }
+        @keyframes chatSlideIn { from{opacity:0;transform:translateY(16px) scale(.96)} to{opacity:1;transform:none} }
+        #chatHeader {
+            background:linear-gradient(135deg,#1e1e1e,#252525);
+            border-bottom:1px solid rgba(253,181,21,.15);
+            padding:14px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0;
+        }
+        #chatAvatar {
+            width:36px; height:36px; border-radius:50%;
+            background:#000; overflow:hidden;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
+        #chatMessages {
+            flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px;
+            scroll-behavior:smooth;
+        }
+        #chatMessages::-webkit-scrollbar { width:4px; }
+        #chatMessages::-webkit-scrollbar-track { background:transparent; }
+        #chatMessages::-webkit-scrollbar-thumb { background:#2d2d2d; border-radius:4px; }
+        .chat-msg { display:flex; gap:8px; align-items:flex-end; }
+        .chat-msg.user { flex-direction:row-reverse; }
+        .chat-bubble {
+            max-width:80%; min-width:60px; padding:10px 14px; border-radius:14px;
+            font-size:13px; line-height:1.55; overflow-wrap:break-word; word-break:normal;
+            white-space:pre-wrap;
+        }
+        .chat-bubble.bot {
+            background:#252525; color:#c0c0c0; border:1px solid rgba(255,252,238,.06);
+            border-bottom-left-radius:4px;
+        }
+        .chat-bubble.user {
+            background:linear-gradient(135deg,#FDB515,#e09c0d);
+            color:#171818; font-weight:600; border-bottom-right-radius:4px;
+        }
+        .chat-time { font-size:10px; color:#4a4a4a; margin-top:2px; text-align:center; }
+        #chatTyping { display:none; align-items:center; gap:6px; padding:0 4px; }
+        #chatTyping span { width:6px; height:6px; border-radius:50%; background:#FDB515; opacity:.4; animation:typingDot 1.2s infinite; }
+        #chatTyping span:nth-child(2) { animation-delay:.2s; }
+        #chatTyping span:nth-child(3) { animation-delay:.4s; }
+        @keyframes typingDot { 0%,80%,100%{opacity:.4;transform:scale(1)} 40%{opacity:1;transform:scale(1.2)} }
+        #chatInputArea {
+            border-top:1px solid rgba(255,252,238,.08);
+            padding:12px; display:flex; gap:8px; align-items:center; flex-shrink:0;
+            background:#171818;
+        }
+        #chatInput {
+            flex:1; background:#212121; border:1px solid rgba(255,252,238,.1);
+            border-radius:50px; padding:9px 16px; color:#FFFCEE; font-size:13px;
+            font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s;
+        }
+        #chatInput::placeholder { color:#4a4a4a; }
+        #chatInput:focus { border-color:rgba(253,181,21,.4); }
+        #chatSend {
+            width:36px; height:36px; border-radius:50%; border:none; cursor:pointer;
+            background:linear-gradient(135deg,#FDB515,#e09c0d); display:flex;
+            align-items:center; justify-content:center; flex-shrink:0;
+            transition:transform .15s, opacity .15s;
+        }
+        #chatSend:hover { transform:scale(1.08); }
+        #chatSend:disabled { opacity:.4; cursor:default; transform:none; }
+    </style>
+
+    {{-- Chat Button --}}
+    <button id="chatBtn" onclick="toggleChat()" aria-label="Open AI Support Chat">
+        <span id="chatBadge">1</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#171818" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+    </button>
+
+    {{-- Chat Panel --}}
+    <div id="chatPanel">
+        <div id="chatHeader">
+            <div id="chatAvatar">
+                <img src="{{ asset('images/chat-bot.png') }}" alt="INSPIN Assistant" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:13.5px;font-weight:700;color:#FFFCEE;font-family:'Clash Display',sans-serif;">INSPIN Assistant</div>
+                <div style="font-size:10px;color:#00D15B;display:flex;align-items:center;gap:4px;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#00D15B;display:inline-block;"></span> Online · Replies instantly
+                </div>
+            </div>
+            <button onclick="toggleChat()" style="background:rgba(255,252,238,.06);border:none;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#6e6e6e;font-size:16px;transition:background .15s;" onmouseover="this.style.background='rgba(255,252,238,.12)'" onmouseout="this.style.background='rgba(255,252,238,.06)'">&times;</button>
+        </div>
+
+        <div id="chatMessages">
+            <div class="chat-msg">
+                <img src="{{ asset('images/chat-bot.png') }}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#000;">
+                <div>
+                    <div class="chat-bubble bot">👋 Hi! I'm the INSPIN Assistant. I can help you with picks, packages, how the site works, or anything else about INSPIN. What can I help you with?</div>
+                    <div class="chat-time">Just now</div>
+                </div>
+            </div>
+            <div id="chatTyping" class="chat-msg">
+                <img src="{{ asset('images/chat-bot.png') }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#000;">
+                <div class="chat-bubble bot" style="padding:12px 16px;">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="chatInputArea">
+            <input id="chatInput" type="text" placeholder="Ask me anything about INSPIN…" maxlength="400" onkeydown="if(event.key==='Enter')sendChat()">
+            <button id="chatSend" onclick="sendChat()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171818" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+    var chatOpen = false;
+    var chatHistory = [];
+    var botAvatarHtml = '<img src="{{ asset("images/chat-bot.png") }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#000;">';
+
+    function toggleChat() {
+        chatOpen = !chatOpen;
+        document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+        document.getElementById('chatBadge').style.display = chatOpen ? 'none' : 'flex';
+        sessionStorage.setItem('chatOpen', chatOpen ? '1' : '0');
+        if (chatOpen) { scrollChat(); document.getElementById('chatInput').focus(); }
+    }
+
+    // Save chat to sessionStorage
+    function saveChat() {
+        sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    }
+
+    // Restore chat from sessionStorage on page load
+    function restoreChat() {
+        try {
+            var saved = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            if (saved.length > 0) {
+                // Clear the default welcome message first
+                var msgs = document.getElementById('chatMessages');
+                var typing = document.getElementById('chatTyping');
+                // Remove all children except typing indicator
+                while (msgs.firstChild && msgs.firstChild !== typing) {
+                    msgs.removeChild(msgs.firstChild);
+                }
+                saved.forEach(function(m) {
+                    appendMsg(m.role === 'user' ? 'user' : 'bot', m.content, m.time);
+                    if (m.role === 'user') {
+                        chatHistory.push({role:'user', content:m.content});
+                    } else {
+                        chatHistory.push({role:'assistant', content:m.content});
+                    }
+                });
+            }
+        } catch(e) {}
+
+        // Restore open state
+        if (sessionStorage.getItem('chatOpen') === '1') {
+            chatOpen = true;
+            document.getElementById('chatPanel').classList.add('open');
+            document.getElementById('chatBadge').style.display = 'none';
+            scrollChat();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', restoreChat);
+
+    function sendChat() {
+        var input = document.getElementById('chatInput');
+        var msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = '';
+        document.getElementById('chatSend').disabled = true;
+
+        var now = new Date();
+        var msgTime = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        appendMsg('user', msg);
+        chatHistory.push({role:'user', content:msg});
+        // Save to sessionStorage with timestamp for restore
+        var stored = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+        stored.push({role:'user', content:msg, time:msgTime});
+        sessionStorage.setItem('chatHistory', JSON.stringify(stored));
+
+        // Show typing indicator
+        var typing = document.getElementById('chatTyping');
+        typing.style.display = 'flex';
+        scrollChat();
+
+        fetch('{{ route("chat") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ message: msg, history: chatHistory.slice(-8) })
+        })
+        .then(r => r.json())
+        .then(data => {
+            typing.style.display = 'none';
+            var reply = data.reply || 'Sorry, I had trouble with that. Please try again!';
+            var repTime = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+            appendMsg('bot', reply);
+            chatHistory.push({role:'assistant', content:reply});
+            var stored2 = JSON.parse(sessionStorage.getItem('chatHistory') || '[]');
+            stored2.push({role:'assistant', content:reply, time:repTime});
+            sessionStorage.setItem('chatHistory', JSON.stringify(stored2));
+        })
+        .catch(() => {
+            typing.style.display = 'none';
+            appendMsg('bot', 'Having a brief connection issue. Please try again in a moment!');
+        })
+        .finally(() => {
+            document.getElementById('chatSend').disabled = false;
+            document.getElementById('chatInput').focus();
+        });
+    }
+
+    function appendMsg(role, text, savedTime) {
+        var msgs = document.getElementById('chatMessages');
+        var typing = document.getElementById('chatTyping');
+
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + (role === 'user' ? 'user' : '');
+
+        var now = new Date();
+        var time = savedTime || now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+        if (role === 'bot') {
+            div.innerHTML = botAvatarHtml + '<div><div class="chat-bubble bot">' + escHtml(text) + '</div><div class="chat-time">' + time + '</div></div>';
+        } else {
+            div.innerHTML = '<div><div class="chat-bubble user">' + escHtml(text) + '</div><div class="chat-time" style="text-align:right;">' + time + '</div></div>';
+        }
+
+        msgs.insertBefore(div, typing);
+        scrollChat();
+    }
+
+    function scrollChat() {
+        var msgs = document.getElementById('chatMessages');
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function escHtml(t) {
+        return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
+    </script>
 </body>
 </html>

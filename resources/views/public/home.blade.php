@@ -85,7 +85,19 @@ body { background: #171818; }
 /* ── Hero heading responsive ── */
 @media(max-width:900px){ .hero-h1 { font-size:2.8rem !important; } }
 @media(max-width:640px){ .hero-h1 { font-size:2rem !important; } }
-@media(max-width:400px){ .hero-h1 { font-size:1.6rem !important; } }
+@media(max-width:400px){ .hero-h1 { font-size:1.5rem !important; } }
+
+/* ── Mobile section padding ── */
+@media(max-width:768px){
+    .home-picks-grid { grid-template-columns:1fr !important; }
+    .home-pkg-grid { grid-template-columns:1fr !important; }
+    .home-articles-grid { grid-template-columns:1fr !important; }
+}
+@media(max-width:480px){
+    .home-pick-card { padding:16px; }
+    .home-pkg-card { padding:20px 16px; }
+    .arr-btn { width:30px; height:30px; font-size:16px; }
+}
 </style>
 @endpush
 

@@ -28,7 +28,7 @@
     <div style="margin-top:52px;padding-top:36px;border-top:1px solid rgba(255,252,238,.08);">
         <h2 style="font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:500;color:#FFFCEE;margin-bottom:6px;">Meet Our Experts</h2>
         <p style="color:#6e6e6e;margin-bottom:32px;">Our team of professional handicappers brings decades of combined experience to every pick.</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:20px;">
             @foreach($experts as $expert)
             @php $eid = 'bio-'.$expert->id; @endphp
             <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(253,181,21,.3)'" onmouseout="this.style.borderColor='rgba(255,252,238,.08)'">
