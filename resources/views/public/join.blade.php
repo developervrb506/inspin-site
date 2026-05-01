@@ -6,22 +6,34 @@
     .pkg-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
     @media(max-width:900px){ .pkg-grid { grid-template-columns: repeat(2,1fr); } }
     @media(max-width:560px){ .pkg-grid { grid-template-columns: 1fr; } }
-    @media(max-width:560px){ .whale-inner,.free-inner { flex-direction:column !important; text-align:center !important; } .whale-price-block,.free-price-block { width:100% !important; text-align:center !important; } }
     .feat-row { display:flex; align-items:center; gap:9px; padding:7px 0; font-size:13px; border-bottom:1px solid rgba(255,252,238,.06); }
     .feat-row:last-child { border-bottom:none; }
     .feat-check { width:16px; height:16px; flex-shrink:0; }
     .feat-x { width:16px; height:16px; flex-shrink:0; color:#4a4a4a; }
+    /* Mobile fixes */
+    @media(max-width:768px){
+        .whale-inner,.free-inner { flex-direction:column !important; text-align:center !important; gap:16px !important; }
+        .whale-price-block,.free-price-block { width:100% !important; text-align:center !important; }
+    }
+    @media(max-width:560px){
+        .join-banner { padding:24px 20px !important; }
+        .join-hero { padding:40px 0 36px !important; }
+        .join-hero h1 { font-size:1.6rem !important; }
+        .pkg-price-text { font-size:1.7rem !important; }
+        .whale-price-num { font-size:2rem !important; }
+        .free-price-num { font-size:2.2rem !important; }
+    }
 </style>
 @endpush
 
 @section('content')
 
 {{-- Hero --}}
-<section style="background:#171818;padding:70px 0 60px;text-align:center;position:relative;overflow:hidden;">
+<section class="join-hero" style="background:#171818;padding:70px 0 60px;text-align:center;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,252,238,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,252,238,.03) 1px,transparent 1px);background-size:68px 68px;"></div>
     <div style="position:absolute;bottom:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent 5%,#c47f10 30%,#FDB515 50%,#c47f10 70%,transparent 95%);"></div>
     <div class="container" style="position:relative;">
-        <h1 style="font-family:'Clash Display',sans-serif;color:#FFFCEE;font-size:2.2rem;font-weight:500;margin-bottom:12px;letter-spacing:-.2px;">Membership Packages</h1>
+        <h1 class="join-hero-h1" style="font-family:'Clash Display',sans-serif;color:#FFFCEE;font-size:2.2rem;font-weight:500;margin-bottom:12px;letter-spacing:-.2px;">Membership Packages</h1>
         <p style="color:#6e6e6e;max-width:560px;margin:0 auto 10px;font-size:15px;">Start free. Upgrade anytime. Cancel anytime.</p>
         <p style="color:#9a9a9a;max-width:620px;margin:0 auto;font-size:14px;">Our simulation model is up <strong style="color:#FDB515;">+150 units</strong> over 3 years — a $100 bettor netted $15,000+ profit.</p>
     </div>
@@ -31,7 +43,7 @@
     <div class="container">
 
         {{-- ═══ FREE TRIAL — Full-width green banner (like Whale) ═══ --}}
-        <div onclick="openModal('join')" style="cursor:pointer;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(34,197,94,.25);box-shadow:0 0 40px rgba(34,197,94,.06);margin-bottom:32px;">
+        <div onclick="openModal('join')" class="join-banner" style="cursor:pointer;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(34,197,94,.25);box-shadow:0 0 40px rgba(34,197,94,.06);margin-bottom:32px;">
             {{-- Green glow top bar --}}
             <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent 0%,#22c55e 30%,#4ade80 50%,#22c55e 70%,transparent 100%);"></div>
             <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at 80% 50%,rgba(34,197,94,.08) 0%,transparent 65%);pointer-events:none;"></div>
@@ -172,7 +184,7 @@
         </div>
 
         {{-- ═══ WHALE PACKAGE — full-width banner ═══ --}}
-        <div onclick="openModal('join')" style="cursor:pointer;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(253,181,21,.2);box-shadow:0 0 40px rgba(253,181,21,.06);margin-bottom:24px;">
+        <div onclick="openModal('join')" class="join-banner" style="cursor:pointer;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(253,181,21,.2);box-shadow:0 0 40px rgba(253,181,21,.06);margin-bottom:24px;">
             <div style="position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at 80% 50%,rgba(253,181,21,.08) 0%,transparent 65%);pointer-events:none;"></div>
             <div class="whale-inner" style="display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative;z-index:1;flex-wrap:wrap;">
                 <div style="display:flex;align-items:center;gap:20px;">

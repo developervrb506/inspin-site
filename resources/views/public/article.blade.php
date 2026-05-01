@@ -1,10 +1,24 @@
 @extends('layouts.public')
 @section('title', $article->title . ' - INSPIN')
 
+@push('styles')
+<style>
+.art-wrap { display:{{ $article->supplements->count() > 0 ? 'flex' : 'block' }}; gap:40px; align-items:flex-start; max-width:{{ $article->supplements->count() > 0 ? '1200px' : '800px' }}; margin:0 auto; padding:52px 20px; }
+@media(max-width:900px) {
+    .art-wrap { flex-direction:column; padding:32px 16px; }
+    .art-sidebar { width:100% !important; position:static !important; }
+    .art-sidebar > div { position:static !important; }
+}
+@media(max-width:480px) {
+    .art-wrap { padding:24px 14px; gap:24px; }
+}
+</style>
+@endpush
+
 @section('content')
 @php $hasSups = $article->supplements->count() > 0; @endphp
 <div style="background:#171818;min-height:60vh;">
-<div style="max-width:{{ $hasSups ? '1200px' : '800px' }};margin:0 auto;padding:52px 20px;display:{{ $hasSups ? 'flex' : 'block' }};gap:40px;align-items:flex-start;">
+<div class="art-wrap">
 
 {{-- Main article column --}}
 <div class="article-detail" style="flex:1;min-width:0;padding:0;background:none;min-height:unset;">
@@ -110,7 +124,7 @@
 
 {{-- Supplements sidebar (only rendered if supplements exist) --}}
 @if($hasSups)
-<aside style="width:300px;flex-shrink:0;">
+<aside class="art-sidebar" style="width:300px;flex-shrink:0;">
     <div style="position:sticky;top:90px;display:flex;flex-direction:column;gap:16px;">
         <div style="padding-bottom:12px;border-bottom:1px solid rgba(255,252,238,.08);margin-bottom:4px;">
             <div style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:500;color:#FFFCEE;">Game Analysis</div>
