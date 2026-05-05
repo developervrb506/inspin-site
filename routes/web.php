@@ -58,6 +58,16 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 // USER ROUTES (any logged-in user)
 // ==========================================
 Route::middleware('auth')->group(function () {
+    // Subscriber dashboard & portal
+    Route::get('/subscriber/dashboard', [\App\Http\Controllers\SubscriberController::class, 'dashboard'])->name('subscriber.dashboard');
+    Route::get('/subscriber/picks', [\App\Http\Controllers\SubscriberController::class, 'picks'])->name('subscriber.picks');
+    Route::get('/subscriber/articles', [\App\Http\Controllers\SubscriberController::class, 'articles'])->name('subscriber.articles');
+    Route::get('/subscriber/articles/{article}', [\App\Http\Controllers\SubscriberController::class, 'article'])->name('subscriber.article');
+    Route::get('/subscriber/consensus', [\App\Http\Controllers\SubscriberController::class, 'consensus'])->name('subscriber.consensus');
+    Route::get('/subscriber/trends', [\App\Http\Controllers\SubscriberController::class, 'trends'])->name('subscriber.trends');
+    Route::get('/subscriber/odds', [\App\Http\Controllers\SubscriberController::class, 'odds'])->name('subscriber.odds');
+    Route::get('/subscriber/packages', [\App\Http\Controllers\SubscriberController::class, 'packages'])->name('subscriber.packages');
+
     Route::get('/profile', [PublicController::class, 'profile'])->name('profile');
     Route::get('/account/settings', [App\Http\Controllers\AccountSettingsController::class, 'index'])->name('account.settings');
     Route::put('/account/settings/profile', [App\Http\Controllers\AccountSettingsController::class, 'updateProfile'])->name('account.settings.profile');

@@ -122,17 +122,27 @@
                         </div>
                     </div>
 
-                    {{-- Pick — all picks require login --}}
+                    {{-- Pick access: tier-based for logged-in users, locked for guests --}}
                     @auth
-                    <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:12px 16px;margin-bottom:10px;">
-                        <div style="font-size:10px;color:#FDB515;text-transform:uppercase;font-weight:700;margin-bottom:4px;letter-spacing:.4px;">The Pick</div>
-                        <div style="font-size:15px;font-weight:600;color:#FFFCEE;">{{ $pick->pick }}</div>
-                        @if($pick->units_result !== null)
-                            <div style="margin-top:5px;font-size:12px;font-weight:600;color:{{ $pick->result==='win'?'#00D15B':($pick->result==='loss'?'#ef4444':'#FDB515') }};">
-                                {{ $pick->result==='win'?'+':'' }}{{ $pick->units_result }} units
-                            </div>
+                        @if(auth()->user()->canViewPick($pick))
+                        <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:12px 16px;margin-bottom:10px;">
+                            <div style="font-size:10px;color:#FDB515;text-transform:uppercase;font-weight:700;margin-bottom:4px;letter-spacing:.4px;">The Pick</div>
+                            <div style="font-size:15px;font-weight:600;color:#FFFCEE;">{{ $pick->pick }}</div>
+                            @if($pick->units_result !== null)
+                                <div style="margin-top:5px;font-size:12px;font-weight:600;color:{{ $pick->result==='win'?'#00D15B':($pick->result==='loss'?'#ef4444':'#FDB515') }};">
+                                    {{ $pick->result==='win'?'+':'' }}{{ $pick->units_result }} units
+                                </div>
+                            @endif
+                        </div>
+                        @else
+                        {{-- Logged in but not enough tier --}}
+                        <div style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.2);border-radius:10px;padding:14px 16px;margin-bottom:10px;text-align:center;">
+                            <div style="font-size:18px;margin-bottom:6px;">⭐</div>
+                            <div style="font-size:13px;font-weight:700;color:#FFFCEE;margin-bottom:4px;">{{ $pick->stars }}★ Pick — Upgrade Required</div>
+                            <div style="font-size:12px;color:#6e6e6e;margin-bottom:12px;">Your package includes up to <strong style="color:#FFFCEE;">{{ auth()->user()->maxAccessibleStars() }}★</strong> picks. Upgrade to unlock {{ $pick->stars }}★ picks.</div>
+                            <a href="{{ route('join') }}" style="display:inline-block;padding:9px 20px;background:#6366f1;color:#fff;border-radius:50px;font-weight:700;text-decoration:none;font-size:12px;">Upgrade Package</a>
+                        </div>
                         @endif
-                    </div>
                     @else
                     <div style="background:rgba(253,181,21,.04);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:16px;margin-bottom:10px;text-align:center;">
                         <div style="font-size:20px;margin-bottom:6px;">🔒</div>
