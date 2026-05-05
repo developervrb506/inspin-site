@@ -26,17 +26,20 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            
+
+            $user = Auth::user();
+            $redirectTo = $user->role === 'admin' ? route('dashboard') : route('subscriber.dashboard');
+
             // Return JSON for AJAX requests
             if ($request->wantsJson() || $request->acceptsJson()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Login successful.',
-                    'redirect' => route('dashboard'),
+                    'success'  => true,
+                    'message'  => 'Login successful.',
+                    'redirect' => $redirectTo,
                 ]);
             }
-            
-            return redirect()->intended(route('dashboard'));
+
+            return redirect()->intended($redirectTo);
         }
 
         // Return JSON error for AJAX requests

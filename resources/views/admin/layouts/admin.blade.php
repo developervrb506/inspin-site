@@ -272,12 +272,38 @@
                     <div class="sidebar-user-name">{{ auth()->user()->name ?? 'Admin' }}</div>
                     <div class="sidebar-user-role">{{ auth()->user()->role ?? 'admin' }}</div>
                 </div>
-                <form method="POST" action="{{ route('logout') }}" style="flex-shrink:0;">
+                <form method="POST" action="{{ route('logout') }}" id="adminLogoutForm" style="flex-shrink:0;">
                     @csrf
-                    <button type="submit" style="background:none;border:none;cursor:pointer;padding:4px;color:#475569;" title="Logout">
+                    <button type="button" onclick="confirmAdminLogout()" style="background:none;border:none;cursor:pointer;padding:4px;color:#475569;" title="Logout">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     </button>
                 </form>
+
+                {{-- Admin logout confirm --}}
+                <div id="adminLogoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+                    <div style="background:#fff;border-radius:14px;padding:28px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+                        <div style="font-size:2rem;margin-bottom:12px;">🔐</div>
+                        <h3 style="font-size:1.05rem;font-weight:700;color:#0f172a;margin-bottom:8px;">Log out of Admin?</h3>
+                        <p style="font-size:13px;color:#64748b;margin-bottom:22px;">You'll need your credentials to log back in.</p>
+                        <div style="display:flex;gap:10px;justify-content:center;">
+                            <button onclick="document.getElementById('adminLogoutModal').style.display='none'"
+                                style="padding:9px 22px;background:#f1f5f9;border:none;color:#475569;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+                                Cancel
+                            </button>
+                            <button onclick="document.getElementById('adminLogoutForm').submit()"
+                                style="padding:9px 22px;background:#dc2626;border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                function confirmAdminLogout() {
+                    var m = document.getElementById('adminLogoutModal');
+                    m.style.display = 'flex';
+                    m.addEventListener('click', function(e){ if(e.target===this) this.style.display='none'; }, {once:false});
+                }
+                </script>
             </div>
         </div>
     </aside>

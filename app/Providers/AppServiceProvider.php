@@ -7,6 +7,7 @@ use App\Models\Contest;
 use App\Models\Expert;
 use App\Models\Pick;
 use App\Models\SupportTicket;
+use App\Observers\PickObserver;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        Pick::observe(PickObserver::class);
+
         View::composer('admin.layouts.admin', function ($view) {
             $view->with('stats', [
                 'picks' => Pick::count(),

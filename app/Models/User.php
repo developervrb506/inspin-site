@@ -43,4 +43,42 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // ── Relationships ────────────────────────────────────────────
+    public function subscriptions()
+    {
+        return $this->hasMany(UserPackage::class)->orderByDesc('starts_at');
+    }
+
+    public function activeSubscription(): ?UserPackage
+    {
+        return $this->subscriptions()
+            ->where('is_active', true)
+            ->first();
+    }
+
+    // ── Subscription helpers ─────────────────────────────────────
+    public function maxAccessibleStars(): int
+    {
+        $sub = $this->activeSubscription();
+        if (!$sub) return 0;
+        return $sub->max_stars;
+    }
+
+    public function canViewPick(\App\Models\Pick $pick): bool
+    {
+        $sub = $this->activeSubscription();
+        if (!$sub) return false;
+        return $pick->stars <= $sub->max_stars;
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->activeSubscription() !== null;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 }

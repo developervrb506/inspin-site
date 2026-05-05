@@ -1,114 +1,90 @@
-@extends('admin.layouts.admin')
-
-@section('title', 'Settings - INSPIN Admin')
+@extends('layouts.subscriber')
+@section('title', 'Account Settings - INSPIN')
 @section('page-title', 'Account Settings')
-@section('breadcrumb')
-    <span>Settings</span>
-@endsection
 
 @section('content')
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-    <div class="card">
-        <div class="card-header">
-            <h2>Profile Information</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="{{ route('account.settings.profile') }}">
-                @csrf
-                @method('PUT')
+@php $isAdmin = false; @endphp
 
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
-                </div>
+@if(session('success'))
+<div style="background:rgba(0,209,91,.1);border:1px solid rgba(0,209,91,.25);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#00D15B;">
+    ✓ {{ session('success') }}
+</div>
+@endif
 
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+    {{-- Profile form --}}
+    <div class="{{ $isAdmin ? 'card' : 'stat-card' }}">
+        @if($isAdmin)<div class="card-header"><h2>Profile Information</h2></div><div class="card-body">@else<div class="stat-label" style="margin-bottom:16px;">Profile Information</div>@endif
+        <form method="POST" action="{{ route('account.settings.profile') }}">
+            @csrf @method('PUT')
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">Full Name</label>
+                    <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
+                    @error('name')<div style="color:#ef4444;font-size:12px;margin-top:3px;">{{ $message }}</div>@enderror
                 </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="Optional">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">Email Address</label>
+                    <input type="email" name="email" value="{{ old('email', $user->email) }}" required
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
+                    @error('email')<div style="color:#ef4444;font-size:12px;margin-top:3px;">{{ $message }}</div>@enderror
                 </div>
-
-                <div class="form-group">
-                    <label>Role</label>
-                    <input type="text" value="{{ ucfirst($user->role ?? 'free') }}" disabled style="background:#f8fafc;color:#64748b;">
-                    <div class="hint">Contact an admin to change your role</div>
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">Phone Number</label>
+                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="Optional"
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M5 13l4 4L19 7"/></svg>
-                        Save Profile
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div style="margin-top:18px;">
+                <button type="submit" style="padding:10px 22px;background:#FDB515;color:#171818;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Save Profile</button>
+            </div>
+        </form>
+        @if($isAdmin)</div>@endif
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>Change Password</h2>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="{{ route('account.settings.password') }}">
-                @csrf
-                @method('PUT')
-
-                <div class="form-group">
-                    <label for="current_password">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required placeholder="Enter current password">
-                    @error('current_password')
-                        <div style="color:#dc2626;font-size:12px;margin-top:4px;">{{ $message }}</div>
-                    @enderror
+    {{-- Password form --}}
+    <div class="{{ $isAdmin ? 'card' : 'stat-card' }}">
+        @if($isAdmin)<div class="card-header"><h2>Change Password</h2></div><div class="card-body">@else<div class="stat-label" style="margin-bottom:16px;">Change Password</div>@endif
+        <form method="POST" action="{{ route('account.settings.password') }}">
+            @csrf @method('PUT')
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">Current Password</label>
+                    <input type="password" name="current_password" required placeholder="Enter current password"
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
+                    @error('current_password')<div style="color:#ef4444;font-size:12px;margin-top:3px;">{{ $message }}</div>@enderror
                 </div>
-
-                <div class="form-group">
-                    <label for="password">New Password</label>
-                    <input type="password" id="password" name="password" required minlength="8" placeholder="Minimum 8 characters">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">New Password</label>
+                    <input type="password" name="password" required minlength="8" placeholder="Minimum 8 characters"
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
                 </div>
-
-                <div class="form-group">
-                    <label for="password_confirmation">Confirm New Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" required minlength="8" placeholder="Re-enter new password">
+                <div>
+                    <label style="font-size:12px;font-weight:600;color:{{ $isAdmin?'#374151':'#9a9a9a' }};display:block;margin-bottom:5px;">Confirm New Password</label>
+                    <input type="password" name="password_confirmation" required minlength="8" placeholder="Re-enter new password"
+                        style="width:100%;padding:10px 14px;background:{{ $isAdmin?'#fff':'#111' }};border:1px solid {{ $isAdmin?'#d1d5db':'rgba(255,252,238,.1)' }};border-radius:8px;font-size:14px;color:{{ $isAdmin?'#111':'#FFFCEE' }};outline:none;">
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        Update Password
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div style="margin-top:18px;">
+                <button type="submit" style="padding:10px 22px;background:#171818;border:1px solid rgba(255,252,238,.2);color:#FFFCEE;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Update Password</button>
+            </div>
+        </form>
+        @if($isAdmin)</div>@endif
     </div>
 </div>
 
-<div class="card" style="margin-top:24px;">
-    <div class="card-header">
-        <h2>Account Details</h2>
-    </div>
-    <div class="card-body">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
-            <div style="padding:16px;background:#f8fafc;border-radius:8px;">
-                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Member Since</div>
-                <div style="font-weight:600;">{{ $user->created_at?->format('M d, Y') ?? 'N/A' }}</div>
-            </div>
-            <div style="padding:16px;background:#f8fafc;border-radius:8px;">
-                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Last Updated</div>
-                <div style="font-weight:600;">{{ $user->updated_at?->format('M d, Y') ?? 'N/A' }}</div>
-            </div>
-            <div style="padding:16px;background:#f8fafc;border-radius:8px;">
-                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:4px;">User ID</div>
-                <div style="font-weight:600;">#{{ $user->id }}</div>
-            </div>
-            <div style="padding:16px;background:#f8fafc;border-radius:8px;">
-                <div style="font-size:12px;color:#64748b;text-transform:uppercase;font-weight:700;margin-bottom:4px;">Account Status</div>
-                <span class="badge badge-success">Active</span>
-            </div>
+{{-- Account info strip --}}
+<div class="{{ $isAdmin ? 'card' : 'stat-card' }}">
+    @if($isAdmin)<div class="card-header"><h2>Account Details</h2></div><div class="card-body">@else<div class="stat-label" style="margin-bottom:16px;">Account Details</div>@endif
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
+        @foreach(['Member Since'=>$user->created_at?->format('M d, Y'),'Last Updated'=>$user->updated_at?->format('M d, Y'),'User ID'=>'#'.$user->id,'Status'=>'Active'] as $label=>$val)
+        <div style="padding:14px;background:rgba(255,252,238,.03);border:1px solid rgba(255,252,238,.06);border-radius:8px;">
+            <div style="font-size:10px;color:#6e6e6e;text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;">{{ $label }}</div>
+            <div style="font-size:13px;font-weight:600;color:{{ $label==='Status'?'#00D15B':'#FFFCEE' }};">{{ $val }}</div>
         </div>
+        @endforeach
     </div>
+    @if($isAdmin)</div>@endif
 </div>
 @endsection
