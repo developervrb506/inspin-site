@@ -119,7 +119,7 @@
             font-family:'Clash Display',sans-serif; font-size:1.1rem;
             font-weight:500; color:#FFFCEE;
         }
-        .portal-content { flex:1; padding:32px; max-width:1100px; }
+        .portal-content { flex:1; padding:32px; width:100%; min-width:0; }
 
         /* Hamburger for mobile */
         #menuToggle {
