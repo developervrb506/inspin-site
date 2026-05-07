@@ -122,7 +122,7 @@ class PublicController extends Controller
             ->when($sport, fn($q) => $q->where('sport', $sport))
             ->orderBy('game_date', 'desc')
             ->orderBy('game_time', 'asc')
-            ->paginate(15);
+            ->paginate(10);
 
         return view('public.picks', [
             'picks' => $picks,

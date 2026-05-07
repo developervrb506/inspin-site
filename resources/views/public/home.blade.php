@@ -220,14 +220,17 @@ body { background: #171818; }
         <div class="home-picks-grid">
             @foreach($expertPicks as $pick)
             @php
-                $timeStr   = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
+                $rawTime   = $pick->game_time ? (string)$pick->game_time : '00:00:00';
+                $timeStr   = strlen($rawTime) === 5 ? $rawTime.':00' : substr($rawTime, 0, 8);
                 $gameStart = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
                 $now       = \Carbon\Carbon::now('America/New_York');
-                $status    = $pick->result !== 'pending' ? 'Graded' : ($gameStart->lte($now) ? 'Started' : 'Active');
+                $status    = $pick->result !== 'pending' ? 'Graded' : ($now->gte($gameStart) ? 'Started' : 'Active');
                 $sportEmojis = ['MLB'=>'⚾','NFL'=>'🏈','NBA'=>'🏀','NHL'=>'🏒','NCAAF'=>'🏈','NCAAB'=>'🏀','MMA'=>'🥊','GOLF'=>'⛳'];
                 $sEmoji = $sportEmojis[$pick->sport] ?? '🏅';
                 $t1init = strtoupper(substr($pick->team1_name ?? 'TM',0,3));
                 $t2init = strtoupper(substr($pick->team2_name ?? 'TM',0,3));
+                $conf   = $pick->team1_percent;
+                $statusStyles = ['Started'=>'background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444;','Active'=>'background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;','Graded'=>'background:rgba(100,100,100,.12);border:1px solid #4a4a4a;color:#9a9a9a;'];
             @endphp
             <div class="home-pick-card">
                 {{-- Row 1: sport icon circle + name | stars --}}
@@ -245,67 +248,47 @@ body { background: #171818; }
                     </div>
                 </div>
 
-                {{-- Row 2: status + time --}}
-                <div style="display:flex;align-items:center;gap:7px;margin-bottom:16px;">
-                    @if($status==='Started')
-                        <span class="live-dot"></span>
-                        <span style="color:#ef4444;font-size:12px;font-weight:700;letter-spacing:.3px;">Started</span>
-                    @elseif($status==='Active')
-                        <span style="width:8px;height:8px;border-radius:50%;background:#00D15B;display:inline-block;flex-shrink:0;"></span>
-                        <span style="color:#00D15B;font-size:12px;font-weight:700;">Active</span>
-                    @else
-                        <span style="width:8px;height:8px;border-radius:50%;background:#4a4a4a;display:inline-block;flex-shrink:0;"></span>
-                        <span style="color:#4a4a4a;font-size:12px;font-weight:700;">Graded</span>
-                    @endif
+                {{-- Row 2: status pill + time --}}
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                    @if($status==='Started')<span class="live-dot"></span>@endif
+                    <span style="{{ $statusStyles[$status] ?? '' }}font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;">{{ $status }}</span>
                     <span style="color:#6e6e6e;font-size:12px;">
-                        {{ $pick->game_date?->format('M d') }}{{ $pick->game_time ? ' @ '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A') : '' }}
+                        {{ $pick->game_date?->format('M d') }}{{ $pick->game_time ? ' @ '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A').' ET' : '' }}
                     </span>
                 </div>
 
-                {{-- Row 3: Teams with logo + progress bar + % badge --}}
-                @php
-                    $p1 = $pick->team1_percent ?? 50;
-                    $p2 = $pick->team2_percent ?? (100 - $p1);
-                @endphp
-                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
-                    {{-- Team 1 --}}
-                    <div>
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                            <div style="width:36px;height:36px;border-radius:50%;background:#2a2a2a;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,252,238,.08);overflow:hidden;">
-                                @if($pick->team1_logo)
-                                    <img src="{{ asset('storage/'.$pick->team1_logo) }}" alt="{{ $t1init }}" style="width:28px;height:28px;object-fit:contain;"
-                                         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                                    <span style="display:none;font-size:9px;font-weight:800;color:#9a9a9a;text-transform:uppercase;">{{ $t1init }}</span>
-                                @else
-                                    <span style="font-size:9px;font-weight:800;color:#9a9a9a;text-transform:uppercase;">{{ $t1init }}</span>
-                                @endif
-                            </div>
-                            <span style="color:#FFFCEE;font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $pick->team1_name }}</span>
-                            <span style="flex-shrink:0;background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">{{ $p1 }}%</span>
+                {{-- Row 3: Teams combined + confidence --}}
+                <div style="margin-bottom:16px;">
+                    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap;">
+                        <div style="width:28px;height:28px;border-radius:50%;background:#2a2a2a;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,252,238,.08);overflow:hidden;">
+                            @if($pick->team1_logo)
+                                <img src="{{ asset('storage/'.$pick->team1_logo) }}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                                <span style="display:none;font-size:8px;font-weight:800;color:#9a9a9a;">{{ $t1init }}</span>
+                            @else
+                                <span style="font-size:8px;font-weight:800;color:#9a9a9a;">{{ $t1init }}</span>
+                            @endif
                         </div>
-                        <div style="height:5px;background:#2a2a2a;border-radius:4px;overflow:hidden;">
-                            <div style="width:{{ $p1 }}%;height:100%;background:#00D15B;border-radius:4px;"></div>
+                        <span style="color:#FFFCEE;font-size:13px;font-weight:600;">{{ $pick->team1_name }}</span>
+                        <span style="color:#4a4a4a;font-size:11px;">vs</span>
+                        <div style="width:28px;height:28px;border-radius:50%;background:#2a2a2a;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,252,238,.08);overflow:hidden;">
+                            @if($pick->team2_logo)
+                                <img src="{{ asset('storage/'.$pick->team2_logo) }}" style="width:22px;height:22px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                                <span style="display:none;font-size:8px;font-weight:800;color:#9a9a9a;">{{ $t2init }}</span>
+                            @else
+                                <span style="font-size:8px;font-weight:800;color:#9a9a9a;">{{ $t2init }}</span>
+                            @endif
                         </div>
+                        <span style="color:#FFFCEE;font-size:13px;font-weight:600;">{{ $pick->team2_name }}</span>
                     </div>
-                    {{-- Team 2 --}}
-                    <div>
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                            <div style="width:36px;height:36px;border-radius:50%;background:#2a2a2a;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,252,238,.08);overflow:hidden;">
-                                @if($pick->team2_logo)
-                                    <img src="{{ asset('storage/'.$pick->team2_logo) }}" alt="{{ $t2init }}" style="width:28px;height:28px;object-fit:contain;"
-                                         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                                    <span style="display:none;font-size:9px;font-weight:800;color:#9a9a9a;text-transform:uppercase;">{{ $t2init }}</span>
-                                @else
-                                    <span style="font-size:9px;font-weight:800;color:#9a9a9a;text-transform:uppercase;">{{ $t2init }}</span>
-                                @endif
-                            </div>
-                            <span style="color:#FFFCEE;font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ $pick->team2_name }}</span>
-                            <span style="flex-shrink:0;background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">{{ $p2 }}%</span>
-                        </div>
-                        <div style="height:5px;background:#2a2a2a;border-radius:4px;overflow:hidden;">
-                            <div style="width:{{ $p2 }}%;height:100%;background:#00D15B;border-radius:4px;"></div>
-                        </div>
+                    @if($conf)
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+                        <span style="{{ $statusStyles[$status] ?? '' }}font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;">{{ $status }} Pick</span>
+                        <span style="font-size:13px;font-weight:700;color:#FDB515;">{{ $conf }}% Confidence</span>
                     </div>
+                    <div style="height:4px;background:#2a2a2a;border-radius:4px;overflow:hidden;">
+                        <div style="width:{{ $conf }}%;height:100%;background:#FDB515;border-radius:4px;"></div>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- View Pick --}}

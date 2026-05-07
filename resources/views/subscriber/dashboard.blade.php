@@ -126,10 +126,11 @@
         @if($activePicks->count() > 0)
         @foreach($activePicks as $pick)
         @php
-            $timeStr = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
+            $rawT    = $pick->game_time ? (string)$pick->game_time : '00:00:00';
+            $timeStr = strlen($rawT) === 5 ? $rawT.':00' : substr($rawT, 0, 8);
             $gStart  = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
             $pNow    = \Carbon\Carbon::now('America/New_York');
-            $pStatus = $gStart->lte($pNow) ? 'Started' : 'Active';
+            $pStatus = $pNow->gte($gStart) ? 'Started' : 'Active';
             $scColor = ['Started'=>'#ef4444','Active'=>'#00D15B'];
             $spColors= ['MLB'=>['#22c55e','rgba(34,197,94,.12)'],'NFL'=>['#3b82f6','rgba(59,130,246,.12)'],'NBA'=>['#ef4444','rgba(220,38,38,.12)'],'NHL'=>['#a855f7','rgba(168,85,247,.12)']];
             $sc = $spColors[$pick->sport] ?? ['#FDB515','rgba(253,181,21,.1)'];
@@ -141,7 +142,8 @@
                 <div style="font-size:11px;color:#6e6e6e;">{{ $pick->game_date->format('M d') }}{{ $pick->game_time ? ' · '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A').' ET' : '' }}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-                <div style="font-size:11px;font-weight:700;color:{{ $scColor[$pStatus] ?? '#6e6e6e' }};">{{ $pStatus }}</div>
+                @php $dSS=['Started'=>'background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444;','Active'=>'background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;']; @endphp
+                <span style="{{ $dSS[$pStatus] ?? '' }}font-size:12px;font-weight:800;padding:2px 8px;border-radius:20px;display:inline-block;">{{ $pStatus }}</span>
                 <div style="font-size:12px;color:#FDB515;">{{ str_repeat('★',(int)$pick->stars) }}</div>
             </div>
         </div>

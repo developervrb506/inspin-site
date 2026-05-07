@@ -71,7 +71,9 @@ class PickController extends Controller
     public function create()
     {
         $sports = ['NFL', 'NCAAF', 'NBA', 'NCAAB', 'NHL', 'MLB'];
-        $articles = Article::where('is_published', true)->get();
+        // Only show articles not already linked to another pick
+        $usedArticleIds = Pick::whereNotNull('related_article_id')->pluck('related_article_id');
+        $articles = Article::where('is_published', true)->whereNotIn('id', $usedArticleIds)->get();
         $experts = Expert::where('is_active', true)->orderBy('name')->get();
         $teamLogos = TeamLogo::active()->orderBy('sport')->orderBy('team_name')->get();
         return view('admin.picks.form', [
@@ -142,7 +144,9 @@ class PickController extends Controller
     public function edit(Pick $pick)
     {
         $sports = ['NFL', 'NCAAF', 'NBA', 'NCAAB', 'NHL', 'MLB'];
-        $articles = Article::where('is_published', true)->get();
+        // Exclude articles linked to OTHER picks (keep current pick's article available)
+        $usedArticleIds = Pick::whereNotNull('related_article_id')->where('id', '!=', $pick->id)->pluck('related_article_id');
+        $articles = Article::where('is_published', true)->whereNotIn('id', $usedArticleIds)->get();
         $experts = Expert::where('is_active', true)->orderBy('name')->get();
         $teamLogos = TeamLogo::active()->orderBy('sport')->orderBy('team_name')->get();
         return view('admin.picks.form', compact('pick', 'sports', 'articles', 'experts', 'teamLogos'));
