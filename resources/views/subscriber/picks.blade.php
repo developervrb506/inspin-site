@@ -96,11 +96,12 @@
 <div class="picks-grid">
     @foreach($picks as $pick)
     @php
-        $timeStr   = $pick->game_time ? \Carbon\Carbon::parse($pick->game_time)->format('H:i:s') : '00:00:00';
+        $rawTime   = $pick->game_time ? (string)$pick->game_time : '00:00:00';
+        $timeStr   = strlen($rawTime) === 5 ? $rawTime.':00' : substr($rawTime, 0, 8);
         $gameStart = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $pick->game_date->format('Y-m-d').' '.$timeStr, 'America/New_York');
         $now       = \Carbon\Carbon::now('America/New_York');
         $isGraded  = in_array($pick->result, ['win','loss','push']);
-        $status    = $isGraded ? ucfirst($pick->result) : ($gameStart->lte($now) ? 'Started' : 'Active');
+        $status    = $isGraded ? ucfirst($pick->result) : ($now->gte($gameStart) ? 'Started' : 'Active');
         $statusColors = ['win'=>'#00D15B','loss'=>'#ef4444','push'=>'#FDB515','Win'=>'#00D15B','Loss'=>'#ef4444','Push'=>'#FDB515','Started'=>'#ef4444','Active'=>'#00D15B'];
         $sc  = $statusColors[$status] ?? '#6e6e6e';
         $spc = $spColors[$pick->sport] ?? ['#FDB515','rgba(253,181,21,.1)'];
@@ -118,7 +119,8 @@
                 <span style="font-size:11px;color:#6e6e6e;">{{ $pick->game_date->format('M d') }}{{ $pick->game_time ? ' · '.\Carbon\Carbon::parse($pick->game_time)->format('g:i A').' ET' : '' }}</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:11px;font-weight:700;color:{{ $sc }};">{{ $status }}</span>
+                @php $subSS=['Started'=>'background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444;','Active'=>'background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;','Graded'=>'background:rgba(100,100,100,.12);border:1px solid #4a4a4a;color:#9a9a9a;','Win'=>'background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;','Loss'=>'background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444;','Push'=>'background:rgba(253,181,21,.15);border:1px solid #FDB515;color:#FDB515;']; @endphp
+                <span style="{{ $subSS[$status] ?? '' }}font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;">{{ $status }}</span>
                 @if($pick->stars === 10)
                 <span style="font-size:10px;font-weight:800;color:#FDB515;">★10 WHALE</span>
                 @else

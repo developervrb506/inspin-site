@@ -690,12 +690,7 @@
             }
         }
         
-        // Close modal on overlay click
-        document.getElementById('authModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
+        // Modal only closes via the X button — clicking outside does nothing
         
         // Handle login form
         document.getElementById('loginForm').addEventListener('submit', function(e) {

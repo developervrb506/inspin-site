@@ -71,14 +71,15 @@
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
                     <div style="display:flex;gap:8px;align-items:center;">
                         @php
-                            $tStr=$linkedPick->game_time?\Carbon\Carbon::parse($linkedPick->game_time)->format('H:i:s'):'00:00:00';
+                            $tRaw=$linkedPick->game_time?(string)$linkedPick->game_time:'00:00:00';
+                            $tStr=strlen($tRaw)===5?$tRaw.':00':substr($tRaw,0,8);
                             $gStart=\Carbon\Carbon::createFromFormat('Y-m-d H:i:s',$linkedPick->game_date->format('Y-m-d').' '.$tStr,'America/New_York');
                             $pNow=\Carbon\Carbon::now('America/New_York');
-                            $pStatus=$linkedPick->result!=='pending'?'Graded':($gStart->lte($pNow)?'Started':'Active');
-                            $pColor=$pStatus==='Active'?'#00D15B':($pStatus==='Started'?'#ef4444':'#4a4a4a');
+                            $pStatus=$linkedPick->result!=='pending'?'Graded':($pNow->gte($gStart)?'Started':'Active');
+                            $pStatusStyles=['Started'=>'background:rgba(239,68,68,.15);border:1px solid #ef4444;color:#ef4444;','Active'=>'background:rgba(0,209,91,.15);border:1px solid #00D15B;color:#00D15B;','Graded'=>'background:rgba(100,100,100,.12);border:1px solid #4a4a4a;color:#9a9a9a;'];
                         @endphp
                         <span style="background:rgba(253,181,21,.1);color:#FDB515;padding:3px 10px;border-radius:5px;font-size:11px;font-weight:700;">{{ $linkedPick->sport }}</span>
-                        <span style="color:{{ $pColor }};font-size:11px;font-weight:700;">{{ $pStatus }}</span>
+                        <span style="{{ $pStatusStyles[$pStatus] ?? '' }}font-size:13px;font-weight:800;padding:3px 10px;border-radius:20px;">{{ $pStatus }}</span>
                     </div>
                     <div style="color:#FDB515;font-size:16px;">
                         @if($linkedPick->stars===10)<span style="font-weight:800;font-size:12px;">★10 WHALE</span>
