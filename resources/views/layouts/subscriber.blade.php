@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Member Portal - INSPIN')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -342,10 +343,22 @@ function confirmLogout() {
     var m = document.getElementById('logoutModal');
     m.style.display = 'flex';
 }
-// Close modal on backdrop click
 document.getElementById('logoutModal').addEventListener('click', function(e) {
     if (e.target === this) this.style.display = 'none';
 });
+// Logout using fresh CSRF token (avoids 419 errors)
+function doLogout() {
+    var token = document.querySelector('meta[name="csrf-token"]');
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': token ? token.content : '',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    }).then(function() { window.location.href = '/'; })
+      .catch(function() { window.location.href = '/'; });
+}
 </script>
 @stack('scripts')
 </body>

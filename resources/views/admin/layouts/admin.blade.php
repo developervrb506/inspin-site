@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Admin - INSPIN')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f1f5f9; color: #0f172a; min-height: 100vh; display: flex; }
@@ -290,7 +291,7 @@
                                 style="padding:9px 22px;background:#f1f5f9;border:none;color:#475569;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
                                 Cancel
                             </button>
-                            <button onclick="document.getElementById('adminLogoutForm').submit()"
+                            <button onclick="doAdminLogout()"
                                 style="padding:9px 22px;background:#dc2626;border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
                                 Log Out
                             </button>
@@ -298,6 +299,14 @@
                     </div>
                 </div>
                 <script>
+                function doAdminLogout() {
+                    var token = document.querySelector('meta[name="csrf-token"]') || document.querySelector('input[name="_token"]');
+                    var csrfVal = token ? (token.content || token.value) : document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '';
+                    fetch('/logout', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': csrfVal, 'Content-Type': 'application/json', 'Accept': 'application/json' }
+                    }).then(function() { window.location.href = '/'; }).catch(function() { window.location.href = '/'; });
+                }
                 function confirmAdminLogout() {
                     var m = document.getElementById('adminLogoutModal');
                     m.style.display = 'flex';
