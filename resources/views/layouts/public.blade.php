@@ -60,12 +60,46 @@
         .logo img { height: 48px; width: auto; }
 
         /* ===== NAV ===== */
-        .nav { display: flex; gap: 0; list-style: none; flex-wrap: wrap; transform: none; visibility: visible; }
-        .nav a { display: block; padding: 20px 13px; color: #9a9a9a; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-transform: none; letter-spacing: 0.1px; transition: all 0.18s; border-bottom: 2px solid transparent; margin-bottom: -1px; position: relative; }
+        .nav { display: flex; gap: 0; list-style: none; flex-wrap: wrap; transform: none; visibility: visible; align-items: stretch; }
+        .nav > li { display: flex; align-items: stretch; }
+        .nav a { display: flex; align-items: center; padding: 0 13px; color: #9a9a9a; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-transform: none; letter-spacing: 0.1px; transition: all 0.18s; border-bottom: 2px solid transparent; position: relative; height: 60px; }
         .nav a:hover { color: #FFFCEE; }
         .nav a.active { color: var(--gold); border-bottom-color: var(--gold); }
         .nav a.active::after, .nav a:hover::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 60%; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); border-radius: 2px; }
         .nav a.active::after { width: 80%; }
+
+        /* ── Dropdown ── */
+        .nav-dropdown-wrap { position: relative; display: flex; align-items: stretch; }
+        .nav-dropdown-trigger { cursor: pointer; display: flex !important; align-items: center; gap: 5px; }
+        .nav-dropdown-trigger .nav-caret { transition: transform .2s; flex-shrink: 0; opacity: .6; }
+        .nav-dropdown-wrap.open .nav-caret { transform: rotate(180deg); opacity: 1; }
+        .nav-dropdown-wrap.open > .nav-dropdown-trigger { color: #FFFCEE; }
+
+        .nav-dropdown {
+            display: none; position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+            z-index: 500; min-width: 260px;
+        }
+        .nav-dropdown-wrap.open .nav-dropdown { display: block; animation: ddFadeIn .18s ease; }
+        @keyframes ddFadeIn { from{opacity:0;transform:translateX(-50%) translateY(-6px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+        .nav-dropdown-inner {
+            background: #1a1a1a; border: 1px solid rgba(255,252,238,.1);
+            border-radius: 14px; padding: 8px; margin-top: 4px;
+            box-shadow: 0 16px 48px rgba(0,0,0,.7), 0 0 0 1px rgba(255,252,238,.04);
+        }
+        .nav-dropdown-item {
+            display: flex !important; align-items: center; gap: 12px; padding: 10px 12px !important;
+            border-radius: 9px; text-decoration: none; transition: background .15s !important;
+            border-bottom: none !important; height: auto !important;
+            color: #9a9a9a !important;
+        }
+        .nav-dropdown-item::after { display: none !important; }
+        .nav-dropdown-item:hover { background: rgba(255,252,238,.05) !important; color: #FFFCEE !important; }
+        .ndi-icon { font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(255,252,238,.05); border-radius: 8px; flex-shrink: 0; }
+        .ndi-text { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+        .ndi-label { font-size: 13px; font-weight: 600; color: #FFFCEE; font-family: 'DM Sans', sans-serif; }
+        .ndi-sub { font-size: 11px; color: #6e6e6e; }
+        .ndi-badge { font-size: 9px; font-weight: 700; background: rgba(253,181,21,.12); color: #FDB515; border: 1px solid rgba(253,181,21,.25); padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
 
         /* ===== CONTAINER ===== */
         .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
@@ -286,8 +320,15 @@
                 visibility: hidden;
             }
             .nav.open { transform: translateX(0); visibility: visible; }
-            .nav a { padding: 16px 24px; font-size: 13px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
+            .nav > li { display: block; }
+            .nav a { height: auto; padding: 16px 24px; font-size: 13px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
             .nav a.active::after, .nav a:hover::after { display: none; }
+            .nav-dropdown-wrap { flex-direction: column; }
+            .nav-dropdown { position: static; transform: none; display: none !important; min-width: unset; }
+            .nav-dropdown-wrap.open .nav-dropdown { display: block !important; animation: none; }
+            .nav-dropdown-inner { border-radius: 0; border: none; border-top: 1px solid rgba(255,252,238,.06); background: rgba(255,255,255,.03); box-shadow: none; padding: 4px 0; margin: 0; }
+            .nav-dropdown-item { padding: 12px 28px !important; border-radius: 0; }
+            .nav-dropdown-trigger { padding: 16px 24px; border-bottom: 1px solid var(--black-border); width: 100%; }
 
             /* Hero */
             .hero { padding: 44px 0 36px; }
@@ -447,10 +488,52 @@
                 <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
                 <li><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}">Picks</a></li>
                 <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
-                <li><a href="{{ route('tools') }}" class="{{ request()->routeIs('tools') ? 'active' : '' }}">Betting Tools</a></li>
-                <li><a href="{{ route('odds') }}" class="{{ request()->routeIs('odds') ? 'active' : '' }}">Live Odds</a></li>
-                <li><a href="{{ route('consensus') }}" class="{{ request()->routeIs('consensus') ? 'active' : '' }}">Consensus</a></li>
-                <li><a href="{{ route('trends') }}" class="{{ request()->routeIs('trends') ? 'active' : '' }}">Trends</a></li>
+
+                {{-- Data & Tools dropdown --}}
+                <li class="nav-dropdown-wrap">
+                    <a href="#" class="nav-dropdown-trigger {{ request()->routeIs('tools','odds','consensus','trends') ? 'active' : '' }}"
+                       onclick="toggleDropdown(event)" aria-haspopup="true">
+                        Data &amp; Tools
+                        <svg class="nav-caret" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                    <div class="nav-dropdown" id="toolsDropdown">
+                        <div class="nav-dropdown-inner">
+                            <a href="{{ route('tools') }}" class="nav-dropdown-item">
+                                <span class="ndi-icon">🛠️</span>
+                                <span class="ndi-text">
+                                    <span class="ndi-label">Betting Tools</span>
+                                    <span class="ndi-sub">Calculators &amp; trackers</span>
+                                </span>
+                                <span class="ndi-badge">Soon</span>
+                            </a>
+                            <a href="{{ route('odds') }}" class="nav-dropdown-item">
+                                <span class="ndi-icon">⚡</span>
+                                <span class="ndi-text">
+                                    <span class="ndi-label">Live Odds</span>
+                                    <span class="ndi-sub">Real-time odds comparison</span>
+                                </span>
+                                <span class="ndi-badge">Soon</span>
+                            </a>
+                            <a href="{{ route('consensus') }}" class="nav-dropdown-item">
+                                <span class="ndi-icon">📊</span>
+                                <span class="ndi-text">
+                                    <span class="ndi-label">Consensus</span>
+                                    <span class="ndi-sub">Public betting splits</span>
+                                </span>
+                                <span class="ndi-badge">Soon</span>
+                            </a>
+                            <a href="{{ route('trends') }}" class="nav-dropdown-item">
+                                <span class="ndi-icon">📈</span>
+                                <span class="ndi-text">
+                                    <span class="ndi-label">Trends</span>
+                                    <span class="ndi-sub">Hot streaks &amp; patterns</span>
+                                </span>
+                                <span class="ndi-badge">Soon</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+
                 <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a></li>
             </ul>
             <div class="header-auth" id="headerAuth">
@@ -602,6 +685,22 @@
     </div>
 
     <script>
+        // Data & Tools dropdown
+        function toggleDropdown(e) {
+            e.preventDefault();
+            var wrap = e.currentTarget.closest('.nav-dropdown-wrap');
+            var isOpen = wrap.classList.contains('open');
+            // Close all other dropdowns
+            document.querySelectorAll('.nav-dropdown-wrap.open').forEach(function(el) { el.classList.remove('open'); });
+            if (!isOpen) wrap.classList.add('open');
+        }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-dropdown-wrap')) {
+                document.querySelectorAll('.nav-dropdown-wrap.open').forEach(function(el) { el.classList.remove('open'); });
+            }
+        });
+
         // Logout using fresh CSRF token from meta tag (avoids 419 errors)
         function doLogout() {
             var token = document.querySelector('meta[name="csrf-token"]');
