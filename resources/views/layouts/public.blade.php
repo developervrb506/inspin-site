@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'INSPIN - Sports Betting Analysis & Picks')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/inspin Logo3.png') }}">
@@ -446,6 +447,7 @@
                 <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
                 <li><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}">Picks</a></li>
                 <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
+                <li><a href="{{ route('tools') }}" class="{{ request()->routeIs('tools') ? 'active' : '' }}">Betting Tools</a></li>
                 <li><a href="{{ route('odds') }}" class="{{ request()->routeIs('odds') ? 'active' : '' }}">Live Odds</a></li>
                 <li><a href="{{ route('consensus') }}" class="{{ request()->routeIs('consensus') ? 'active' : '' }}">Consensus</a></li>
                 <li><a href="{{ route('trends') }}" class="{{ request()->routeIs('trends') ? 'active' : '' }}">Trends</a></li>
@@ -453,11 +455,12 @@
             </ul>
             <div class="header-auth" id="headerAuth">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="header-dash-link">{{ Auth::user()->name }}</a>
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="header-logout-btn">Logout</button>
-                    </form>
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('dashboard') }}" class="header-dash-link">{{ Auth::user()->name }}</a>
+                    @else
+                        <a href="/subscriber/dashboard" class="header-dash-link">{{ Auth::user()->name }}</a>
+                    @endif
+                    <button type="button" onclick="doLogout()" class="header-logout-btn">Logout</button>
                 @else
                     <button onclick="openModal()" class="header-login">Log In</button>
                     <button onclick="openModal('join')" class="header-signup" style="cursor:pointer;">Join Now</button>
@@ -599,6 +602,24 @@
     </div>
 
     <script>
+        // Logout using fresh CSRF token from meta tag (avoids 419 errors)
+        function doLogout() {
+            var token = document.querySelector('meta[name="csrf-token"]');
+            if (!token) { document.location = '/'; return; }
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token.content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(function() {
+                window.location.href = '/';
+            }).catch(function() {
+                window.location.href = '/';
+            });
+        }
+
         // Nav toggle
         function toggleNav() {
             var nav = document.getElementById('mainNav');
@@ -755,6 +776,91 @@
         
     </script>
     @stack('scripts')
+
+    {{-- ═══ CONTACT US FLOATING BUTTON ═══ --}}
+    <style>
+        #contactBtn {
+            position:fixed; bottom:88px; right:24px; z-index:8990;
+            width:50px; height:50px; border-radius:50%;
+            background:#2d2d2d; border:1.5px solid rgba(255,252,238,.35);
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            box-shadow:0 4px 16px rgba(0,0,0,.5), 0 0 0 1px rgba(255,252,238,.08);
+            transition:border-color .2s, box-shadow .2s, background .2s;
+        }
+        #contactBtn:hover { background:#3a3a3a; border-color:rgba(253,181,21,.6); box-shadow:0 4px 20px rgba(253,181,21,.2); }
+        #contactMenu {
+            position:fixed; bottom:148px; right:24px; z-index:8989;
+            display:flex; flex-direction:column; gap:10px; align-items:flex-end;
+            pointer-events:none; opacity:0;
+            transform:translateY(10px);
+            transition:opacity .22s, transform .22s;
+        }
+        #contactMenu.open { opacity:1; transform:translateY(0); pointer-events:all; }
+        .contact-item {
+            display:flex; align-items:center; gap:10px; cursor:pointer;
+        }
+        .contact-label {
+            background:#1a1a1a; border:1px solid rgba(255,252,238,.1);
+            color:#FFFCEE; font-size:12px; font-weight:600;
+            padding:6px 12px; border-radius:8px; white-space:nowrap;
+            box-shadow:0 2px 10px rgba(0,0,0,.3);
+        }
+        .contact-icon {
+            width:44px; height:44px; border-radius:50%; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:18px; box-shadow:0 2px 10px rgba(0,0,0,.3);
+            text-decoration:none; transition:transform .15s;
+        }
+        .contact-icon:hover { transform:scale(1.1); }
+    </style>
+
+    {{-- Contact Menu Items --}}
+    <div id="contactMenu">
+        <div class="contact-item">
+            <span class="contact-label">Call Us</span>
+            <a href="tel:#" class="contact-icon" style="background:#2d2d2d;border:1px solid rgba(255,252,238,.12);" title="Call">
+                📞
+            </a>
+        </div>
+        <div class="contact-item">
+            <span class="contact-label">Send Email</span>
+            <a href="mailto:#" class="contact-icon" style="background:#EA4335;" title="Email">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" fill="white" fill-opacity="0.2" stroke="white" stroke-width="1.5"/>
+                    <path d="M22 6L12 13L2 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </div>
+        <div class="contact-item">
+            <span class="contact-label">Telegram</span>
+            <a href="https://t.me/#" target="_blank" rel="noopener" class="contact-icon" style="background:#229ED9;" title="Telegram">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-2.012 9.475c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.462c.537-.194 1.006.131.875.747z"/></svg>
+            </a>
+        </div>
+        <div class="contact-item">
+            <span class="contact-label">WhatsApp</span>
+            <a href="https://wa.me/#" target="_blank" rel="noopener" class="contact-icon" style="background:#25D366;" title="WhatsApp">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+        </div>
+    </div>
+
+    {{-- Contact Toggle Button --}}
+    <button id="contactBtn" onclick="toggleContact()" title="Contact Us">
+        <svg width="20" height="20" fill="none" stroke="#FFFCEE" stroke-width="2" viewBox="0 0 24 24" id="contactIcon"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+    </button>
+
+    <script>
+    var contactOpen = false;
+    function toggleContact() {
+        contactOpen = !contactOpen;
+        document.getElementById('contactMenu').classList.toggle('open', contactOpen);
+        var icon = document.getElementById('contactIcon');
+        icon.style.stroke = contactOpen ? '#FDB515' : '#FFFCEE';
+    }
+    // Close contact menu if chat opens
+    var origToggleChat = typeof toggleChat === 'function' ? toggleChat : null;
+    </script>
 
     {{-- ═══ INSPIN AI CHAT WIDGET ═══ --}}
     <style>
