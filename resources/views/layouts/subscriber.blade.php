@@ -4,360 +4,274 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Member Portal - INSPIN')</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/inspin Logo3.png') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg:    #0a0a0a;
+            --gold:  #FDB515;
+            --side:  #111111;
+            --card:  #161616;
+            --inner: #1e1e1e;
+            --bdr:   rgba(255,255,255,.07);
+            --r:     14px;
+            --side-w:190px;
+        }
         * { box-sizing:border-box; margin:0; padding:0; }
-        html,body { height:100%; }
-        body { font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; background:#0f0f0f; color:#FFFCEE; line-height:1.6; display:flex; min-height:100vh; }
+        html,body { height:100%; background:var(--bg); }
+        body { font-family:'Inter',sans-serif; color:#fff; line-height:1.5; min-height:100vh; }
+        a { text-decoration:none; color:inherit; }
+        img { max-width:100%; }
 
-        /* ── Sidebar ── */
+        /* ── Outer wrapper ── */
+        #portal-wrap {
+            display:flex;
+            min-height:100vh;
+            padding:12px;
+            gap:10px;
+        }
+
+        /* ══════════ SIDEBAR ══════════ */
         #sidebar {
-            width:240px; flex-shrink:0; background:#141414;
-            border-right:1px solid rgba(255,252,238,.07);
+            width:var(--side-w);
+            flex-shrink:0;
+            background:var(--side);
+            border:1px solid var(--bdr);
+            border-radius:var(--r);
+            display:flex;
+            flex-direction:column;
+            position:sticky;
+            top:12px;
+            height:calc(100vh - 24px);
+            overflow:hidden;
+            z-index:200;
+        }
+        .sb-logo { padding:18px 16px 14px; flex-shrink:0; }
+        .sb-logo img { height:32px; width:auto; }
+        .sb-divider { height:1px; background:var(--bdr); margin:0 16px; flex-shrink:0; }
+        .sb-nav { flex:1; overflow-y:auto; overflow-x:hidden; padding:10px 8px; }
+        .sb-nav::-webkit-scrollbar { width:0; }
+        .sb-section { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:rgba(255,255,255,.3); padding:12px 8px 6px; }
+
+        .sb-item {
+            display:flex; align-items:center; gap:10px;
+            padding:0 8px; height:42px; border-radius:10px;
+            cursor:pointer; text-decoration:none; color:rgba(255,255,255,.55);
+            font-size:13px; font-weight:600; transition:all .15s;
+            margin-bottom:2px; white-space:nowrap;
+        }
+        .sb-item:hover { color:#fff; background:rgba(255,255,255,.05); }
+        .sb-item.active { color:var(--gold); }
+        .sb-item.active .sb-icon { background:var(--gold); }
+        .sb-item.active .sb-icon svg { color:#000; stroke:#000; }
+        .sb-item:hover:not(.active) .sb-icon { background:rgba(255,255,255,.1); }
+
+        .sb-icon {
+            width:36px; height:36px; border-radius:9px;
+            background:rgba(255,255,255,.07);
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+            transition:background .15s;
+        }
+        .sb-icon svg { width:16px; height:16px; color:rgba(255,255,255,.5); stroke:rgba(255,255,255,.5); }
+
+        .sb-bottom { flex-shrink:0; padding:10px 8px; border-top:1px solid var(--bdr); }
+        .sb-user-row { display:flex; align-items:center; gap:8px; padding:8px; border-radius:10px; background:rgba(255,255,255,.04); }
+        .sb-av { width:30px; height:30px; border-radius:8px; background:var(--gold); color:#000; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .sb-uname { font-size:11px; font-weight:600; color:#fff; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .sb-upkg  { font-size:9px; color:var(--gold); font-weight:600; }
+
+        /* ══════════ MAIN ══════════ */
+        #sub-main {
+            flex:1; min-width:0;
+            background:var(--side);
+            border:1px solid var(--bdr);
+            border-radius:var(--r);
             display:flex; flex-direction:column;
-            position:fixed; top:0; left:0; height:100vh; z-index:200;
-            transition:transform .3s cubic-bezier(.4,0,.2,1);
             overflow:hidden;
         }
-        .sidebar-logo {
-            padding:18px 20px 16px;
-            border-bottom:1px solid rgba(255,252,238,.07);
-            flex-shrink:0;
-        }
-        .sidebar-logo img { height:36px; width:auto; }
 
-        /* User info */
-        .sidebar-user {
-            padding:12px 16px;
-            border-bottom:1px solid rgba(255,252,238,.07);
-            display:flex; align-items:center; gap:10px; flex-shrink:0;
+        /* Top bar */
+        .sub-topbar {
+            height:72px; flex-shrink:0;
+            border-bottom:1px solid var(--bdr);
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 24px;
         }
-        .sidebar-avatar {
-            width:34px; height:34px; border-radius:50%;
-            background:linear-gradient(135deg,#FDB515,#e09c0d);
-            display:flex; align-items:center; justify-content:center;
-            font-size:13px; font-weight:800; color:#171818; flex-shrink:0;
+        .sub-topbar-title { font-size:22px; font-weight:700; color:#fff; }
+        .sub-profile-btn {
+            display:flex; align-items:center; gap:10px;
+            background:rgba(255,255,255,.06); border:1px solid var(--bdr);
+            border-radius:10px; padding:8px 14px; cursor:pointer;
         }
-        .sidebar-user-name { font-size:12px; font-weight:600; color:#FFFCEE; line-height:1.3; }
-        .sidebar-user-pkg { font-size:10px; color:#FDB515; font-weight:600; letter-spacing:.3px; }
+        .sub-pav { width:42px; height:42px; border-radius:10px; background:var(--gold); color:#000; font-size:18px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .sub-pname { font-size:14px; font-weight:600; color:#fff; }
+        .sub-ppkg  { font-size:12px; font-weight:600; color:var(--gold); }
+        .sub-chevron { color:rgba(255,255,255,.3); margin-left:4px; }
+        .sub-topbar-hamburger { display:none; background:none; border:none; cursor:pointer; color:#fff; }
 
-        /* Package badge - compact */
-        .sidebar-pkg-badge {
-            margin:10px 14px 0;
-            background:rgba(253,181,21,.06);
-            border:1px solid rgba(253,181,21,.15);
-            border-radius:8px; padding:10px 12px; flex-shrink:0;
-        }
-        .sidebar-pkg-badge .pkg-label { font-size:8px; color:#6e6e6e; text-transform:uppercase; letter-spacing:.6px; margin-bottom:3px; }
-        .sidebar-pkg-badge .pkg-name { font-size:12px; font-weight:700; color:#FFFCEE; margin-bottom:2px; }
-        .sidebar-pkg-badge .pkg-stars { font-size:12px; color:#FDB515; letter-spacing:1px; }
-        .sidebar-pkg-badge .pkg-exp { font-size:10px; color:#6e6e6e; margin-top:3px; }
+        /* Content area */
+        .sub-content { flex:1; overflow-y:auto; padding:20px 24px; }
+        .sub-content::-webkit-scrollbar { width:4px; }
+        .sub-content::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:4px; }
 
-        /* Nav - scrollable */
-        .sidebar-nav { flex:1; padding:10px 10px; overflow-y:auto; overflow-x:hidden; min-height:0; }
-        .sidebar-nav::-webkit-scrollbar { width:3px; }
-        .sidebar-nav::-webkit-scrollbar-track { background:transparent; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background:#2d2d2d; border-radius:3px; }
-        .nav-section-label {
-            font-size:9px; text-transform:uppercase; letter-spacing:.8px;
-            color:#4a4a4a; font-weight:700; padding:0 8px; margin-bottom:4px; margin-top:12px;
-        }
-        .nav-section-label:first-child { margin-top:4px; }
-        .sidebar-link {
-            display:flex; align-items:center; gap:9px;
-            padding:9px 10px; border-radius:8px;
-            font-size:12.5px; font-weight:500; color:#9a9a9a;
-            text-decoration:none; transition:all .18s; margin-bottom:1px;
-            white-space:nowrap;
-        }
-        .sidebar-link:hover { background:rgba(255,252,238,.05); color:#FFFCEE; }
-        .sidebar-link.active { background:rgba(253,181,21,.1); color:#FDB515; font-weight:600; }
-        .sidebar-link svg { flex-shrink:0; opacity:.65; width:15px; height:15px; }
-        .sidebar-link.active svg { opacity:1; }
-        .sidebar-link .badge {
-            margin-left:auto; background:#FDB515; color:#171818;
-            font-size:9px; font-weight:800; padding:2px 6px; border-radius:8px;
-        }
+        /* ── Cards ── */
+        .s-card { background:var(--card); border:1px solid var(--bdr); border-radius:var(--r); overflow:hidden; }
+        .s-inner { background:var(--inner); border:1px solid rgba(255,255,255,.06); border-radius:10px; }
 
-        /* Units mini card - compact */
-        .sidebar-units {
-            margin:0 10px 10px; flex-shrink:0;
-            background:#1a1a1a; border:1px solid rgba(255,252,238,.06);
-            border-radius:8px; padding:10px 12px;
-        }
-        .sidebar-units .u-label { font-size:8px; color:#6e6e6e; text-transform:uppercase; letter-spacing:.6px; margin-bottom:3px; }
-        .sidebar-units .u-value { font-size:1.2rem; font-weight:700; font-family:'Clash Display',sans-serif; line-height:1; }
+        /* ── Labels ── */
+        .kpi-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:rgba(255,255,255,.35); margin-bottom:10px; }
+        .kpi-val   { font-size:28px; font-weight:800; color:#fff; line-height:1; }
+        .kpi-sub   { font-size:13px; color:rgba(255,255,255,.4); margin-top:6px; }
+        .gold-bar  { height:2px; background:var(--gold); border-radius:10px; margin:10px 0 6px; }
+        .sec-hdr   { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+        .sec-ttl   { font-size:16px; font-weight:700; color:#fff; }
+        .sec-lnk   { font-size:11px; font-weight:600; color:var(--gold); }
 
-        /* Back to site */
-        .sidebar-back {
-            padding:10px 16px; flex-shrink:0;
-            border-top:1px solid rgba(255,252,238,.07);
-        }
-        .sidebar-back a {
-            display:flex; align-items:center; gap:8px;
-            font-size:11px; color:#3a3a3a; text-decoration:none;
-            transition:color .15s;
-        }
-        .sidebar-back a:hover { color:#6e6e6e; }
+        /* ── Badges ── */
+        .bw  { background:rgba(0,209,91,.12); border:1px solid rgba(0,209,91,.2); color:#00D15B; }
+        .bl  { background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.2); color:#EF4444; }
+        .bp  { background:rgba(253,181,21,.12); border:1px solid rgba(253,181,21,.2); color:#FDB515; }
+        .bpend { background:rgba(110,110,110,.12); border:1px solid rgba(110,110,110,.2); color:#888; }
+        .bact  { background:rgba(0,209,91,.12); border:1px solid rgba(0,209,91,.2); color:#00D15B; }
+        .bstart{ background:rgba(92,125,235,.12); border:1px solid rgba(92,125,235,.2); color:#7B97F5; }
+        .sbadge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:30px; display:inline-block; }
+        .spbadge{ font-size:11px; font-weight:600; padding:3px 8px; border-radius:7px; display:inline-block; }
 
-        /* ── Main content ── */
-        #main {
-            margin-left:240px; flex:1; min-height:100vh;
-            display:flex; flex-direction:column;
-        }
-        .portal-header {
-            background:rgba(20,20,20,.95); border-bottom:1px solid rgba(255,252,238,.06);
-            padding:0 32px; height:60px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:100;
-            backdrop-filter:blur(12px);
-        }
-        .portal-header h1 {
-            font-family:'Clash Display',sans-serif; font-size:1.1rem;
-            font-weight:500; color:#FFFCEE;
-        }
-        .portal-content { flex:1; padding:32px; width:100%; min-width:0; }
-
-        /* Hamburger for mobile */
-        #menuToggle {
-            display:none; background:none; border:none; cursor:pointer;
-            color:#FFFCEE; padding:4px;
-        }
-        #sidebarOverlay {
-            display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
-            z-index:199;
-        }
-
-        @media(max-width:768px){
-            #sidebar { transform:translateX(-100%); }
+        /* ── Mobile ── */
+        #sbOvl { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:199; }
+        #sbOvl.on { display:block; }
+        @media(max-width:900px){
+            #sidebar { position:fixed; top:12px; left:12px; bottom:12px; height:calc(100vh-24px); transform:translateX(-210px); transition:transform .3s; z-index:300; }
             #sidebar.open { transform:translateX(0); }
-            #main { margin-left:0; }
-            #menuToggle { display:block; }
-            #sidebarOverlay.open { display:block; }
-            .portal-content { padding:20px 16px; }
-            .portal-header { padding:0 16px; }
+            #sub-main { border-radius:var(--r); }
+            .sub-topbar-hamburger { display:flex; }
+            .sub-pname,.sub-ppkg { display:none; }
         }
-
-        /* ── Stat cards ── */
-        .stat-card {
-            background:#1a1a1a; border:1px solid rgba(255,252,238,.07);
-            border-radius:14px; padding:22px 24px;
-            transition:border-color .2s;
-        }
-        .stat-card:hover { border-color:rgba(253,181,21,.2); }
-        .stat-label { font-size:10px; text-transform:uppercase; letter-spacing:.6px; color:#6e6e6e; margin-bottom:8px; }
-        .stat-value { font-family:'Clash Display',sans-serif; font-size:2rem; font-weight:600; line-height:1; }
-        .stat-sub { font-size:12px; color:#6e6e6e; margin-top:6px; }
-
-        /* ── Alerts ── */
-        .portal-alert {
-            border-radius:12px; padding:14px 18px;
-            display:flex; align-items:center; gap:12px; margin-bottom:20px;
-        }
-        .portal-alert.extended { background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.25); }
-        .portal-alert.warning  { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2); }
-        .portal-alert.success  { background:rgba(0,209,91,.08); border:1px solid rgba(0,209,91,.2); }
 
     </style>
     @stack('styles')
 </head>
 <body>
+<div id="sbOvl" onclick="closeSb()"></div>
+<div id="portal-wrap">
 
-<!-- Sidebar overlay (mobile) -->
-<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+    {{-- ════ SIDEBAR ════ --}}
+    <aside id="sidebar">
+        <div class="sb-logo"><a href="/subscriber/dashboard"><img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN"></a></div>
+        <div class="sb-divider"></div>
 
-<!-- Sidebar -->
-<aside id="sidebar">
-    <div class="sidebar-logo">
-        <a href="/subscriber/dashboard">
-            <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN">
-        </a>
-    </div>
-
-    <!-- User info -->
-    @auth
-    @php $sub = auth()->user()->activeSubscription()?->load('package'); @endphp
-    <div class="sidebar-user">
-        <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-        <div>
-            <div class="sidebar-user-name">{{ Str::limit(auth()->user()->name, 18) }}</div>
-            <div class="sidebar-user-pkg">{{ $sub ? $sub->max_stars.'★ Access' : 'No Package' }}</div>
-        </div>
-    </div>
-
-    @if($sub)
-    <div class="sidebar-pkg-badge">
-        <div class="pkg-label">Active Package</div>
-        <div class="pkg-name">{{ $sub->packageName() }}</div>
-        <div class="pkg-stars">{{ str_repeat('★', $sub->max_stars > 5 ? 5 : $sub->max_stars) }}{{ $sub->max_stars > 5 ? '+' : '' }}</div>
-        <div class="pkg-exp">
-            @if($sub->status_note === 'extended')
-                Extended (unit-based)
-            @elseif($sub->isExpired())
-                Expired
-            @else
-                Expires {{ $sub->expires_at->format('M d, Y') }}
-            @endif
-        </div>
-    </div>
-    @endif
-    @endauth
-
-    <!-- Navigation -->
-    <nav class="sidebar-nav">
-        <div class="nav-section-label">Menu</div>
-
-        <a href="/subscriber/dashboard" class="sidebar-link {{ request()->is('subscriber/dashboard') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            Dashboard
-        </a>
-
-        <a href="/subscriber/picks" class="sidebar-link {{ request()->is('subscriber/picks*') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/></svg>
-            My Picks
-        </a>
-
-        <a href="/profile" class="sidebar-link {{ request()->is('profile') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            My Profile
-        </a>
-
-        <a href="/account/settings" class="sidebar-link {{ request()->is('account/settings') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-            Settings
-        </a>
-
-        <div class="nav-section-label">Content</div>
-
-        <a href="/subscriber/articles" class="sidebar-link {{ request()->is('subscriber/article*') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Articles
-        </a>
-
-        <a href="/subscriber/consensus" class="sidebar-link {{ request()->is('subscriber/consensus*') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            Consensus
-        </a>
-
-        <a href="/subscriber/trends" class="sidebar-link {{ request()->is('subscriber/trends*') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Trends
-        </a>
-
-        <a href="/subscriber/odds" class="sidebar-link {{ request()->is('subscriber/odds*') ? 'active' : '' }}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-            Live Odds
-        </a>
-
-        <div class="nav-section-label">Account</div>
-
-        @if($sub && $sub->max_stars < 10)
-        <a href="/subscriber/packages" class="sidebar-link {{ request()->is('subscriber/packages') ? 'active' : '' }}" style="color:#FDB515;">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            Upgrade Package
-            <span class="badge">↑</span>
-        </a>
-        @endif
-
-        <form method="POST" action="{{ route('logout') }}" id="logoutForm" style="margin-top:4px;">
-            @csrf
-            <button type="button" onclick="confirmLogout()" class="sidebar-link" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        @auth
+        @php $sub = auth()->user()->activeSubscription()?->load('package'); @endphp
+        <nav class="sb-nav">
+            <div class="sb-section">Menu</div>
+            <a href="/subscriber/dashboard" class="sb-item {{ request()->is('subscriber/dashboard') ? 'active' : '' }}">
+                <div class="sb-icon"><svg viewBox="0 0 20 20" fill="currentColor"><rect x="1" y="1" width="8" height="8" rx="1.5"/><rect x="11" y="1" width="8" height="8" rx="1.5"/><rect x="1" y="11" width="8" height="8" rx="1.5"/><rect x="11" y="11" width="8" height="8" rx="1.5"/></svg></div>
+                Dashboard
+            </a>
+            <a href="/subscriber/picks" class="sb-item {{ request()->is('subscriber/picks*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+                My Picks
+            </a>
+            <a href="/subscriber/packages" class="sb-item {{ request()->is('subscriber/packages*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+                Packages
+            </a>
+            <div class="sb-section">Content</div>
+            <a href="/subscriber/articles" class="sb-item {{ request()->is('subscriber/article*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                Articles
+            </a>
+            <a href="/subscriber/consensus" class="sb-item {{ request()->is('subscriber/consensus*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                Consensus
+            </a>
+            <a href="/subscriber/trends" class="sb-item {{ request()->is('subscriber/trends*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                Trends
+            </a>
+            <a href="/subscriber/odds" class="sb-item {{ request()->is('subscriber/odds*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+                Live Odds
+            </a>
+            <div class="sb-section">Account</div>
+            <a href="/profile" class="sb-item {{ request()->is('profile') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+                My Profile
+            </a>
+            <a href="/account/settings" class="sb-item {{ request()->is('account/settings') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+                Settings
+            </a>
+            <button onclick="confirmLogout()" class="sb-item" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
                 Log Out
             </button>
-        </form>
+        </nav>
 
-        {{-- Logout confirm modal --}}
-        <div id="logoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(6px);">
-            <div style="background:#1a1a1a;border:1px solid rgba(255,252,238,.1);border-radius:16px;padding:32px;max-width:340px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.7);">
-                <div style="font-size:2.5rem;margin-bottom:14px;">👋</div>
-                <h3 style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:500;color:#FFFCEE;margin-bottom:8px;">Log Out?</h3>
-                <p style="font-size:13px;color:#6e6e6e;margin-bottom:24px;">You'll need to log back in to access your picks and dashboard.</p>
-                <div style="display:flex;gap:10px;justify-content:center;">
-                    <button onclick="document.getElementById('logoutModal').style.display='none'"
-                        style="padding:10px 24px;background:#212121;border:1px solid rgba(255,252,238,.1);color:#9a9a9a;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;"
-                        onmouseover="this.style.borderColor='rgba(255,252,238,.25)';this.style.color='#FFFCEE'"
-                        onmouseout="this.style.borderColor='rgba(255,252,238,.1)';this.style.color='#9a9a9a'">
-                        Stay
-                    </button>
-                    <button onclick="document.getElementById('logoutForm').submit()"
-                        style="padding:10px 24px;background:#ef4444;border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;"
-                        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-                        Log Out
-                    </button>
+        {{-- User card --}}
+        <div class="sb-bottom">
+            <a href="/" style="display:block;font-size:10px;color:rgba(255,255,255,.2);margin-bottom:8px;padding:0 4px;" onmouseover="this.style.color='rgba(255,255,255,.5)'" onmouseout="this.style.color='rgba(255,255,255,.2)'">← Back to INSPIN.com</a>
+            <div class="sb-user-row">
+                <div class="sb-av">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                <div style="min-width:0;flex:1;">
+                    <div class="sb-uname">{{ Str::limit(auth()->user()->name,16) }}</div>
+                    <div class="sb-upkg">{{ $sub?$sub->max_stars.'★ Access':'No Package' }}</div>
                 </div>
             </div>
         </div>
-    </nav>
+        @endauth
+    </aside>
 
-    @if($sub)
-    <!-- Units mini in sidebar -->
-    @php $u = (float)($sub->units_total ?? 0); @endphp
-    <div class="sidebar-units">
-        <div class="u-label">My Units</div>
-        <div class="u-value" style="color:{{ $u >= 0 ? '#00D15B' : '#ef4444' }};">{{ $u >= 0 ? '+' : '' }}{{ number_format($u, 2) }}</div>
+    {{-- ════ MAIN ════ --}}
+    <div id="sub-main">
+        <header class="sub-topbar">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button class="sub-topbar-hamburger" onclick="toggleSb()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <span class="sub-topbar-title">@yield('page-title','Portal')</span>
+            </div>
+            @auth
+            <div class="sub-profile-btn">
+                <div class="sub-pav">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                <div>
+                    <div class="sub-pname">{{ auth()->user()->name }}</div>
+                    <div class="sub-ppkg">{{ isset($sub)&&$sub ? $sub->packageName() : 'Free' }}</div>
+                </div>
+                <svg class="sub-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            @endauth
+        </header>
+
+        <main class="sub-content">@yield('content')</main>
     </div>
-    @endif
+</div>
 
-    <div class="sidebar-back">
-        <a href="/">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Back to INSPIN.com
-        </a>
+{{-- Logout modal --}}
+<div id="logoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+    <div style="background:#161616;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:30px;max-width:320px;width:92%;text-align:center;">
+        <div style="font-size:2.2rem;margin-bottom:12px;">👋</div>
+        <h3 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px;">Log Out?</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:22px;">You'll need to log back in to access your picks.</p>
+        <div style="display:flex;gap:8px;justify-content:center;">
+            <button onclick="document.getElementById('logoutModal').style.display='none'" style="padding:9px 22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Stay</button>
+            <button onclick="doLogout()" style="padding:9px 22px;background:#ef4444;border:none;color:#fff;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Log Out</button>
+        </div>
     </div>
-</aside>
-
-<!-- Main -->
-<div id="main">
-    <header class="portal-header">
-        <div style="display:flex;align-items:center;gap:14px;">
-            <button id="menuToggle" onclick="toggleSidebar()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-            <h1>@yield('page-title', 'Member Portal')</h1>
-        </div>
-        <div style="display:flex;align-items:center;gap:16px;">
-            <span style="font-size:12px;color:#6e6e6e;">{{ date('l, F j, Y') }}</span>
-        </div>
-    </header>
-
-    <main class="portal-content">
-        @yield('content')
-    </main>
 </div>
 
 <script>
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-}
-function confirmLogout() {
-    var m = document.getElementById('logoutModal');
-    m.style.display = 'flex';
-}
-document.getElementById('logoutModal').addEventListener('click', function(e) {
-    if (e.target === this) this.style.display = 'none';
-});
-// Logout using fresh CSRF token (avoids 419 errors)
-function doLogout() {
-    var token = document.querySelector('meta[name="csrf-token"]');
-    fetch('/logout', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': token ? token.content : '',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    }).then(function() { window.location.href = '/'; })
-      .catch(function() { window.location.href = '/'; });
+function toggleSb(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sbOvl').classList.toggle('on'); }
+function closeSb() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbOvl').classList.remove('on'); }
+function confirmLogout(){ document.getElementById('logoutModal').style.display='flex'; }
+document.getElementById('logoutModal').addEventListener('click',function(e){ if(e.target===this) this.style.display='none'; });
+function doLogout(){
+    var t=document.querySelector('meta[name="csrf-token"]');
+    fetch('/logout',{method:'POST',headers:{'X-CSRF-TOKEN':t?t.content:'','Content-Type':'application/json','Accept':'application/json'}})
+    .then(function(){window.location.href='/';}).catch(function(){window.location.href='/';});
 }
 </script>
 @stack('scripts')
