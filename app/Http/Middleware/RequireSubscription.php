@@ -14,10 +14,12 @@ class RequireSubscription
         }
 
         $user = auth()->user();
-        $hasActiveSubscription = $user->role !== 'free';
 
-        if (!$hasActiveSubscription) {
-            return redirect()->route('join')->with('error', 'An active subscription is required to access this content.');
+        // Check for a real, non-expired active subscription record
+        $sub = $user->activeSubscription();
+
+        if (!$sub || $sub->isExpired()) {
+            return redirect('/subscriber/packages')->with('error', 'An active subscription is required to access this content.');
         }
 
         return $next($request);

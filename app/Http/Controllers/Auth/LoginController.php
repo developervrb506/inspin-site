@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -19,18 +22,36 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
+        $request->validate([
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
+        // Rate limit: max 5 attempts per minute per email+IP combination
+        $throttleKey = Str::lower($request->input('email')).'|'.$request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            if ($request->wantsJson() || $request->acceptsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Too many login attempts. Please try again in {$seconds} seconds.",
+                ], 429);
+            }
+
+            throw ValidationException::withMessages([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ]);
+        }
+
+        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
             $request->session()->regenerate();
+            RateLimiter::clear($throttleKey); // Reset counter on success
 
             $user = Auth::user();
             $redirectTo = $user->role === 'admin' ? route('dashboard') : route('subscriber.dashboard');
 
-            // Return JSON for AJAX requests
             if ($request->wantsJson() || $request->acceptsJson()) {
                 return response()->json([
                     'success'  => true,
@@ -42,16 +63,18 @@ class LoginController extends Controller
             return redirect()->intended($redirectTo);
         }
 
-        // Return JSON error for AJAX requests
+        // Increment failed attempt counter
+        RateLimiter::hit($throttleKey, 60); // decay 60 seconds
+
         if ($request->wantsJson() || $request->acceptsJson()) {
             return response()->json([
                 'success' => false,
-                'message' => 'The provided credentials do not match our records.',
+                'message' => 'Wrong email or password. Please try again.',
             ], 422);
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Wrong email or password. Please try again.',
         ])->onlyInput('email');
     }
 

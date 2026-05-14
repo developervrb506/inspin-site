@@ -252,8 +252,8 @@
                 </div>
                 <img src="{{ asset('storage/'.$sup->image_path) }}" alt="{{ $sup->title }}" style="width:100%;display:block;border-radius:0 0 12px 12px;">
 
-            @elseif($sup->embed_code && !$embedIsUrl)
-                {{-- Real iframe embed --}}
+            @elseif($sup->embed_code && !$embedIsUrl && preg_match('/<iframe\s[^>]*src=["\']https?:\/\/[^"\']+["\'][^>]*>/i', $sup->embed_code))
+                {{-- Iframe embed — validated to contain only safe iframe tags --}}
                 <div style="padding:10px 14px 8px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,252,238,.06);">
                     <span style="width:28px;height:28px;border-radius:6px;background:{{ $tc[1] }};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">{{ $sup->type_icon }}</span>
                     @if($sup->title)<div style="font-size:12px;font-weight:600;color:#FFFCEE;">{{ $sup->title }}</div>@endif

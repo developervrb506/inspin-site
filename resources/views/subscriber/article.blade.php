@@ -215,7 +215,14 @@
             </div>
 
             @elseif($sup->embed_code)
-            <div>{!! $sup->embed_code !!}</div>
+            @php
+                // Only allow <iframe> tags — strip everything else to prevent XSS
+                $safeEmbed = preg_match('/<iframe\s[^>]*src=["\']https?:\/\/[^"\']+["\'][^>]*>/i', $sup->embed_code)
+                    ? $sup->embed_code : '';
+            @endphp
+            @if($safeEmbed)
+            <div style="overflow:hidden;border-radius:0 0 10px 10px;">{!! $safeEmbed !!}</div>
+            @endif
             @endif
 
         </div>
