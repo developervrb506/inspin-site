@@ -47,9 +47,24 @@ class LoginController extends Controller
 
         if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
             $request->session()->regenerate();
-            RateLimiter::clear($throttleKey); // Reset counter on success
+            RateLimiter::clear($throttleKey);
 
             $user = Auth::user();
+
+            // Block unverified users — send them to verify page instead
+            if (!$user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+                if ($request->wantsJson() || $request->acceptsJson()) {
+                    return response()->json([
+                        'success'  => false,
+                        'verified' => false,
+                        'message'  => 'Please verify your email before logging in. We just resent the verification link — check your inbox and spam folder.',
+                    ], 403);
+                }
+                Auth::logout();
+                return redirect('/')->with('error', 'Please verify your email before logging in.');
+            }
+
             $redirectTo = $user->role === 'admin' ? route('dashboard') : route('subscriber.dashboard');
 
             if ($request->wantsJson() || $request->acceptsJson()) {

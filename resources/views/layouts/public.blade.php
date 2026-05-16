@@ -833,6 +833,11 @@
             .then(data => {
                 if (data.success) {
                     window.location.href = data.redirect || '{{ route('dashboard') }}';
+                } else if (data.verified === false) {
+                    // Show email verification required message inside modal
+                    document.querySelector('#loginTab .modal-body, #loginTab form')?.closest('form')?.parentElement
+                    errorDiv.innerHTML = '📧 <strong>Email not verified.</strong> We just resent the link — check your inbox and spam folder, then try again.';
+                    errorDiv.style.display = 'block';
                 } else {
                     errorDiv.textContent = data.message || 'Login failed. Please check your credentials.';
                     errorDiv.style.display = 'block';
