@@ -55,6 +55,17 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Email verification routes
+Route::get('/email/verify', fn() => view('auth.verify-email'))->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/subscriber/dashboard')->with('success', 'Email verified! Welcome to INSPIN.');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('success', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 // ==========================================
 // USER ROUTES (any logged-in user)
 // ==========================================

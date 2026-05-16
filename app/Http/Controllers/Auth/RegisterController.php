@@ -32,17 +32,17 @@ class RegisterController extends Controller
             'phone' => $validated['phone'] ?? null,
         ]);
 
-        Auth::login($user);
+        // Send verification email — do NOT log in yet
+        $user->sendEmailVerificationNotification();
 
-        // Return JSON for AJAX requests
         if ($request->wantsJson() || $request->acceptsJson()) {
             return response()->json([
-                'success' => true,
-                'message' => 'Registration successful.',
-                'redirect' => route('dashboard'),
+                'success'  => true,
+                'message'  => 'Account created! Please check your email and click the verification link before logging in.',
+                'redirect' => '/?registered=1',
             ]);
         }
 
-        return redirect()->route('dashboard');
+        return redirect('/')->with('success', 'Account created! Please check your email to verify your account.');
     }
 }
