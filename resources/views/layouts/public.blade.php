@@ -861,7 +861,18 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload();
+                    // Show email verification message inside the modal
+                    document.getElementById('registerFormFields').innerHTML =
+                        '<div style="text-align:center;padding:20px 0;">' +
+                        '<div style="font-size:3rem;margin-bottom:14px;">📧</div>' +
+                        '<h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:10px;">Check Your Email</h3>' +
+                        '<p style="color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:16px;">' +
+                        'We sent a verification link to your email address.<br>Click the link to activate your account.' +
+                        '</p>' +
+                        '<div style="background:rgba(253,181,21,.07);border:1px solid rgba(253,181,21,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(255,255,255,.4);">'+
+                        '⚠️ Check your <strong style="color:#fff;">spam/junk folder</strong> if you don\'t see it.' +
+                        '</div></div>';
+                    document.getElementById('registerDisclaimer').style.display = 'none';
                 } else {
                     errorDiv.textContent = data.message || 'Registration failed. Please try again.';
                     errorDiv.style.display = 'block';
