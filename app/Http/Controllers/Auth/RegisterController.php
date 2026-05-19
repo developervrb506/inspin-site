@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserPackage;
+use App\Models\Package;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -31,6 +32,20 @@ class RegisterController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
         ]);
+
+        // Auto-assign 7-day free trial
+        $freeTrial = Package::where('slug', 'free-trial')->first();
+        if ($freeTrial) {
+            UserPackage::create([
+                'user_id'    => $user->id,
+                'package_id' => $freeTrial->id,
+                'starts_at'  => now(),
+                'expires_at' => now()->addDays(7),
+                'is_active'  => true,
+                'max_stars'  => 1,
+                'units_total'=> 0,
+            ]);
+        }
 
         // Send verification email — do NOT log in yet
         $user->sendEmailVerificationNotification();

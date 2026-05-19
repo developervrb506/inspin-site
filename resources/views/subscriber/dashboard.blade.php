@@ -63,6 +63,17 @@
     $userInitial = strtoupper(substr(auth()->user()->name, 0, 1));
 @endphp
 
+{{-- Email verified success banner --}}
+@if(session('verified'))
+<div style="background:rgba(0,209,91,.08);border:1px solid rgba(0,209,91,.25);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+    <div style="width:42px;height:42px;background:rgba(0,209,91,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✓</div>
+    <div>
+        <div style="font-size:15px;font-weight:700;color:#00D15B;margin-bottom:2px;">Email Verified — Welcome to INSPIN!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.4);">Your account is now active. Browse your picks, check the latest articles, and explore your dashboard below.</div>
+    </div>
+</div>
+@endif
+
 @if(!$sub)
 {{-- No subscription --}}
 <div class="dk" style="text-align:center;padding:56px;margin-top:4px;">

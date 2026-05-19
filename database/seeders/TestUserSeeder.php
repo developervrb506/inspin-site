@@ -23,7 +23,12 @@ class TestUserSeeder extends Seeder
         foreach ($testAccounts as $account) {
             $user = User::updateOrCreate(
                 ['email' => $account['email']],
-                ['name' => $account['name'], 'password' => Hash::make('password'), 'role' => 'subscriber']
+                [
+                    'name'              => $account['name'],
+                    'password'          => Hash::make('password'),
+                    'role'              => 'subscriber',
+                    'email_verified_at' => Carbon::now(), // test accounts are pre-verified
+                ]
             );
 
             UserPackage::where('user_id', $user->id)->update(['is_active' => false]);

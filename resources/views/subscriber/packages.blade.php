@@ -14,6 +14,19 @@
 
 @section('content')
 
+{{-- Expired / no subscription notice --}}
+@if(session('expired'))
+<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px;">
+    <div style="font-size:1.6rem;flex-shrink:0;">🔒</div>
+    <div>
+        <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">Your Access Has Expired</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;">
+            Your free trial or subscription has ended. Choose a package below to continue viewing expert picks, consensus data, and analysis.
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- Current plan notice --}}
 @if($currentSub)
 <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:12px;">

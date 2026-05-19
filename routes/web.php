@@ -57,14 +57,32 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 
 // Email verification routes
 Route::get('/email/verify', fn() => view('auth.verify-email'))->middleware('auth')->name('verification.notice');
-Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/subscriber/dashboard')->with('success', 'Email verified! Welcome to INSPIN.');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
+    $user = \App\Models\User::findOrFail($id);
+
+    // Validate the signed URL and hash
+    if (!$request->hasValidSignature() || !hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+        abort(403, 'Invalid or expired verification link.');
+    }
+
+    // Mark as verified if not already
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    // Auto-login the user so they land straight on dashboard
+    \Illuminate\Support\Facades\Auth::login($user);
+
+    return redirect('/subscriber/dashboard')->with('verified', true);
+})->middleware('signed')->name('verification.verify');
 Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('success', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+    // Works for both logged-in users and unverified users by email lookup
+    $user = $request->user() ?? \App\Models\User::where('email', $request->input('email'))->first();
+    if ($user && !$user->hasVerifiedEmail()) {
+        $user->sendEmailVerificationNotification();
+    }
+    return response()->json(['success' => true]);
+})->middleware('throttle:6,1')->name('verification.send');
 
 // ==========================================
 // USER ROUTES (any logged-in user)
@@ -75,9 +93,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/subscriber/picks', [\App\Http\Controllers\SubscriberController::class, 'picks'])->name('subscriber.picks');
     Route::get('/subscriber/articles', [\App\Http\Controllers\SubscriberController::class, 'articles'])->name('subscriber.articles');
     Route::get('/subscriber/articles/{article}', [\App\Http\Controllers\SubscriberController::class, 'article'])->name('subscriber.article');
-    Route::get('/subscriber/consensus', [\App\Http\Controllers\SubscriberController::class, 'consensus'])->name('subscriber.consensus');
-    Route::get('/subscriber/trends', [\App\Http\Controllers\SubscriberController::class, 'trends'])->name('subscriber.trends');
-    Route::get('/subscriber/odds', [\App\Http\Controllers\SubscriberController::class, 'odds'])->name('subscriber.odds');
+    Route::get('/subscriber/consensus', fn() => view('subscriber.coming-soon', ['pageTitle'=>'Consensus','pageIcon'=>'📊','pageDesc'=>'Public betting splits and sharp money data are coming soon. You\'ll be able to see where the smart money is going before every game.']))->name('subscriber.consensus');
+    Route::get('/subscriber/trends', fn() => view('subscriber.coming-soon', ['pageTitle'=>'Betting Trends','pageIcon'=>'📈','pageDesc'=>'Hot streak tracking, sport-by-sport performance trends, and historical unit data are coming soon.']))->name('subscriber.trends');
+    Route::get('/subscriber/odds', fn() => view('subscriber.coming-soon', ['pageTitle'=>'Live Odds','pageIcon'=>'⚡','pageDesc'=>'Real-time odds comparison across all major sportsbooks is coming soon. Never miss the best line again.']))->name('subscriber.odds');
+    Route::get('/subscriber/betting-tools', fn() => view('subscriber.coming-soon', ['pageTitle'=>'Betting Tools','pageIcon'=>'🛠️','pageDesc'=>'Calculators, trackers, and betting tools to help you manage your bankroll and maximize your edge are coming soon.']))->name('subscriber.betting-tools');
     Route::get('/subscriber/packages', [\App\Http\Controllers\SubscriberController::class, 'packages'])->name('subscriber.packages');
 
     Route::get('/profile', [PublicController::class, 'profile'])->name('profile');
