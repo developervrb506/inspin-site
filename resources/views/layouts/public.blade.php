@@ -478,6 +478,21 @@
     </style>
 </head>
 <body>
+    {{-- Flash notifications --}}
+    @if(session('info'))
+    <div id="flash-info" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a1a1a;border:1px solid rgba(253,181,21,.3);border-radius:50px;padding:12px 24px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);">
+        <span style="font-size:16px;">📧</span>
+        <span style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;">{{ session('info') }}</span>
+    </div>
+    <script>setTimeout(function(){var t=document.getElementById('flash-info');if(t){t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(function(){t.remove()},400);}},5000);</script>
+    @endif
+    @if(session('error'))
+    <div id="flash-error" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:#1a1a1a;border:1px solid rgba(239,68,68,.3);border-radius:50px;padding:12px 24px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);">
+        <span style="font-size:16px;">⚠️</span>
+        <span style="font-size:13px;font-weight:600;color:#f87171;white-space:nowrap;">{{ session('error') }}</span>
+    </div>
+    <script>setTimeout(function(){var t=document.getElementById('flash-error');if(t){t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(function(){t.remove()},400);}},5000);</script>
+    @endif
     <div class="nav-overlay" id="navOverlay" onclick="closeNav()"></div>
     <header class="header">
         <div class="wrap">

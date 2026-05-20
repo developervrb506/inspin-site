@@ -65,12 +65,13 @@ Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $requ
         abort(403, 'Invalid or expired verification link.');
     }
 
-    // Mark as verified if not already
-    if (!$user->hasVerifiedEmail()) {
-        $user->markEmailAsVerified();
+    // If already verified — link has already been used, redirect to login
+    if ($user->hasVerifiedEmail()) {
+        return redirect('/')->with('info', 'This verification link has already been used. Please log in to access your account.');
     }
 
-    // Auto-login the user so they land straight on dashboard
+    // First click — mark as verified and auto-login
+    $user->markEmailAsVerified();
     \Illuminate\Support\Facades\Auth::login($user);
 
     return redirect('/subscriber/dashboard')->with('verified', true);

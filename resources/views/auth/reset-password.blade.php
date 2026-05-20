@@ -41,7 +41,9 @@
 
     <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" value="{{ $email ?? old('email') }}" placeholder="you@example.com" required autofocus>
+        <input type="email" id="email" name="email" value="{{ $email ?? old('email') }}" readonly
+               style="cursor:not-allowed;opacity:.6;background:rgba(255,255,255,.03);" required>
+        <div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px;">This is the email linked to your account.</div>
     </div>
 
     <div class="form-group">

@@ -17,8 +17,15 @@
 @endpush
 
 @section('content')
+
+{{-- Toast notification --}}
 @if(session('success'))
-<div style="background:rgba(0,209,91,.1);border:1px solid rgba(0,209,91,.25);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:#00D15B;">✓ {{ session('success') }}</div>
+<div id="toast-success" style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#161616;border:1px solid rgba(0,209,91,.35);border-radius:50px;padding:12px 24px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideDown .3s ease;">
+    <div style="width:22px;height:22px;background:#00D15B;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">✓</div>
+    <span style="font-size:14px;font-weight:600;color:#fff;">{{ session('success') }}</span>
+</div>
+<style>@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}</style>
+<script>setTimeout(function(){ var t=document.getElementById('toast-success'); if(t){t.style.transition='opacity .4s';t.style.opacity='0';setTimeout(function(){t.remove()},400);} }, 3500);</script>
 @endif
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
