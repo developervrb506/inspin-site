@@ -14,8 +14,8 @@
 
         {{-- Photo --}}
         <div style="flex-shrink:0;">
-            @if($expert->avatar)
-                <img src="{{ asset('storage/uploads/experts/'.$expert->avatar) }}"
+            @if($expert->avatarUrl)
+                <img src="{{ $expert->avatarUrl }}"
                      alt="{{ $expert->name }}"
                      style="width:160px;height:160px;border-radius:12px;object-fit:cover;border:3px solid rgba(253,181,21,.3);"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">

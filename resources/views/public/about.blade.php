@@ -34,8 +34,8 @@
             <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(253,181,21,.3)'" onmouseout="this.style.borderColor='rgba(255,252,238,.08)'" onclick="window.location='{{ route('expert.profile', $expert->slug) }}'" style="cursor:pointer;">
 
                 {{-- Avatar with onerror fallback --}}
-                @if($expert->avatar)
-                    <img src="{{ asset('storage/uploads/experts/'.$expert->avatar) }}"
+                @if($expert->avatarUrl)
+                    <img src="{{ $expert->avatarUrl }}"
                          alt="{{ $expert->name }}"
                          style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(253,181,21,.3);margin-bottom:16px;"
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">

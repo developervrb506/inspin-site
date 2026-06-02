@@ -54,8 +54,8 @@ class Expert extends Model
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
-            return asset('storage/uploads/experts/' . $this->avatar);
+            return \Illuminate\Support\Facades\Storage::url($this->avatar);
         }
-        return asset('images/default-expert.png');
+        return null;
     }
 }
