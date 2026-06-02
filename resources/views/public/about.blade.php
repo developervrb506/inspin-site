@@ -31,7 +31,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:20px;">
             @foreach($experts as $expert)
             @php $eid = 'bio-'.$expert->id; @endphp
-            <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(253,181,21,.3)'" onmouseout="this.style.borderColor='rgba(255,252,238,.08)'">
+            <div style="background:#212121;border:1px solid rgba(255,252,238,.08);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(253,181,21,.3)'" onmouseout="this.style.borderColor='rgba(255,252,238,.08)'" onclick="window.location='{{ route('expert.profile', $expert->slug) }}'" style="cursor:pointer;">
 
                 {{-- Avatar with onerror fallback --}}
                 @if($expert->avatar)
@@ -51,36 +51,18 @@
                 @endif
 
                 @if($expert->bio)
-                @php $longBio = strlen($expert->bio) > 180; @endphp
-                <div id="{{ $eid }}" style="color:#6e6e6e;font-size:13px;line-height:1.65;margin:0;overflow:hidden;{{ $longBio ? 'display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;' : '' }}">{{ $expert->bio }}</div>
-                @if($longBio)
-                <button onclick="toggleBio('{{ $eid }}', this)"
-                    style="margin-top:10px;background:none;border:none;color:#FDB515;font-size:12px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px;">
-                    Show More
-                </button>
+                <div style="color:#6e6e6e;font-size:13px;line-height:1.65;margin:0 0 14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">{{ $expert->bio }}</div>
                 @endif
-                @endif
+
+                <a href="{{ route('expert.profile', $expert->slug) }}"
+                   style="display:inline-block;margin-top:auto;padding:8px 20px;border:1px solid rgba(253,181,21,.4);color:#FDB515;border-radius:50px;font-size:12px;font-weight:700;text-decoration:none;transition:all .2s;"
+                   onmouseover="this.style.background='rgba(253,181,21,.1)'"
+                   onmouseout="this.style.background='transparent'">
+                    View Profile →
+                </a>
             </div>
             @endforeach
         </div>
-
-        <script>
-        function toggleBio(id, btn) {
-            var el = document.getElementById(id);
-            var expanded = el.style.webkitLineClamp === 'unset' || el.style.webkitLineClamp === '';
-            if (expanded) {
-                el.style.webkitLineClamp = '4';
-                el.style.display = '-webkit-box';
-                el.style.overflow = 'hidden';
-                btn.textContent = 'Show More';
-            } else {
-                el.style.webkitLineClamp = 'unset';
-                el.style.display = 'block';
-                el.style.overflow = 'visible';
-                btn.textContent = 'Show Less';
-            }
-        }
-        </script>
     </div>
     @endif
 

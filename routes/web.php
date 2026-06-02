@@ -32,6 +32,7 @@ Route::get('/join', [PublicController::class, 'join'])->name('join');
 Route::get('/picks', [PublicController::class, 'picks'])->name('picks');
 Route::post('/picks/{pick}/simulate', [PickController::class, 'simulate'])->name('picks.simulate')->middleware('auth');
 Route::get('/about', [PublicController::class, 'about'])->name('about');
+Route::get('/experts/{expert:slug}', [PublicController::class, 'expertProfile'])->name('expert.profile');
 Route::get('/reviews', function () { return view('public.reviews'); })->name('reviews');
 Route::get('/betting-tools', fn() => view('public.coming-soon', ['pageTitle'=>'Betting Tools','pageIcon'=>'🛠️','pageDesc'=>'Our suite of professional betting tools is coming soon. Calculators, trackers, and more to sharpen your edge.']))->name('tools');
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');

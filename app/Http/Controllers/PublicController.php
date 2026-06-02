@@ -106,6 +106,31 @@ class PublicController extends Controller
         ]);
     }
 
+    public function expertProfile(Expert $expert)
+    {
+        if (!$expert->is_active) abort(404);
+
+        $picks = Pick::where('expert_name', $expert->name)
+            ->where('is_active', true)
+            ->orderBy('game_date', 'desc')
+            ->limit(10)
+            ->get();
+
+        $gradedPicks = $picks->where('result', '!=', 'pending');
+        $wins = $gradedPicks->where('result', 'win')->count();
+        $winPct = $gradedPicks->count() > 0
+            ? round(($wins / $gradedPicks->count()) * 100)
+            : null;
+
+        return view('public.expert', [
+            'expert'  => $expert,
+            'picks'   => $picks,
+            'winPct'  => $winPct,
+            'graded'  => $gradedPicks->count(),
+            'wins'    => $wins,
+        ]);
+    }
+
     public function trends()
     {
         $streakService = new StreakService();
