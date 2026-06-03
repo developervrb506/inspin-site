@@ -59,7 +59,9 @@
     @if($expert->bio)
     <div style="margin-bottom:40px;">
         <h2 style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:500;color:#FDB515;margin-bottom:14px;text-transform:uppercase;letter-spacing:.6px;">About</h2>
-        <p style="color:#b0b0b0;font-size:15px;line-height:1.8;margin:0;">{{ $expert->bio }}</p>
+        @foreach(array_filter(explode("\n\n", $expert->bio)) as $paragraph)
+            <p style="color:#b0b0b0;font-size:15px;line-height:1.8;margin:0 0 16px;">{!! nl2br(e(trim($paragraph))) !!}</p>
+        @endforeach
     </div>
     @endif
 
