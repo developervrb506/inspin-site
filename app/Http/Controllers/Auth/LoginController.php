@@ -51,9 +51,12 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            // Block unverified users — send them to verify page instead
+            // Block unverified users — log out first so session is cleared
             if (!$user->hasVerifiedEmail()) {
                 $user->sendEmailVerificationNotification();
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
                 if ($request->wantsJson() || $request->acceptsJson()) {
                     return response()->json([
                         'success'  => false,
@@ -61,7 +64,6 @@ class LoginController extends Controller
                         'message'  => 'Please verify your email before logging in. We just resent the verification link — check your inbox and spam folder.',
                     ], 403);
                 }
-                Auth::logout();
                 return redirect('/')->with('error', 'Please verify your email before logging in.');
             }
 

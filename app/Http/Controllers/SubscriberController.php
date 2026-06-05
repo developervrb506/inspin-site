@@ -107,7 +107,7 @@ class SubscriberController extends Controller
         $sub = $user->activeSubscription();
 
         if (!$sub) {
-            return redirect()->route('join')->with('info', 'Please subscribe to view picks.');
+            return redirect('/subscriber/packages')->with('expired', true);
         }
 
         $sport  = $request->get('sport');

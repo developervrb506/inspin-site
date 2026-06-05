@@ -139,6 +139,7 @@
         .bstart{ background:rgba(92,125,235,.12); border:1px solid rgba(92,125,235,.2); color:#7B97F5; }
         .sbadge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:30px; display:inline-block; }
         .spbadge{ font-size:11px; font-weight:600; padding:3px 8px; border-radius:7px; display:inline-block; }
+        .sb-soon { font-size:9px; font-weight:700; padding:2px 7px; border-radius:20px; background:rgba(255,255,255,.07); color:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.1); margin-left:auto; letter-spacing:.3px; flex-shrink:0; }
 
         /* ── Mobile ── */
         #sbOvl { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:199; }
@@ -187,14 +188,22 @@
             <a href="/subscriber/consensus" class="sb-item {{ request()->is('subscriber/consensus*') ? 'active' : '' }}">
                 <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
                 Consensus
+                <span class="sb-soon">SOON</span>
             </a>
             <a href="/subscriber/trends" class="sb-item {{ request()->is('subscriber/trends*') ? 'active' : '' }}">
                 <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
                 Trends
+                <span class="sb-soon">SOON</span>
             </a>
             <a href="/subscriber/odds" class="sb-item {{ request()->is('subscriber/odds*') ? 'active' : '' }}">
                 <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
                 Live Odds
+                <span class="sb-soon">SOON</span>
+            </a>
+            <a href="/subscriber/betting-tools" class="sb-item {{ request()->is('subscriber/betting-tools*') ? 'active' : '' }}">
+                <div class="sb-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+                Betting Tools
+                <span class="sb-soon">SOON</span>
             </a>
             <div class="sb-section">Account</div>
             <a href="/profile" class="sb-item {{ request()->is('profile') ? 'active' : '' }}">
@@ -234,16 +243,6 @@
                 </button>
                 <span class="sub-topbar-title">@yield('page-title','Portal')</span>
             </div>
-            @auth
-            <div class="sub-profile-btn">
-                <div class="sub-pav">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
-                <div>
-                    <div class="sub-pname">{{ auth()->user()->name }}</div>
-                    <div class="sub-ppkg">{{ isset($sub)&&$sub ? $sub->packageName() : 'Free' }}</div>
-                </div>
-                <svg class="sub-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            @endauth
         </header>
 
         <main class="sub-content">@yield('content')</main>

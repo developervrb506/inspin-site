@@ -701,6 +701,23 @@
             }
         });
 
+        function resendVerification(email) {
+            var btn = document.getElementById('resendVerifyBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+            fetch('/email/verification-notification', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ email: email })
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(){
+                if (btn) { btn.textContent = '✓ Email Resent — Check Your Inbox'; btn.style.background = 'rgba(0,209,91,.1)'; btn.style.borderColor = 'rgba(0,209,91,.3)'; btn.style.color = '#00D15B'; }
+            })
+            .catch(function(){
+                if (btn) { btn.disabled = false; btn.textContent = '↺ Resend Verification Email'; }
+            });
+        }
+
         // Logout using fresh CSRF token from meta tag (avoids 419 errors)
         function doLogout() {
             var token = document.querySelector('meta[name="csrf-token"]');
@@ -866,17 +883,26 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Show email verification message inside the modal
+                    // Store registered email for resend
+                    var regEmail = formData.get('email');
                     document.getElementById('registerFormFields').innerHTML =
-                        '<div style="text-align:center;padding:20px 0;">' +
+                        '<div style="text-align:center;padding:10px 0;">' +
                         '<div style="font-size:3rem;margin-bottom:14px;">📧</div>' +
-                        '<h3 style="color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:10px;">Check Your Email</h3>' +
-                        '<p style="color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:16px;">' +
-                        'We sent a verification link to your email address.<br>Click the link to activate your account.' +
+                        '<h3 style="color:#fff;font-size:1.15rem;font-weight:700;margin-bottom:8px;">Check Your Email</h3>' +
+                        '<p style="color:rgba(255,255,255,.5);font-size:13px;line-height:1.7;margin-bottom:6px;">' +
+                        'We sent a verification link to<br><strong style="color:#FDB515;">' + regEmail + '</strong>' +
                         '</p>' +
-                        '<div style="background:rgba(253,181,21,.07);border:1px solid rgba(253,181,21,.2);border-radius:10px;padding:12px;font-size:12px;color:rgba(255,255,255,.4);">'+
-                        '⚠️ Check your <strong style="color:#fff;">spam/junk folder</strong> if you don\'t see it.' +
-                        '</div></div>';
+                        '<p style="color:rgba(255,255,255,.4);font-size:12px;margin-bottom:18px;">Click the link in that email to activate your account and start your <strong style="color:#fff;">7-day free trial</strong>.</p>' +
+                        '<div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.15);border-radius:10px;padding:14px;margin-bottom:16px;font-size:12px;color:rgba(255,255,255,.4);text-align:left;">' +
+                        '<strong style="color:#FDB515;display:block;margin-bottom:4px;">📬 Didn\'t receive it?</strong>' +
+                        'Check your <strong style="color:#fff;">spam or junk folder</strong> first. If it\'s not there, click the button below to resend.' +
+                        '</div>' +
+                        '<button id="resendVerifyBtn" onclick="resendVerification(\'' + regEmail + '\')" ' +
+                        'style="width:100%;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;font-family:\'Inter\',sans-serif;margin-bottom:10px;">'+
+                        '↺ &nbsp;Resend Verification Email' +
+                        '</button>' +
+                        '<p style="font-size:11px;color:rgba(255,255,255,.2);">Already verified? <a href="/" onclick="openModal();switchTab(\'login\');return false;" style="color:rgba(255,255,255,.4);">Log in here →</a></p>' +
+                        '</div>';
                     document.getElementById('registerDisclaimer').style.display = 'none';
                 } else {
                     errorDiv.textContent = data.message || 'Registration failed. Please try again.';
