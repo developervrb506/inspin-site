@@ -35,6 +35,8 @@ Route::get('/about', [PublicController::class, 'about'])->name('about');
 Route::get('/experts/{expert:slug}', [PublicController::class, 'expertProfile'])->name('expert.profile');
 Route::get('/reviews', function () { return view('public.reviews'); })->name('reviews');
 Route::get('/betting-tools', fn() => view('public.coming-soon', ['pageTitle'=>'Betting Tools','pageIcon'=>'🛠️','pageDesc'=>'Our suite of professional betting tools is coming soon. Calculators, trackers, and more to sharpen your edge.']))->name('tools');
+Route::get('/contact', [PublicController::class, 'contact'])->name('contact');
+Route::post('/contact/ticket', [PublicController::class, 'submitContactTicket'])->name('contact.ticket');
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');
 Route::get('/terms-of-service', function () { return view('public.terms'); })->name('terms');
 Route::get('/privacy-policy', function () { return view('public.privacy'); })->name('privacy');
