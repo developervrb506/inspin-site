@@ -500,9 +500,9 @@
                 <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN - Insider Picks Sports Information">
             </a>
             <ul class="nav" id="mainNav">
+                {{-- Primary: revenue pages --}}
                 <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
                 <li><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}">Picks</a></li>
-                <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
 
                 {{-- Data & Tools dropdown --}}
                 <li class="nav-dropdown-wrap">
@@ -549,9 +549,14 @@
                     </div>
                 </li>
 
-                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About Us</a></li>
+                <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
             </ul>
+
+            {{-- Right side: secondary + auth --}}
             <div class="header-auth" id="headerAuth">
+                <a href="{{ route('about') }}" class="header-login {{ request()->routeIs('about') ? 'active' : '' }}" style="opacity:{{ request()->routeIs('about') ? '1' : '0.6' }};">About</a>
+                <a href="{{ route('contact') }}" class="header-login {{ request()->routeIs('contact') ? 'active' : '' }}" style="opacity:{{ request()->routeIs('contact') ? '1' : '0.6' }};">Contact</a>
+                <div style="width:1px;height:18px;background:rgba(255,252,238,.1);"></div>
                 @auth
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('dashboard') }}" class="header-dash-link">{{ Auth::user()->name }}</a>
@@ -585,8 +590,23 @@
                     <li><a href="{{ route('consensus') }}">Consensus</a></li>
                     <li><a href="{{ route('trends') }}">Trends</a></li>
                     <li><a href="{{ route('about') }}">About Us</a></li>
+                    <li><a href="{{ route('contact') }}">Contact Us</a></li>
                 </ul>
-                <div class="social-icons" style="margin-top:16px;">
+                <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;">
+                    <a href="tel:+16108704799" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">
+                        📞 <span>610-870-4799</span>
+                    </a>
+                    <a href="mailto:support@inspin.com" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">
+                        ✉️ <span>support@inspin.com</span>
+                    </a>
+                    <a href="https://wa.me/16108704799" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#25d366'" onmouseout="this.style.color='#6e6e6e'">
+                        💬 <span>WhatsApp</span>
+                    </a>
+                    <a href="https://t.me/inspinsports" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#0088cc'" onmouseout="this.style.color='#6e6e6e'">
+                        ✈️ <span>Telegram</span>
+                    </a>
+                </div>
+                <div class="social-icons" style="margin-top:14px;">
                     <a href="https://www.facebook.com/Inspin.sports" target="_blank" rel="noopener"><img src="{{ asset('images/social-facebook.png') }}" alt="Facebook"></a>
                     <a href="https://www.instagram.com/inspin.sports/" target="_blank" rel="noopener"><img src="{{ asset('images/social-instagram.png') }}" alt="Instagram"></a>
                     <a href="https://twitter.com/inspin" target="_blank" rel="noopener"><img src="{{ asset('images/social-twitter.png') }}" alt="X (Twitter)"></a>
@@ -601,6 +621,83 @@
             </div>
         </div>
     </footer>
+
+    {{-- ═══ STICKY CONTACT WIDGET ═══ --}}
+    <style>
+        #contactBtn {
+            position:fixed; bottom:88px; right:24px; z-index:8998;
+            width:44px; height:44px; border-radius:50%;
+            background:#212121; border:1px solid rgba(253,181,21,.3);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition:transform .2s, box-shadow .2s, border-color .2s;
+            box-shadow:0 2px 12px rgba(0,0,0,.5);
+        }
+        #contactBtn:hover { transform:scale(1.08); border-color:#FDB515; box-shadow:0 4px 20px rgba(253,181,21,.3); }
+        #contactPanel {
+            position:fixed; bottom:144px; right:24px; z-index:8997;
+            width:240px; background:#1e1e1e;
+            border:1px solid rgba(253,181,21,.15); border-radius:14px;
+            box-shadow:0 16px 48px rgba(0,0,0,.7);
+            display:none; flex-direction:column; overflow:hidden;
+            animation:chatSlideIn .22s cubic-bezier(.34,1.56,.64,1);
+        }
+        #contactPanel.open { display:flex; }
+        #contactPanel-header { padding:12px 16px; border-bottom:1px solid rgba(255,252,238,.06); }
+        .cp-item {
+            display:flex; align-items:center; gap:10px;
+            padding:11px 16px; text-decoration:none; color:#FFFCEE;
+            font-size:13px; font-weight:500; transition:background .15s;
+            border-bottom:1px solid rgba(255,252,238,.04);
+        }
+        .cp-item:last-child { border-bottom:none; }
+        .cp-item:hover { background:rgba(253,181,21,.06); color:#FDB515; }
+        .cp-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+        @media (max-width:520px) {
+            #contactBtn { bottom:80px; right:16px; }
+            #contactPanel { right:16px; bottom:136px; width:220px; }
+        }
+    </style>
+    <button id="contactBtn" onclick="toggleContactPanel()" aria-label="Contact options" title="Contact Us">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FDB515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.06 9.81a19.79 19.79 0 01-3.07-8.72A2 2 0 012 .93h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+    </button>
+    <div id="contactPanel">
+        <div id="contactPanel-header">
+            <div style="font-size:12px;font-weight:700;color:#FDB515;text-transform:uppercase;letter-spacing:.6px;">Contact Us</div>
+        </div>
+        <a href="tel:+16108704799" class="cp-item">
+            <span class="cp-icon">📞</span> 610-870-4799
+        </a>
+        <button onclick="toggleChat();toggleContactPanel();" class="cp-item" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
+            <span class="cp-icon">🤖</span> INSPIN Chatbot
+        </button>
+        <a href="https://wa.me/16108704799" target="_blank" rel="noopener" class="cp-item">
+            <span class="cp-icon">💬</span> WhatsApp
+        </a>
+        <a href="https://t.me/inspinsports" target="_blank" rel="noopener" class="cp-item">
+            <span class="cp-icon">✈️</span> Telegram
+        </a>
+        <a href="{{ route('contact') }}#ticket" class="cp-item">
+            <span class="cp-icon">🎫</span> Send a Ticket
+        </a>
+        <a href="mailto:support@inspin.com" class="cp-item">
+            <span class="cp-icon">✉️</span> Email Support
+        </a>
+    </div>
+    <script>
+    var contactPanelOpen = false;
+    function toggleContactPanel() {
+        contactPanelOpen = !contactPanelOpen;
+        document.getElementById('contactPanel').classList.toggle('open', contactPanelOpen);
+    }
+    document.addEventListener('click', function(e) {
+        if (contactPanelOpen && !e.target.closest('#contactPanel') && !e.target.closest('#contactBtn')) {
+            contactPanelOpen = false;
+            document.getElementById('contactPanel').classList.remove('open');
+        }
+    });
+    </script>
 
     <!-- Login/Register Modal -->
     <div id="authModal" class="modal-overlay">

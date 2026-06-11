@@ -166,6 +166,35 @@ class PublicController extends Controller
         ]);
     }
 
+    public function contact()
+    {
+        return view('public.contact');
+    }
+
+    public function submitContactTicket(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'customer_name'  => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'subject'        => 'required|string|max:255',
+            'message'        => 'required|string',
+        ]);
+
+        \App\Models\SupportTicket::create([
+            'customer_name'  => $validated['customer_name'],
+            'customer_email' => $validated['customer_email'],
+            'subject'        => $validated['subject'],
+            'message'        => $validated['message'],
+            'source_system'  => 'INSPIN',
+            'status'         => 'open',
+            'priority'       => 1,
+        ]);
+
+        return redirect()->route('contact')
+            ->with('ticket_success', true)
+            ->with('ticket_email', $validated['customer_email']);
+    }
+
     public function profile()
     {
         $user = auth()->user();
