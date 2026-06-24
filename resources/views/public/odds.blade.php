@@ -3,6 +3,15 @@
 
 @push('styles')
 <style>
+.market-toggle { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+.market-btn {
+    padding:8px 20px; border-radius:50px; font-size:13px; font-weight:600;
+    font-family:'DM Sans', sans-serif; background:#212121; border:1px solid #2d2d2d;
+    color:#9a9a9a; cursor:pointer; transition:all .18s;
+}
+.market-btn:hover { background:#2a2a2a; border-color:#3a3a3a; color:#FFFCEE; }
+.market-btn.active { background:transparent; border-color:#FDB515; color:#FDB515; box-shadow:0 0 12px rgba(253,181,21,.15); }
+
 .odds-grid { display:flex; flex-direction:column; gap:12px; }
 
 .odds-card {
@@ -24,58 +33,6 @@
     gap:8px;
 }
 
-.odds-body {
-    display:grid;
-    grid-template-columns:1fr repeat(4,auto);
-    gap:0;
-}
-@media(max-width:700px){ .odds-body { grid-template-columns:1fr; } }
-@media(max-width:600px){
-    .odds-col { border-left:none; border-top:1px solid rgba(255,252,238,.04); }
-    .odds-col:first-child { border-top:none; }
-    .odds-col-header { padding:5px 14px; }
-    .odds-val { padding:7px 14px; }
-    .odds-header { padding:10px 14px; flex-wrap:wrap; gap:6px; }
-    .odds-team-row { padding:8px 14px; }
-}
-
-.odds-team-col { padding:0; }
-.odds-team-row {
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 18px;
-}
-.odds-team-row:first-child { border-bottom:1px solid rgba(255,252,238,.04); }
-
-.odds-col {
-    display:flex;
-    flex-direction:column;
-    border-left:1px solid rgba(255,252,238,.05);
-}
-.odds-col-header {
-    font-size:9px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-    color:#4a4a4a;
-    padding:6px 20px;
-    border-bottom:1px solid rgba(255,252,238,.04);
-    text-align:center;
-    white-space:nowrap;
-}
-.odds-val {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:10px 20px;
-    font-size:13px;
-    font-weight:600;
-    text-align:center;
-    white-space:nowrap;
-}
-.odds-val:first-of-type { border-bottom:1px solid rgba(255,252,238,.04); }
-
 .sport-badge {
     display:inline-block;
     padding:2px 9px;
@@ -84,91 +41,217 @@
     font-weight:700;
     letter-spacing:.3px;
 }
-.fav { color:#FFFCEE; }
-.dog { color:#FDB515; }
-.over-val { color:#00D15B; }
-.under-val { color:#ef4444; }
+
+.team-badge {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.2px;
+    flex-shrink:0;
+    box-shadow:0 0 0 1px rgba(255,252,238,.08);
+}
+.team-badge-sm { width:22px; height:22px; font-size:9px; }
+.matchup-team { display:inline-flex; align-items:center; gap:8px; }
+.matchup-at { color:#4a4a4a; font-weight:400; margin:0 6px; }
+.odds-team-cell { display:flex; align-items:center; gap:8px; }
+
+.odds-table-wrap { overflow-x:auto; }
+.odds-table { width:100%; border-collapse:collapse; min-width:480px; }
+.odds-table th, .odds-table td {
+    padding:10px 14px;
+    text-align:center;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+    border-bottom:1px solid rgba(255,252,238,.04);
+}
+.odds-table th {
+    font-size:9px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    color:#4a4a4a;
+    padding:8px 14px;
+}
+.odds-table td:first-child, .odds-table th:first-child {
+    text-align:left;
+    font-size:13px;
+    font-weight:600;
+    color:#FFFCEE;
+    text-transform:none;
+    letter-spacing:0;
+    position:sticky;
+    left:0;
+    background:#212121;
+}
+.odds-table tr:last-child td { border-bottom:none; }
+.odds-cell-price { color:#9a9a9a; }
+.odds-cell-best { color:#FDB515; }
+.odds-cell-best::after { content:'★'; font-size:9px; margin-left:4px; vertical-align:middle; }
+.odds-cell-na { color:#3a3a3a; }
+
+.market-block { display:none; }
+.market-block.active { display:table-row-group; }
+
+.odds-sync-note {
+    font-size:12px; color:#6e6e6e; text-align:right; margin-bottom:16px;
+}
+.odds-mock-badge {
+    display:inline-block; padding:2px 10px; border-radius:20px; font-size:10px;
+    font-weight:700; letter-spacing:.5px; background:#2a1f00; color:#FDB515;
+    border:1px solid rgba(253,181,21,.3); margin-left:8px; text-transform:uppercase;
+}
+
+@media(max-width:600px){
+    .odds-header { padding:10px 14px; flex-wrap:wrap; gap:6px; }
+    .odds-table th, .odds-table td { padding:8px 10px; font-size:12px; }
+}
 </style>
 @endpush
 
 @section('content')
 <div class="section">
     <div class="container">
-        <h1 class="section-title">Live Odds</h1>
-        <p class="section-sub">Real-time odds from top sportsbooks</p>
+        <h1 class="section-title">
+            Live Odds
+            @if(!$liveConfigured)
+                <span class="odds-mock-badge">Preview Data</span>
+            @endif
+        </h1>
+        <p class="section-sub">Compare real-time lines across top sportsbooks</p>
 
-        @if($consensus->count() > 0)
+        <div class="sport-filter">
+            <a href="{{ route('odds') }}" class="{{ !$sport ? 'active' : '' }}">All</a>
+            @foreach($sports as $s)
+                <a href="{{ route('odds', ['sport' => $s]) }}" class="{{ $sport === $s ? 'active' : '' }}">{{ $s }}</a>
+            @endforeach
+        </div>
+
+        <div class="market-toggle">
+            <button type="button" class="market-btn active" data-market="h2h" onclick="setOddsMarket('h2h', this)">Moneyline</button>
+            <button type="button" class="market-btn" data-market="spreads" onclick="setOddsMarket('spreads', this)">Spread</button>
+            <button type="button" class="market-btn" data-market="totals" onclick="setOddsMarket('totals', this)">Total</button>
+        </div>
+
+        @if($lastSync)
+        <div class="odds-sync-note">Last updated {{ $lastSync->diffForHumans() }}</div>
+        @endif
+
+        @if($games->count() > 0)
         <div class="odds-grid">
-            @foreach($consensus as $game)
+            @foreach($games as $game)
             @php
-                $mlAway = $game->moneyline_away ?? '';
-                $mlHome = $game->moneyline_home ?? '';
-                $awayIsFav = is_numeric(str_replace(['+','-'],'',ltrim($mlAway,'+'))) && str_starts_with(ltrim($mlAway),' ') === false && $mlAway !== '' && (int)str_replace('+','',$mlAway) < 0;
                 $sportColors = ['NFL'=>['#3b82f6','#1e3a5f'],'NBA'=>['#ef4444','#3b0000'],'MLB'=>['#22c55e','#0a2e1a'],'NHL'=>['#a855f7','#2e1a45'],'NCAAF'=>['#f97316','#3b1a00'],'NCAAB'=>['#f97316','#3b1a00']];
-                $sc = $sportColors[$game->league] ?? ['#FDB515','#2a1f00'];
+                $sc = $sportColors[$game['sport_title']] ?? ['#FDB515','#2a1f00'];
             @endphp
             <div class="odds-card">
-                {{-- Card header: sport badge + game time --}}
                 <div class="odds-header">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <span class="sport-badge" style="background:{{ $sc[1] }};color:{{ $sc[0] }};border:1px solid {{ $sc[0] }}44;">{{ $game->league }}</span>
+                    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                        <span class="sport-badge" style="background:{{ $sc[1] }};color:{{ $sc[0] }};border:1px solid {{ $sc[0] }}44;">{{ $game['sport_title'] }}</span>
                         <span style="font-size:14px;font-weight:600;color:#FFFCEE;">
-                            {{ $game->away_team }} <span style="color:#4a4a4a;font-weight:400;margin:0 6px;">@</span> {{ $game->home_team }}
+                            <span class="matchup-team">
+                                <span class="team-badge" style="background:{{ $game['away_brand']['bg'] }};color:{{ $game['away_brand']['fg'] }};">{{ $game['away_brand']['abbr'] }}</span>
+                                {{ $game['away_team'] }}
+                            </span>
+                            <span class="matchup-at">@</span>
+                            <span class="matchup-team">
+                                <span class="team-badge" style="background:{{ $game['home_brand']['bg'] }};color:{{ $game['home_brand']['fg'] }};">{{ $game['home_brand']['abbr'] }}</span>
+                                {{ $game['home_team'] }}
+                            </span>
                         </span>
                     </div>
                     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                         <svg width="13" height="13" fill="none" stroke="#6e6e6e" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                         <span style="font-size:12px;color:#6e6e6e;font-weight:500;">
-                            {{ $game->game_date?->format('M d') ?? 'TBD' }}
-                            @if($game->game_date && $game->game_date->format('g:i A') !== '12:00 AM')
-                                · {{ $game->game_date->format('g:i A') }} ET
-                            @else
-                                · TBD ET
-                            @endif
+                            {{ $game['commence_time']?->format('M d · g:i A') ?? 'TBD' }} ET
                         </span>
                     </div>
                 </div>
 
-                {{-- Odds body --}}
-                <div class="odds-body">
-                    {{-- Teams column --}}
-                    <div class="odds-team-col">
-                        <div class="odds-team-row">
-                            <span style="font-size:12px;color:#6e6e6e;width:30px;text-align:center;font-weight:600;">AWY</span>
-                            <span style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $game->away_team }}</span>
-                        </div>
-                        <div class="odds-team-row">
-                            <span style="font-size:12px;color:#6e6e6e;width:30px;text-align:center;font-weight:600;">HME</span>
-                            <span style="font-size:13px;font-weight:600;color:#FFFCEE;">{{ $game->home_team }}</span>
-                        </div>
-                    </div>
-
-                    {{-- Moneyline --}}
-                    <div class="odds-col">
-                        <div class="odds-col-header">Moneyline</div>
-                        @php
-                            $mlA = $game->moneyline_away ?? '—';
-                            $mlH = $game->moneyline_home ?? '—';
-                            $mlAColor = (is_numeric(str_replace(['+'],'',$mlA)) && (int)str_replace('+','',$mlA) > 0) ? '#FDB515' : '#FFFCEE';
-                            $mlHColor = (is_numeric(str_replace(['+'],'',$mlH)) && (int)str_replace('+','',$mlH) > 0) ? '#FDB515' : '#FFFCEE';
-                        @endphp
-                        <div class="odds-val" style="color:{{ $mlAColor }}">{{ $mlA }}</div>
-                        <div class="odds-val" style="color:{{ $mlHColor }}">{{ $mlH }}</div>
-                    </div>
-
-                    {{-- Spread --}}
-                    <div class="odds-col">
-                        <div class="odds-col-header">Spread</div>
-                        <div class="odds-val" style="color:#9a9a9a;">{{ $game->spread_away ?? '—' }}</div>
-                        <div class="odds-val" style="color:#9a9a9a;">{{ $game->spread_home ?? '—' }}</div>
-                    </div>
-
-                    {{-- Total --}}
-                    <div class="odds-col">
-                        <div class="odds-col-header">Total</div>
-                        <div class="odds-val over-val">{{ $game->total_over ?? '—' }}</div>
-                        <div class="odds-val under-val">{{ $game->total_under ?? '—' }}</div>
-                    </div>
+                <div class="odds-table-wrap">
+                    <table class="odds-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                @foreach($game['books'] as $book)
+                                    <th>{{ $book }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody class="market-block active" data-market="h2h">
+                            @foreach($game['markets']['h2h'] as $row)
+                            @php $brand = $row['label'] === $game['away_team'] ? $game['away_brand'] : $game['home_brand']; @endphp
+                            <tr>
+                                <td>
+                                    <span class="odds-team-cell">
+                                        <span class="team-badge team-badge-sm" style="background:{{ $brand['bg'] }};color:{{ $brand['fg'] }};">{{ $brand['abbr'] }}</span>
+                                        {{ $row['label'] }}
+                                    </span>
+                                </td>
+                                @foreach($row['cells'] as $cell)
+                                    <td>
+                                        @if($cell['price'] === null)
+                                            <span class="odds-cell-na">—</span>
+                                        @else
+                                            <span class="{{ $cell['is_best'] ? 'odds-cell-best' : 'odds-cell-price' }}">{{ $cell['price'] > 0 ? '+'.$cell['price'] : $cell['price'] }}</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tbody class="market-block" data-market="spreads">
+                            @foreach($game['markets']['spreads'] as $row)
+                            @php $brand = $row['label'] === $game['away_team'] ? $game['away_brand'] : $game['home_brand']; @endphp
+                            <tr>
+                                <td>
+                                    <span class="odds-team-cell">
+                                        <span class="team-badge team-badge-sm" style="background:{{ $brand['bg'] }};color:{{ $brand['fg'] }};">{{ $brand['abbr'] }}</span>
+                                        {{ $row['label'] }}
+                                    </span>
+                                </td>
+                                @foreach($row['cells'] as $cell)
+                                    <td>
+                                        @if($cell['price'] === null)
+                                            <span class="odds-cell-na">—</span>
+                                        @else
+                                            <span class="{{ $cell['is_best'] ? 'odds-cell-best' : 'odds-cell-price' }}">
+                                                {{ $cell['point'] > 0 ? '+'.$cell['point'] : $cell['point'] }}
+                                                <small style="opacity:.7;">({{ $cell['price'] > 0 ? '+'.$cell['price'] : $cell['price'] }})</small>
+                                            </span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tbody class="market-block" data-market="totals">
+                            @foreach($game['markets']['totals'] as $row)
+                            <tr>
+                                <td>
+                                    <span class="odds-team-cell">
+                                        <span class="team-badge team-badge-sm" style="background:{{ $sc[1] }};color:{{ $sc[0] }};">{{ $row['label'] === 'Over' ? 'O' : 'U' }}</span>
+                                        {{ $row['label'] }} {{ $row['cells'][0]['point'] ?? '' }}
+                                    </span>
+                                </td>
+                                @foreach($row['cells'] as $cell)
+                                    <td>
+                                        @if($cell['price'] === null)
+                                            <span class="odds-cell-na">—</span>
+                                        @else
+                                            <span class="{{ $cell['is_best'] ? 'odds-cell-best' : 'odds-cell-price' }}">{{ $cell['price'] > 0 ? '+'.$cell['price'] : $cell['price'] }}</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
             @endforeach
@@ -187,3 +270,15 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function setOddsMarket(market, btn) {
+    document.querySelectorAll('.market-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.market-block').forEach(function(block){
+        block.classList.toggle('active', block.dataset.market === market);
+    });
+}
+</script>
+@endpush

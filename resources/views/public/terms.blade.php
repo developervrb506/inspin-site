@@ -25,6 +25,11 @@
         ['10. Indemnity', 'You agree to indemnify, defend and hold harmless Inspin.com, its directors, owners, employees, and agents from and against any claim or demand, including reasonable attorneys\' fees, arising out of your use of the Website or the Services, or your violation of the TOS.'],
         ['11. Modifications to Website', 'Inspin.com reserves the right at any time and from time to time to modify or discontinue, temporarily or permanently, the Website or Services (or any part thereof) with or without notice.'],
         ['12. Termination', 'Inspin.com may, in its sole discretion, terminate your password or use of the Website and/or the Services, and remove and discard any content within the Services, for any reason, including, without limitation, for lack of use or if Inspin.com believes that you have violated the letter or spirit of the TOS.'],
+        ['13. Payment & Billing', 'All package purchases on Inspin.com are one-time, non-recurring charges for a fixed period of access (e.g., 1 week, 2 weeks, 1 month, 1 year) as described on the purchase page at the time of purchase. We do not store your payment method for future automatic charges, and packages do NOT automatically renew or rebill at the end of the access period. To continue access after a package expires, you must manually purchase a new package. Charges will appear on your statement as "INSPIN."'],
+        ['14. Free Trial Terms', 'New members may be eligible for a one-time, 7-day Free Trial. The Free Trial requires no credit card and results in no charge of any kind. It provides access to 1-star picks only. The Free Trial does not automatically convert into a paid package and will never result in an automatic charge, because no payment method is collected to begin with. At the end of the 7-day period, Free Trial access simply ends — no charge is applied, and no cancellation is required.'],
+        ['15. Renewal & Cancellation', 'Because packages are one-time, non-recurring purchases, there is no subscription to cancel and no recurring charge to stop. To discontinue use of the Services, simply choose not to purchase a new package once your current access period expires. You may also close your account at any time by contacting Customer Service or by submitting a request through our Communications Center at inspin.com/contact.'],
+        ['16. Refund Policy', 'Please refer to our Refund Policy at inspin.com/refund-policy for details on refund eligibility and our satisfaction guarantee.'],
+        ['17. Delivery of Services', 'All Content and Services are delivered digitally and electronically through the Website immediately upon purchase or account activation. No physical goods are shipped. Please refer to our Delivery Policy at inspin.com/delivery-policy for details.'],
     ];
     @endphp
 
@@ -40,7 +45,7 @@
     @endforeach
 
     <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,252,238,.08);color:#6e6e6e;font-size:13px;">
-        Questions? Contact us at <a href="mailto:support@inspin.com" style="color:#FDB515;">support@inspin.com</a> or call <a href="tel:18554926003" style="color:#FDB515;">1-855-492-6003</a>.
+        Questions? Contact us at <a href="mailto:help@inspin.com" style="color:#FDB515;">help@inspin.com</a> or call <a href="tel:+16108704799" style="color:#FDB515;">610-870-4799</a>.
     </div>
 
 </div>

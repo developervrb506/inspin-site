@@ -26,7 +26,7 @@ Route::get('/articles', [PublicController::class, 'articles'])->name('articles')
 Route::get('/articles/{article}', [PublicController::class, 'article'])->name('article.show');
 // Coming Soon — original views preserved, restore by swapping back to PublicController methods
 Route::get('/top-consensus', fn() => view('public.coming-soon', ['pageTitle'=>'Top Consensus','pageIcon'=>'📊','pageDesc'=>'Public betting consensus data is coming soon. Subscribers can already access this inside their member portal.']))->name('consensus');
-Route::get('/live-odds', fn() => view('public.coming-soon', ['pageTitle'=>'Live Odds','pageIcon'=>'⚡','pageDesc'=>'Real-time odds comparison is coming soon. Subscribers can already access this inside their member portal.']))->name('odds');
+Route::get('/live-odds', [PublicController::class, 'odds'])->name('odds');
 Route::get('/trends', fn() => view('public.coming-soon', ['pageTitle'=>'Betting Trends','pageIcon'=>'📈','pageDesc'=>'Betting trends and hot streak tracking are coming soon. Subscribers can already access this inside their member portal.']))->name('trends');
 Route::get('/join', [PublicController::class, 'join'])->name('join');
 Route::get('/picks', [PublicController::class, 'picks'])->name('picks');
@@ -40,6 +40,11 @@ Route::post('/contact/ticket', [PublicController::class, 'submitContactTicket'])
 Route::get('/buy-bitcoin', function () { return view('public.bitcoin'); })->name('bitcoin');
 Route::get('/terms-of-service', function () { return view('public.terms'); })->name('terms');
 Route::get('/privacy-policy', function () { return view('public.privacy'); })->name('privacy');
+Route::get('/refund-policy', function () { return view('public.refund-policy'); })->name('refund-policy');
+Route::get('/cancellation-policy', function () { return view('public.cancellation-policy'); })->name('cancellation-policy');
+Route::get('/delivery-policy', function () { return view('public.delivery-policy'); })->name('delivery-policy');
+Route::get('/faq', fn() => view('public.coming-soon', ['pageTitle'=>"FAQ's",'pageIcon'=>'❓','pageDesc'=>"Frequently asked questions are coming soon. In the meantime, reach out through our Communications Center and we'll get you an answer fast."]))->name('faq');
+Route::get('/cashier', fn() => view('public.cashier'))->name('cashier');
 Route::post('/chat', [\App\Http\Controllers\ChatController::class, 'respond'])->name('chat');
 
 // ==========================================

@@ -6,12 +6,15 @@ use App\Models\Article;
 use App\Models\BettingConsensus;
 use App\Models\Contest;
 use App\Models\Expert;
+use App\Models\LiveOdds;
 use App\Models\Package;
 use App\Models\Pick;
 use App\Models\SiteSetting;
 use App\Models\SupportTicket;
 use App\Models\WhalePackage;
+use App\Services\OddsApiService;
 use App\Services\StreakService;
+use App\Support\TeamBranding;
 
 class PublicController extends Controller
 {
@@ -93,9 +96,107 @@ class PublicController extends Controller
 
     public function odds()
     {
+        $sport = request('sport');
+        $sportKey = $sport ? (OddsApiService::SPORTS[$sport] ?? null) : null;
+
+        $games = LiveOdds::query()
+            ->upcoming()
+            ->where('commence_time', '<=', now()->addDays(7))
+            ->when($sportKey, fn($q) => $q->sport($sportKey))
+            ->get()
+            ->groupBy('event_id')
+            ->map(function ($rows) {
+                $first = $rows->first();
+
+                $bookmakers = $rows->groupBy('bookmaker_key')->map(function ($bookRows) {
+                    $book = $bookRows->first();
+
+                    return [
+                        'key' => $book->bookmaker_key,
+                        'title' => $book->bookmaker_title,
+                        'markets' => $bookRows->keyBy('market_key')->map(fn ($row) => $row->outcomes),
+                    ];
+                })->values();
+
+                return [
+                    'event_id' => $first->event_id,
+                    'sport_title' => $first->sport_title,
+                    'commence_time' => $first->commence_time,
+                    'home_team' => $first->home_team,
+                    'away_team' => $first->away_team,
+                    'away_brand' => TeamBranding::forTeam($first->away_team, $first->sport_title),
+                    'home_brand' => TeamBranding::forTeam($first->home_team, $first->sport_title),
+                    'books' => $bookmakers->pluck('title'),
+                    'markets' => $this->buildOddsMarkets($bookmakers, $first->home_team, $first->away_team),
+                ];
+            })
+            ->sortBy('commence_time')
+            ->take(25)
+            ->values();
+
         return view('public.odds', [
-            'consensus' => BettingConsensus::orderBy('game_date')->limit(10)->get(),
+            'games' => $games,
+            'sports' => array_keys(OddsApiService::SPORTS),
+            'sport' => $sport,
+            'lastSync' => ($lastSync = LiveOdds::max('last_update')) ? \Carbon\Carbon::parse($lastSync) : null,
+            'liveConfigured' => app(OddsApiService::class)->isConfigured(),
         ]);
+    }
+
+    /**
+     * Build per-market rows (Moneyline / Spread / Total) with one cell per
+     * bookmaker, flagging the best price in each row for highlighting.
+     */
+    private function buildOddsMarkets($bookmakers, string $homeTeam, string $awayTeam): array
+    {
+        $h2hRows = [
+            'away' => ['label' => $awayTeam, 'cells' => []],
+            'home' => ['label' => $homeTeam, 'cells' => []],
+        ];
+        $spreadRows = [
+            'away' => ['label' => $awayTeam, 'cells' => []],
+            'home' => ['label' => $homeTeam, 'cells' => []],
+        ];
+        $totalRows = [
+            'over' => ['label' => 'Over', 'cells' => []],
+            'under' => ['label' => 'Under', 'cells' => []],
+        ];
+
+        foreach ($bookmakers as $book) {
+            $h2h = collect($book['markets']['h2h'] ?? []);
+            $h2hRows['away']['cells'][] = ['price' => $h2h->firstWhere('name', $awayTeam)['price'] ?? null];
+            $h2hRows['home']['cells'][] = ['price' => $h2h->firstWhere('name', $homeTeam)['price'] ?? null];
+
+            $spreads = collect($book['markets']['spreads'] ?? []);
+            $awaySpread = $spreads->firstWhere('name', $awayTeam);
+            $homeSpread = $spreads->firstWhere('name', $homeTeam);
+            $spreadRows['away']['cells'][] = ['price' => $awaySpread['price'] ?? null, 'point' => $awaySpread['point'] ?? null];
+            $spreadRows['home']['cells'][] = ['price' => $homeSpread['price'] ?? null, 'point' => $homeSpread['point'] ?? null];
+
+            $totals = collect($book['markets']['totals'] ?? []);
+            $over = $totals->firstWhere('name', 'Over');
+            $under = $totals->firstWhere('name', 'Under');
+            $totalRows['over']['cells'][] = ['price' => $over['price'] ?? null, 'point' => $over['point'] ?? null];
+            $totalRows['under']['cells'][] = ['price' => $under['price'] ?? null, 'point' => $under['point'] ?? null];
+        }
+
+        $markets = ['h2h' => $h2hRows, 'spreads' => $spreadRows, 'totals' => $totalRows];
+
+        foreach ($markets as &$rows) {
+            foreach ($rows as &$row) {
+                $best = collect($row['cells'])->pluck('price')->filter(fn ($p) => $p !== null)->max();
+
+                foreach ($row['cells'] as &$cell) {
+                    $cell['is_best'] = $cell['price'] !== null && $cell['price'] === $best;
+                }
+            }
+        }
+
+        return [
+            'h2h' => array_values($markets['h2h']),
+            'spreads' => array_values($markets['spreads']),
+            'totals' => array_values($markets['totals']),
+        ];
     }
 
     public function about()
@@ -149,9 +250,24 @@ class PublicController extends Controller
             ->orderBy('game_time', 'asc')
             ->paginate(10);
 
+        $stats = Pick::whereNotNull('units_result')
+            ->where('result', '!=', 'pending')
+            ->when($sport, fn($q) => $q->where('sport', $sport))
+            ->selectRaw("SUM(units_result) as total_units, COUNT(*) as total,
+                SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
+                SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
+                SUM(CASE WHEN result = 'push' THEN 1 ELSE 0 END) as pushes")
+            ->first();
+
+        $totalUnits = round((float) ($stats->total_units ?? 0), 2);
+        $winRate = $stats->total > 0 ? round($stats->wins / $stats->total * 100, 1) : 0;
+
         return view('public.picks', [
             'picks' => $picks,
             'sport' => $sport,
+            'totalUnits' => $totalUnits,
+            'winRate' => $winRate,
+            'record' => $stats,
         ]);
     }
 

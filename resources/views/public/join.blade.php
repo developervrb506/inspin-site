@@ -42,6 +42,11 @@
 <div class="section">
     <div class="container">
 
+        {{-- Billing disclosure --}}
+        <div style="background:rgba(253,181,21,.04);border:1px solid rgba(253,181,21,.15);border-radius:12px;padding:14px 20px;margin-bottom:24px;font-size:13px;color:#9a9a9a;text-align:center;">
+            💳 All packages below are <strong style="color:#FFFCEE;">one-time charges</strong> for the access period shown — <strong style="color:#FFFCEE;">no recurring or automatic billing</strong>. Your card will not be charged again after the access period ends. See our <a href="{{ route('refund-policy') }}" style="color:#FDB515;">Refund</a>, <a href="{{ route('cancellation-policy') }}" style="color:#FDB515;">Cancellation</a>, and <a href="{{ route('delivery-policy') }}" style="color:#FDB515;">Delivery</a> policies for details.
+        </div>
+
         {{-- ═══ FREE TRIAL — Full-width green banner (like Whale) ═══ --}}
         <div onclick="openModal('join')" class="join-banner" style="cursor:pointer;background:#212121;border-radius:16px;padding:36px 40px;position:relative;overflow:hidden;border:1px solid rgba(34,197,94,.25);box-shadow:0 0 40px rgba(34,197,94,.06);margin-bottom:32px;">
             {{-- Green glow top bar --}}

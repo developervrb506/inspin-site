@@ -209,12 +209,12 @@
                 <div class="comm-card-title">Chat with an Agent</div>
                 <span class="comm-card-badge" style="background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.2);">Offline</span>
             </div>
-            <p class="comm-card-desc">Connect directly with a Customer Service representative. When our team is online you'll chat live — when offline your message goes straight to support@inspin.com.</p>
+            <p class="comm-card-desc">Connect directly with a Customer Service representative. When our team is online you'll chat live — when offline your message goes straight to help@inspin.com.</p>
             <div class="agent-status">
                 <div class="agent-dot"></div>
                 <span>No agents online right now</span>
             </div>
-            <a href="mailto:support@inspin.com" class="comm-btn-gold">Email Support</a>
+            <a href="mailto:help@inspin.com" class="comm-btn-gold">Email Support</a>
         </div>
 
         {{-- 2. Chatbot --}}
@@ -246,21 +246,45 @@
                         <div class="talk-row-sub">Phone</div>
                     </div>
                 </a>
-                <a href="https://wa.me/16108704799" target="_blank" rel="noopener" class="talk-row">
+                <div class="talk-row" style="opacity:.5;cursor:default;">
                     <div class="talk-row-icon" style="background:rgba(37,211,102,.08);">💬</div>
                     <div>
                         <div class="talk-row-label">WhatsApp</div>
-                        <div class="talk-row-sub">Message us on WhatsApp</div>
+                        <div class="talk-row-sub">Coming Soon</div>
                     </div>
-                </a>
-                <a href="https://t.me/inspinsports" target="_blank" rel="noopener" class="talk-row">
+                </div>
+                <div class="talk-row" style="opacity:.5;cursor:default;">
                     <div class="talk-row-icon" style="background:rgba(0,136,204,.08);">✈️</div>
                     <div>
                         <div class="talk-row-label">Telegram</div>
-                        <div class="talk-row-sub">@inspinsports</div>
+                        <div class="talk-row-sub">Coming Soon</div>
                     </div>
-                </a>
+                </div>
             </div>
+        </div>
+
+        {{-- 5. Email Us --}}
+        <div class="comm-card">
+            <span class="comm-card-num">05</span>
+            <div class="comm-card-icon">✉️</div>
+            <div>
+                <div class="comm-card-title">Email Us</div>
+                <div style="font-size:12px;color:#6e6e6e;margin-top:2px;">We respond within 24 hours</div>
+            </div>
+            <p class="comm-card-desc">Prefer email? Send us a message directly and our Customer Service team will get back to you.</p>
+            <a href="mailto:help@inspin.com" class="comm-btn-gold">help@inspin.com</a>
+        </div>
+
+        {{-- 6. FAQ's --}}
+        <div class="comm-card">
+            <span class="comm-card-num">06</span>
+            <div class="comm-card-icon">❓</div>
+            <div>
+                <div class="comm-card-title">FAQ's</div>
+                <span class="comm-card-badge" style="background:rgba(253,181,21,.1);color:#FDB515;border-color:rgba(253,181,21,.2);">Coming Soon</span>
+            </div>
+            <p class="comm-card-desc">Quick answers to the most common questions about picks, packages, and how INSPIN works.</p>
+            <a href="{{ route('faq') }}" class="comm-btn-outline">View FAQ's</a>
         </div>
 
         {{-- 4. Send a Ticket --}}
@@ -335,13 +359,63 @@
             <img src="{{ asset('images/social-youtube.png') }}" alt="YouTube" style="width:24px;height:24px;object-fit:contain;">
             <span>YouTube</span>
         </a>
-        <a href="https://wa.me/16108704799" target="_blank" rel="noopener" class="connect-item" style="border-color:rgba(37,211,102,.15);">
-            <span style="font-size:22px;line-height:1;">💬</span>
-            <span>WhatsApp</span>
+        <div class="connect-item" style="opacity:.45;cursor:default;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFFCEE"><path d="M16.6 5.82c-.93-.93-1.45-2.18-1.45-3.5h-3.2v13.93c0 1.6-1.3 2.9-2.9 2.9a2.9 2.9 0 01-2.9-2.9 2.9 2.9 0 012.9-2.9c.32 0 .63.05.92.14V10.3a6.1 6.1 0 00-.92-.07c-3.36 0-6.08 2.72-6.08 6.08S6.6 22.4 9.96 22.4s6.08-2.72 6.08-6.08V9.1c1.3.93 2.9 1.48 4.6 1.48v-3.2c-1.5 0-2.8-.6-4.04-1.56z"/></svg>
+            <span>TikTok · Soon</span>
+        </div>
+    </div>
+
+    {{-- Section 3: Hours & Legal --}}
+    <div class="comm-section-label">Hours &amp; Legal</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:60px;">
+        <div class="talk-row" style="flex:1;min-width:240px;cursor:default;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">🕗</div>
+            <div>
+                <div class="talk-row-label">Monday – Sunday</div>
+                <div class="talk-row-sub">8:00 AM – 10:00 PM Eastern</div>
+            </div>
+        </div>
+        <a href="{{ route('terms') }}" class="talk-row" style="flex:1;min-width:240px;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">📋</div>
+            <div>
+                <div class="talk-row-label">Terms &amp; Conditions</div>
+                <div class="talk-row-sub">Read our terms of service</div>
+            </div>
         </a>
-        <a href="https://t.me/inspinsports" target="_blank" rel="noopener" class="connect-item" style="border-color:rgba(0,136,204,.15);">
-            <span style="font-size:22px;line-height:1;">✈️</span>
-            <span>Telegram</span>
+        <a href="{{ route('privacy') }}" class="talk-row" style="flex:1;min-width:240px;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">🔒</div>
+            <div>
+                <div class="talk-row-label">Privacy Policy</div>
+                <div class="talk-row-sub">How we handle your data</div>
+            </div>
+        </a>
+        <div class="talk-row" style="flex:1;min-width:240px;cursor:default;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">📍</div>
+            <div>
+                <div class="talk-row-label">Mailing Address</div>
+                <div class="talk-row-sub">Inspin.com, Bryn Mawr, PA</div>
+            </div>
+        </div>
+        <a href="{{ route('refund-policy') }}" class="talk-row" style="flex:1;min-width:240px;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">💳</div>
+            <div>
+                <div class="talk-row-label">Refund Policy</div>
+                <div class="talk-row-sub">Eligibility & how to request</div>
+            </div>
+        </a>
+        <a href="{{ route('cancellation-policy') }}" class="talk-row" style="flex:1;min-width:240px;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">🚫</div>
+            <div>
+                <div class="talk-row-label">Cancellation Policy</div>
+                <div class="talk-row-sub">No auto-renewal, ever</div>
+            </div>
+        </a>
+        <a href="{{ route('delivery-policy') }}" class="talk-row" style="flex:1;min-width:240px;">
+            <div class="talk-row-icon" style="background:rgba(253,181,21,.08);">📦</div>
+            <div>
+                <div class="talk-row-label">Delivery Policy</div>
+                <div class="talk-row-sub">Instant digital access</div>
+            </div>
         </a>
     </div>
 

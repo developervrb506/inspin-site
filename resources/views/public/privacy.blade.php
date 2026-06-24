@@ -20,6 +20,9 @@
         ['Links to Other Sites', 'An Inspin.com website may contain links to other websites and services. Inspin.com is not responsible for the content of, or the privacy practices employed by, other companies or websites. This Privacy Policy applies only to Inspin.com services.'],
         ['Refusing or Withdrawing Consent', 'Subject to legal and contractual requirements, a person can refuse to consent to Inspin.com\'s collection, use or disclosure of Personal Information, or may withdraw consent at any time in the future by giving Inspin.com reasonable notice. If a person refuses or withdraws consent, Inspin.com may not be able to provide certain products, services or information.'],
         ['Challenging Compliance', 'A person shall be able to address a challenge concerning compliance with the above principles to the designated person accountable for compliance. Inspin.com shall maintain procedures for addressing and responding to all inquiries or complaints.'],
+        ['California Privacy Rights (CCPA)', 'If you are a California resident, you have the right to request disclosure of the categories and specific pieces of Personal Information we have collected about you, request deletion of your Personal Information, and opt out of the sale or sharing of your Personal Information (Inspin.com does not sell Personal Information to third parties). You will not be discriminated against for exercising any of these rights. To submit a request, contact us at help@inspin.com or through our Communications Center at inspin.com/contact.'],
+        ['Financial Privacy (Gramm-Leach-Bliley Act)', 'When you make a purchase, we collect limited nonpublic financial information (such as payment confirmation details) solely to process your transaction through our payment processor. We do not share your nonpublic financial information with non-affiliated third parties for marketing purposes. We maintain physical, electronic, and procedural safeguards to protect this information in accordance with applicable law.'],
+        ['Refund, Cancellation & Delivery', 'For details on how purchases are delivered, our cancellation policy, and refund eligibility, please see our Refund Policy (inspin.com/refund-policy), Cancellation Policy (inspin.com/cancellation-policy), and Delivery Policy (inspin.com/delivery-policy).'],
     ];
     @endphp
 
@@ -31,7 +34,7 @@
     @endforeach
 
     <div style="margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,252,238,.08);color:#6e6e6e;font-size:13px;">
-        Questions? Contact us at <a href="mailto:support@inspin.com" style="color:#FDB515;">support@inspin.com</a> or call <a href="tel:18554926003" style="color:#FDB515;">1-855-492-6003 FREE</a>.
+        Questions? Contact us at <a href="mailto:help@inspin.com" style="color:#FDB515;">help@inspin.com</a> or call <a href="tel:+16108704799" style="color:#FDB515;">610-870-4799</a>.
         <br>You can also write to: Inspin.com, Bryn Mawr, PA.
     </div>
 

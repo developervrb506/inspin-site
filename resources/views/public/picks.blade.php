@@ -7,6 +7,66 @@
     .grid.grid-2 { grid-template-columns:1fr !important; }
     .home-pick-card, .card { padding:16px !important; }
 }
+.picks-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px; }
+.picks-stats {
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:24px;
+    background:#1c1c1c;
+    border:1px solid rgba(253,181,21,.25);
+    border-radius:14px;
+    padding:14px 28px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    animation:statsPopIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+.picks-stats-icon {
+    position:absolute;
+    top:-14px;
+    right:-14px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#FDB515;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    box-shadow:0 4px 14px rgba(253,181,21,.45);
+    animation:statsBounce 2.6s ease-in-out infinite;
+}
+.picks-stats-label {
+    font-size:11px;
+    font-weight:700;
+    color:#9a9a9a;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    line-height:1.5;
+    padding-right:20px;
+    border-right:1px solid rgba(255,255,255,.08);
+}
+.picks-stat-item { text-align:center; }
+.picks-stat-value { font-size:22px; font-weight:800; line-height:1; white-space:nowrap; }
+.picks-stat-sub { font-size:10px; color:#6e6e6e; text-transform:uppercase; letter-spacing:.5px; margin-top:6px; white-space:nowrap; }
+@keyframes statsBounce {
+    0%, 100% { transform:translateY(0); }
+    50% { transform:translateY(-6px); }
+}
+@keyframes statsPopIn {
+    0% { opacity:0; transform:scale(.9) translateY(10px); }
+    100% { opacity:1; transform:scale(1) translateY(0); }
+}
+@media(max-width:700px){
+    .picks-toolbar { flex-direction:column; align-items:stretch; }
+    .picks-stats { flex-wrap:wrap; justify-content:flex-start; }
+    .picks-stats-label {
+        width:100%;
+        border-right:none;
+        border-bottom:1px solid rgba(255,255,255,.08);
+        padding-right:0;
+        padding-bottom:10px;
+    }
+}
 </style>
 @endpush
 
@@ -16,14 +76,41 @@
         <h1 class="section-title">Expert Picks</h1>
         <p class="section-sub">Our latest betting picks across all sports</p>
 
-        <div class="sport-filter">
-            <a href="{{ route('picks') }}" class="{{ !$sport ? 'active' : '' }}">All</a>
-            <a href="{{ route('picks', ['sport' => 'NFL']) }}" class="{{ $sport === 'NFL' ? 'active' : '' }}">NFL</a>
-            <a href="{{ route('picks', ['sport' => 'NCAAF']) }}" class="{{ $sport === 'NCAAF' ? 'active' : '' }}">NCAAF</a>
-            <a href="{{ route('picks', ['sport' => 'NBA']) }}" class="{{ $sport === 'NBA' ? 'active' : '' }}">NBA</a>
-            <a href="{{ route('picks', ['sport' => 'NCAAB']) }}" class="{{ $sport === 'NCAAB' ? 'active' : '' }}">NCAAB</a>
-            <a href="{{ route('picks', ['sport' => 'MLB']) }}" class="{{ $sport === 'MLB' ? 'active' : '' }}">MLB</a>
-            <a href="{{ route('picks', ['sport' => 'NHL']) }}" class="{{ $sport === 'NHL' ? 'active' : '' }}">NHL</a>
+        <div class="picks-toolbar">
+            <div class="sport-filter">
+                <a href="{{ route('picks') }}" class="{{ !$sport ? 'active' : '' }}">All</a>
+                <a href="{{ route('picks', ['sport' => 'NFL']) }}" class="{{ $sport === 'NFL' ? 'active' : '' }}">NFL</a>
+                <a href="{{ route('picks', ['sport' => 'NCAAF']) }}" class="{{ $sport === 'NCAAF' ? 'active' : '' }}">NCAAF</a>
+                <a href="{{ route('picks', ['sport' => 'NBA']) }}" class="{{ $sport === 'NBA' ? 'active' : '' }}">NBA</a>
+                <a href="{{ route('picks', ['sport' => 'NCAAB']) }}" class="{{ $sport === 'NCAAB' ? 'active' : '' }}">NCAAB</a>
+                <a href="{{ route('picks', ['sport' => 'MLB']) }}" class="{{ $sport === 'MLB' ? 'active' : '' }}">MLB</a>
+                <a href="{{ route('picks', ['sport' => 'NHL']) }}" class="{{ $sport === 'NHL' ? 'active' : '' }}">NHL</a>
+            </div>
+
+            @if($record->total > 0)
+            <div class="picks-stats">
+                <div class="picks-stats-icon">{{ $totalUnits >= 0 ? '🔥' : '📉' }}</div>
+                <div class="picks-stats-label">{{ $sport ?: 'Overall' }}<br>Performance</div>
+                <div class="picks-stat-item">
+                    <div class="picks-stat-value" style="color:{{ $totalUnits >= 0 ? '#00D15B' : '#ef4444' }};">{{ $totalUnits >= 0 ? '+' : '-' }}{{ number_format(abs($totalUnits), 2) }}</div>
+                    <div class="picks-stat-sub">Units</div>
+                </div>
+                <div class="picks-stat-item">
+                    <div class="picks-stat-value" style="color:#FDB515;">
+                        @if($totalUnits >= 0)
+                            ${{ number_format($totalUnits * 100, 0) }}
+                        @else
+                            -${{ number_format(abs($totalUnits) * 100, 0) }}
+                        @endif
+                    </div>
+                    <div class="picks-stat-sub">$100 Bettor</div>
+                </div>
+                <div class="picks-stat-item">
+                    <div class="picks-stat-value" style="color:#FFFCEE;">{{ $winRate }}%</div>
+                    <div class="picks-stat-sub">{{ $record->wins }}-{{ $record->losses }}-{{ $record->pushes }}</div>
+                </div>
+            </div>
+            @endif
         </div>
 
         @guest

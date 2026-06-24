@@ -100,6 +100,7 @@
         .ndi-label { font-size: 13px; font-weight: 600; color: #FFFCEE; font-family: 'DM Sans', sans-serif; }
         .ndi-sub { font-size: 11px; color: #6e6e6e; }
         .ndi-badge { font-size: 9px; font-weight: 700; background: rgba(253,181,21,.12); color: #FDB515; border: 1px solid rgba(253,181,21,.25); padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+        .ndi-badge-live { font-size: 9px; font-weight: 700; background: rgba(0,209,91,.12); color: #00D15B; border: 1px solid rgba(0,209,91,.3); padding: 2px 7px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
 
         /* ===== CONTAINER ===== */
         .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
@@ -527,7 +528,7 @@
                                     <span class="ndi-label">Live Odds</span>
                                     <span class="ndi-sub">Real-time odds comparison</span>
                                 </span>
-                                <span class="ndi-badge">Soon</span>
+                                <span class="ndi-badge-live">Live</span>
                             </a>
                             <a href="{{ route('consensus') }}" class="nav-dropdown-item">
                                 <span class="ndi-icon">📊</span>
@@ -542,6 +543,14 @@
                                 <span class="ndi-text">
                                     <span class="ndi-label">Trends</span>
                                     <span class="ndi-sub">Hot streaks &amp; patterns</span>
+                                </span>
+                                <span class="ndi-badge">Soon</span>
+                            </a>
+                            <a href="{{ route('faq') }}" class="nav-dropdown-item">
+                                <span class="ndi-icon">❓</span>
+                                <span class="ndi-text">
+                                    <span class="ndi-label">FAQ's</span>
+                                    <span class="ndi-sub">Answers to common questions</span>
                                 </span>
                                 <span class="ndi-badge">Soon</span>
                             </a>
@@ -591,31 +600,45 @@
                     <li><a href="{{ route('trends') }}">Trends</a></li>
                     <li><a href="{{ route('about') }}">About Us</a></li>
                     <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                    <li><a href="{{ route('faq') }}">FAQ's</a></li>
                 </ul>
                 <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;">
                     <a href="tel:+16108704799" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">
                         📞 <span>610-870-4799</span>
                     </a>
-                    <a href="mailto:support@inspin.com" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">
-                        ✉️ <span>support@inspin.com</span>
+                    <a href="mailto:help@inspin.com" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">
+                        ✉️ <span>help@inspin.com</span>
                     </a>
-                    <a href="https://wa.me/16108704799" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#25d366'" onmouseout="this.style.color='#6e6e6e'">
-                        💬 <span>WhatsApp</span>
-                    </a>
-                    <a href="https://t.me/inspinsports" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;color:#6e6e6e;font-size:12px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#0088cc'" onmouseout="this.style.color='#6e6e6e'">
-                        ✈️ <span>Telegram</span>
-                    </a>
+                    <span style="display:flex;align-items:center;gap:6px;color:#4a4a4a;font-size:12px;cursor:default;">
+                        💬 <span>WhatsApp · Coming Soon</span>
+                    </span>
+                    <span style="display:flex;align-items:center;gap:6px;color:#4a4a4a;font-size:12px;cursor:default;">
+                        ✈️ <span>Telegram · Coming Soon</span>
+                    </span>
                 </div>
                 <div class="social-icons" style="margin-top:14px;">
                     <a href="https://www.facebook.com/Inspin.sports" target="_blank" rel="noopener"><img src="{{ asset('images/social-facebook.png') }}" alt="Facebook"></a>
                     <a href="https://www.instagram.com/inspin.sports/" target="_blank" rel="noopener"><img src="{{ asset('images/social-instagram.png') }}" alt="Instagram"></a>
                     <a href="https://twitter.com/inspin" target="_blank" rel="noopener"><img src="{{ asset('images/social-twitter.png') }}" alt="X (Twitter)"></a>
                     <a href="https://www.youtube.com/channel/UCxPUSU7jxt_Ix3sRafRg1WA" target="_blank" rel="noopener"><img src="{{ asset('images/social-youtube.png') }}" alt="YouTube"></a>
+                    <a href="javascript:void(0)" title="TikTok — Coming Soon" style="opacity:.4;cursor:default;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFCEE"><path d="M16.6 5.82c-.93-.93-1.45-2.18-1.45-3.5h-3.2v13.93c0 1.6-1.3 2.9-2.9 2.9a2.9 2.9 0 01-2.9-2.9 2.9 2.9 0 012.9-2.9c.32 0 .63.05.92.14V10.3a6.1 6.1 0 00-.92-.07c-3.36 0-6.08 2.72-6.08 6.08S6.6 22.4 9.96 22.4s6.08-2.72 6.08-6.08V9.1c1.3.93 2.9 1.48 4.6 1.48v-3.2c-1.5 0-2.8-.6-4.04-1.56z"/></svg>
+                    </a>
                 </div>
             </div>
             <div>
                 <div class="footer-copy">&copy; {{ date('Y') }} Inspin.com - All Rights Reserved.</div>
-                <div style="color:#475569;font-size:11px;margin-top:8px;max-width:400px;">
+                <div style="color:#6e6e6e;font-size:11px;margin-top:10px;display:flex;align-items:center;gap:6px;">
+                    🕗 <span>Mon – Sun · 8:00 AM – 10:00 PM Eastern</span>
+                </div>
+                <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 14px;">
+                    <a href="{{ route('terms') }}" style="color:#6e6e6e;font-size:11px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">Terms of Service</a>
+                    <a href="{{ route('privacy') }}" style="color:#6e6e6e;font-size:11px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">Privacy Policy</a>
+                    <a href="{{ route('refund-policy') }}" style="color:#6e6e6e;font-size:11px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">Refund Policy</a>
+                    <a href="{{ route('cancellation-policy') }}" style="color:#6e6e6e;font-size:11px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">Cancellation Policy</a>
+                    <a href="{{ route('delivery-policy') }}" style="color:#6e6e6e;font-size:11px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#FDB515'" onmouseout="this.style.color='#6e6e6e'">Delivery Policy</a>
+                </div>
+                <div style="color:#475569;font-size:11px;margin-top:12px;max-width:400px;">
                     Information contained within this website is for news and entertainment purposes only. Past performance is not a guarantee of future results.
                 </div>
             </div>
@@ -672,16 +695,16 @@
         <button onclick="toggleChat();toggleContactPanel();" class="cp-item" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
             <span class="cp-icon">🤖</span> INSPIN Chatbot
         </button>
-        <a href="https://wa.me/16108704799" target="_blank" rel="noopener" class="cp-item">
-            <span class="cp-icon">💬</span> WhatsApp
-        </a>
-        <a href="https://t.me/inspinsports" target="_blank" rel="noopener" class="cp-item">
-            <span class="cp-icon">✈️</span> Telegram
-        </a>
+        <span class="cp-item" style="opacity:.45;cursor:default;">
+            <span class="cp-icon">💬</span> WhatsApp · Soon
+        </span>
+        <span class="cp-item" style="opacity:.45;cursor:default;">
+            <span class="cp-icon">✈️</span> Telegram · Soon
+        </span>
         <a href="{{ route('contact') }}#ticket" class="cp-item">
             <span class="cp-icon">🎫</span> Send a Ticket
         </a>
-        <a href="mailto:support@inspin.com" class="cp-item">
+        <a href="mailto:help@inspin.com" class="cp-item">
             <span class="cp-icon">✉️</span> Email Support
         </a>
     </div>
@@ -748,7 +771,7 @@
                         <strong style="color:#FDB515;display:block;font-size:13px;margin-bottom:8px;letter-spacing:.2px;">THIS IS NOT A GAMBLING SITE</strong>
                         Information contained within this website is for news and entertainment purposes only. Use of this information in violation of State, Federal, or Local laws is strictly prohibited. Past performance is not a guarantee of future results.<br><br>
                         Do you think you may have a gambling problem? If so, please contact a specialist. We are here for entertainment purposes, but your personal mental health and financial security are very important.<br><br>
-                        <strong style="color:#FFFCEE;">Billing:</strong> Any credit card charges will appear as <strong style="color:#FFFCEE;">"INSPIN"</strong> on your statement. For issues, call our 800# or use the ticket system.
+                        <strong style="color:#FFFCEE;">Billing:</strong> Packages are <strong style="color:#FFFCEE;">one-time charges</strong> for the access period selected — there is no recurring or automatic billing, and your card will not be charged again after that period ends. Any credit card charges will appear as <strong style="color:#FFFCEE;">"INSPIN"</strong> on your statement. For issues, call 610-870-4799 or use the ticket system.
                     </div>
                     {{-- Checkboxes --}}
                     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
