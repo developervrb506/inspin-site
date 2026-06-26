@@ -40,6 +40,8 @@
         a:hover { color: var(--gold); }
         img { max-width: 100%; }
 
+        .mobile-only-nav-item { display: none; }
+
         /* ===== HEADER AUTH (right side) ===== */
         .header-auth { display: flex; gap: 18px; align-items: center; flex-shrink: 0; }
         .header-login { color: #FFFCEE; font-size: 13.5px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-decoration: none; transition: color 0.15s; cursor: pointer; background: none; border: none; padding: 0; opacity: 0.75; }
@@ -300,6 +302,7 @@
             .header .wrap { padding: 0 16px; }
             .logo img { height: 40px; }
             .header-auth { display: none; }
+            .mobile-only-nav-item { display: block; }
 
             /* Hamburger on, nav off by default */
             .hamburger { display: flex; }
@@ -559,12 +562,13 @@
                 </li>
 
                 <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
+                <li class="mobile-only-nav-item"><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact Us</a></li>
             </ul>
 
             {{-- Right side: secondary + auth --}}
             <div class="header-auth" id="headerAuth">
                 <a href="{{ route('about') }}" class="header-login {{ request()->routeIs('about') ? 'active' : '' }}" style="opacity:{{ request()->routeIs('about') ? '1' : '0.6' }};">About</a>
-                <a href="{{ route('contact') }}" class="header-login {{ request()->routeIs('contact') ? 'active' : '' }}" style="opacity:{{ request()->routeIs('contact') ? '1' : '0.6' }};">Contact</a>
+                <a href="{{ route('contact') }}" class="header-login {{ request()->routeIs('contact') ? 'active' : '' }}" style="opacity:{{ request()->routeIs('contact') ? '1' : '0.6' }};">Contact Us</a>
                 <div style="width:1px;height:18px;background:rgba(255,252,238,.1);"></div>
                 @auth
                     @if(auth()->user()->isAdmin())
