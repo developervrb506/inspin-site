@@ -87,6 +87,7 @@
         @php
         $packages6 = [
             [
+                'slug'    => '1-week',
                 'price'   => '$24.99',
                 'tagline' => 'Get 2★ Picks',
                 'access'  => '1 Week Access',
@@ -96,6 +97,7 @@
                 'color'   => '#FDB515',
             ],
             [
+                'slug'    => '2-weeks',
                 'price'   => '$49.99',
                 'tagline' => 'Get 3★ Picks + extra week',
                 'access'  => '2 Week Access',
@@ -105,6 +107,7 @@
                 'color'   => '#FDB515',
             ],
             [
+                'slug'    => 'monthly',
                 'price'   => '$99.99',
                 'tagline' => 'Get 4★ Picks + extra 2 weeks',
                 'access'  => '1 Month Access',
@@ -116,6 +119,7 @@
                 'color'   => '#FDB515',
             ],
             [
+                'slug'    => '2-months',
                 'price'   => '$149.99',
                 'tagline' => 'Get 5★ Picks + extra month',
                 'access'  => '2 Month Access',
@@ -125,6 +129,7 @@
                 'color'   => '#FDB515',
             ],
             [
+                'slug'    => 'quarterly',
                 'price'   => '$199.99',
                 'tagline' => 'Get extra month',
                 'access'  => '3 Month Access',
@@ -134,6 +139,7 @@
                 'color'   => '#FDB515',
             ],
             [
+                'slug'    => 'semi-annual',
                 'price'   => '$299.99',
                 'tagline' => 'Get 10★ Picks + extra 3 months',
                 'access'  => '6 Month Access',
@@ -178,12 +184,21 @@
                     @endforeach
                 </ul>
 
+                @auth
+                <a href="{{ route('cashier', ['package' => $pkg['slug']]) }}"
+                    style="display:block;width:100%;text-align:center;padding:12px;border-radius:50px;font-weight:600;font-size:14px;cursor:pointer;transition:background .18s;border:1px solid {{ $pkg['color'] }};color:{{ $pkg['color'] }};background:transparent;text-decoration:none;"
+                    onmouseover="this.style.background='rgba(253,181,21,.1)'"
+                    onmouseout="this.style.background='transparent'">
+                    Get Started
+                </a>
+                @else
                 <button onclick="openModal('join')"
                     style="display:block;width:100%;text-align:center;padding:12px;border-radius:50px;font-weight:600;font-size:14px;cursor:pointer;transition:background .18s;border:1px solid {{ $pkg['color'] }};color:{{ $pkg['color'] }};background:transparent;"
                     onmouseover="this.style.background='rgba(253,181,21,.1)'"
                     onmouseout="this.style.background='transparent'">
                     Get Started
                 </button>
+                @endauth
             </div>
             @endforeach
         </div>

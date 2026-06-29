@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CashierController;
 use App\Http\Controllers\ContestController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\PublicController;
@@ -44,7 +45,10 @@ Route::get('/refund-policy', function () { return view('public.refund-policy'); 
 Route::get('/cancellation-policy', function () { return view('public.cancellation-policy'); })->name('cancellation-policy');
 Route::get('/delivery-policy', function () { return view('public.delivery-policy'); })->name('delivery-policy');
 Route::get('/faq', fn() => view('public.coming-soon', ['pageTitle'=>"FAQ's",'pageIcon'=>'❓','pageDesc'=>"Frequently asked questions are coming soon. In the meantime, reach out through our Communications Center and we'll get you an answer fast."]))->name('faq');
-Route::get('/cashier', fn() => view('public.cashier'))->name('cashier');
+Route::get('/cashier', [CashierController::class, 'index'])->name('cashier')->middleware('auth');
+Route::post('/cashier/checkout', [CashierController::class, 'createSession'])->name('cashier.checkout')->middleware('auth');
+Route::get('/cashier/success', [CashierController::class, 'success'])->name('cashier.success')->middleware('auth');
+Route::get('/cashier/cancel', [CashierController::class, 'cancel'])->name('cashier.cancel')->middleware('auth');
 Route::post('/chat', [\App\Http\Controllers\ChatController::class, 'respond'])->name('chat');
 
 // ==========================================

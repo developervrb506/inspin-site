@@ -10,6 +10,8 @@ class UserPackage extends Model
     protected $fillable = [
         'user_id', 'package_id', 'starts_at', 'expires_at',
         'is_active', 'units_total', 'max_stars', 'status_note',
+        'stripe_checkout_session_id', 'stripe_customer_id',
+        'stripe_payment_intent_id', 'amount_paid',
     ];
 
     protected $casts = [

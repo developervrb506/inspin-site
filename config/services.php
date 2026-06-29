@@ -39,4 +39,9 @@ return [
         'base_url' => env('ODDS_API_BASE_URL', 'https://api.the-odds-api.com/v4'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+    ],
+
 ];

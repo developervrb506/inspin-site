@@ -4,13 +4,6 @@
 @section('content')
 <style>
     .cashier-wrap { max-width: 680px; margin: 0 auto; padding: 60px 24px 80px; }
-    .cashier-tabs { display: flex; gap: 8px; margin-bottom: 28px; background: #1e1e1e; border-radius: 12px; padding: 6px; }
-    .cashier-tab {
-        flex: 1; text-align: center; padding: 12px; border-radius: 9px;
-        font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
-        color: #9a9a9a; cursor: pointer; transition: all .18s; border: none; background: transparent;
-    }
-    .cashier-tab.active { background: #FDB515; color: #171818; }
     .cashier-card {
         background: #1e1e1e; border: 1px solid rgba(255,252,238,.07);
         border-radius: 16px; padding: 28px;
@@ -19,28 +12,21 @@
         font-size: 11px; color: #6e6e6e; text-transform: uppercase;
         letter-spacing: .5px; margin-bottom: 8px; font-weight: 600; display: block;
     }
-    .cashier-amount-input {
+    .cashier-select {
         width: 100%; background: #171818; border: 1px solid rgba(255,252,238,.08);
-        border-radius: 10px; padding: 16px 18px; color: #FFFCEE; font-size: 22px;
-        font-weight: 700; font-family: 'DM Sans', sans-serif; outline: none;
-        margin-bottom: 24px; transition: border-color .2s;
+        border-radius: 10px; padding: 16px 18px; color: #FFFCEE; font-size: 15px;
+        font-weight: 600; font-family: 'DM Sans', sans-serif; outline: none;
+        margin-bottom: 24px; transition: border-color .2s; cursor: pointer; appearance: none;
     }
-    .cashier-amount-input:focus { border-color: rgba(253,181,21,.4); }
-    .cashier-quick-amounts { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
-    .cashier-quick-amt {
-        padding: 8px 16px; background: #171818; border: 1px solid rgba(255,252,238,.08);
-        border-radius: 50px; color: #9a9a9a; font-size: 13px; font-weight: 600;
-        cursor: pointer; transition: all .18s;
-    }
-    .cashier-quick-amt:hover { border-color: rgba(253,181,21,.3); color: #FDB515; }
+    .cashier-select:focus { border-color: rgba(253,181,21,.4); }
     .cashier-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
     @media (max-width: 520px) { .cashier-methods { grid-template-columns: 1fr; } }
     .cashier-method {
         display: flex; align-items: center; gap: 12px;
         background: #171818; border: 1px solid rgba(255,252,238,.07);
-        border-radius: 12px; padding: 16px; cursor: pointer;
-        transition: all .18s; position: relative; opacity: .55;
+        border-radius: 12px; padding: 16px; position: relative; opacity: .55;
     }
+    .cashier-method.is-active { opacity: 1; border-color: rgba(253,181,21,.3); }
     .cashier-method-icon {
         width: 38px; height: 38px; border-radius: 9px;
         background: rgba(253,181,21,.08); display: flex;
@@ -55,83 +41,98 @@
         border: 1px solid rgba(253,181,21,.2); border-radius: 20px; padding: 2px 8px;
     }
     .cashier-submit {
-        width: 100%; padding: 16px; background: rgba(253,181,21,.15);
-        color: #FDB515; border: 1px solid rgba(253,181,21,.25); border-radius: 12px;
-        font-weight: 700; font-size: 15px; cursor: not-allowed;
-        font-family: 'DM Sans', sans-serif; text-align: center;
+        width: 100%; padding: 16px; background: #FDB515;
+        color: #171818; border: none; border-radius: 12px;
+        font-weight: 700; font-size: 15px; cursor: pointer;
+        font-family: 'DM Sans', sans-serif; text-align: center; transition: background .15s;
     }
+    .cashier-submit:hover { background: #e09c0d; }
+    .cashier-submit:disabled { opacity: .5; cursor: not-allowed; }
     .cashier-note {
         text-align: center; font-size: 12.5px; color: #6e6e6e;
         margin-top: 16px; line-height: 1.6;
     }
+    .cashier-price-line {
+        display: flex; justify-content: space-between; align-items: baseline;
+        padding: 14px 0; border-top: 1px solid rgba(255,252,238,.06);
+        margin-bottom: 20px;
+    }
+    .cashier-price-label { font-size: 13px; color: #9a9a9a; }
+    .cashier-price-amount { font-size: 24px; font-weight: 700; color: #FDB515; font-family: 'Clash Display', sans-serif; }
 </style>
 
 <div class="cashier-wrap">
     <h1 class="section-title" style="text-align:center;border-left:none;padding-left:0;">Cashier</h1>
-    <p class="section-sub" style="text-align:center;padding-left:0;">Manage deposits and withdrawals — secure, fast, and on your terms.</p>
+    <p class="section-sub" style="text-align:center;padding-left:0;">Choose your package and check out securely.</p>
 
-    <div class="cashier-tabs">
-        <button type="button" class="cashier-tab active" onclick="setCashierTab('deposit', this)">Deposit</button>
-        <button type="button" class="cashier-tab" onclick="setCashierTab('withdraw', this)">Withdraw</button>
+    @if(session('error'))
+    <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;color:#f87171;font-size:13.5px;">
+        {{ session('error') }}
     </div>
+    @endif
 
-    <div class="cashier-card">
-        <label class="cashier-label" id="cashierAmountLabel">Deposit Amount</label>
-        <input type="text" class="cashier-amount-input" placeholder="$0.00" disabled>
-
-        <div class="cashier-quick-amounts">
-            <span class="cashier-quick-amt">$50</span>
-            <span class="cashier-quick-amt">$100</span>
-            <span class="cashier-quick-amt">$250</span>
-            <span class="cashier-quick-amt">$500</span>
-        </div>
-
-        <label class="cashier-label">Payment Method</label>
-        <div class="cashier-methods">
-            <div class="cashier-method">
-                <div class="cashier-method-icon">💳</div>
-                <div>
-                    <div class="cashier-method-name">Credit / Debit Card</div>
-                    <div class="cashier-method-sub">Visa, Mastercard, Amex</div>
-                </div>
-                <span class="cashier-method-soon">Soon</span>
-            </div>
-            <div class="cashier-method">
-                <div class="cashier-method-icon">₿</div>
-                <div>
-                    <div class="cashier-method-name">Bitcoin</div>
-                    <div class="cashier-method-sub">Crypto deposit</div>
-                </div>
-                <span class="cashier-method-soon">Soon</span>
-            </div>
-            <div class="cashier-method">
-                <div class="cashier-method-icon">🏦</div>
-                <div>
-                    <div class="cashier-method-name">Bank Transfer</div>
-                    <div class="cashier-method-sub">ACH / Wire</div>
-                </div>
-                <span class="cashier-method-soon">Soon</span>
-            </div>
-            <div class="cashier-method">
-                <div class="cashier-method-icon">📱</div>
-                <div>
-                    <div class="cashier-method-name">CashApp / Venmo</div>
-                    <div class="cashier-method-sub">P2P transfer</div>
-                </div>
-                <span class="cashier-method-soon">Soon</span>
-            </div>
-        </div>
-
-        <div class="cashier-submit">Cashier Coming Soon</div>
-        <p class="cashier-note">We're finalizing secure payment processing. Once live, you'll be able to deposit and withdraw funds directly from this page.</p>
+    @if(!$stripeConfigured)
+    <div style="background:rgba(253,181,21,.06);border:1px solid rgba(253,181,21,.2);border-radius:10px;padding:14px 18px;margin-bottom:20px;color:#FDB515;font-size:13.5px;">
+        Payment processing is being finalized. Checkout will be enabled shortly.
     </div>
+    @endif
+
+    <form method="POST" action="{{ route('cashier.checkout') }}">
+        @csrf
+        <div class="cashier-card">
+            <label class="cashier-label" for="package_id">Select Your Package</label>
+            <select name="package_id" id="package_id" class="cashier-select" required onchange="updateCashierPrice(this)">
+                <option value="" disabled {{ $selectedPackageId ? '' : 'selected' }}>Choose a package…</option>
+                @foreach($packages as $package)
+                <option value="{{ $package->id }}" data-price="{{ number_format($package->price, 2) }}" {{ $selectedPackageId == $package->id ? 'selected' : '' }}>
+                    {{ $package->name }} — ${{ number_format($package->price, 2) }} ({{ $package->duration }})
+                </option>
+                @endforeach
+            </select>
+
+            <div class="cashier-price-line">
+                <span class="cashier-price-label">Total — one-time charge</span>
+                <span class="cashier-price-amount" id="cashierPriceDisplay">$0.00</span>
+            </div>
+
+            <label class="cashier-label">Payment Method</label>
+            <div class="cashier-methods">
+                <div class="cashier-method is-active">
+                    <div class="cashier-method-icon">💳</div>
+                    <div>
+                        <div class="cashier-method-name">Credit / Debit Card</div>
+                        <div class="cashier-method-sub">Visa, Mastercard, Amex via Stripe</div>
+                    </div>
+                </div>
+                <div class="cashier-method">
+                    <div class="cashier-method-icon">₿</div>
+                    <div>
+                        <div class="cashier-method-name">Bitcoin</div>
+                        <div class="cashier-method-sub">Crypto deposit</div>
+                    </div>
+                    <span class="cashier-method-soon">Soon</span>
+                </div>
+            </div>
+
+            <button type="submit" class="cashier-submit" {{ $stripeConfigured ? '' : 'disabled' }}>
+                {{ $stripeConfigured ? 'Continue to Secure Checkout' : 'Checkout Coming Soon' }}
+            </button>
+            <p class="cashier-note">
+                You'll be redirected to Stripe's secure checkout to enter your card details. INSPIN never sees or stores your full card number.
+                This is a one-time charge — no recurring billing, ever.
+            </p>
+        </div>
+    </form>
 </div>
 
 <script>
-function setCashierTab(tab, btn) {
-    document.querySelectorAll('.cashier-tab').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById('cashierAmountLabel').textContent = tab === 'deposit' ? 'Deposit Amount' : 'Withdraw Amount';
+function updateCashierPrice(select) {
+    var opt = select.options[select.selectedIndex];
+    var price = opt && opt.dataset.price ? parseFloat(opt.dataset.price) : 0;
+    document.getElementById('cashierPriceDisplay').textContent = '$' + price.toFixed(2);
 }
+document.addEventListener('DOMContentLoaded', function () {
+    updateCashierPrice(document.getElementById('package_id'));
+});
 </script>
 @endsection
