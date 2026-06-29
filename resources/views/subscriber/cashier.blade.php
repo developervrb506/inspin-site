@@ -1,9 +1,10 @@
-@extends('layouts.public')
+@extends('layouts.subscriber')
 @section('title', 'Cashier - INSPIN')
+@section('page-title', 'Cashier')
 
-@section('content')
+@push('styles')
 <style>
-    .cashier-wrap { max-width: 680px; margin: 0 auto; padding: 60px 24px 80px; }
+    .cashier-wrap { max-width: 680px; }
     .cashier-card {
         background: #1e1e1e; border: 1px solid rgba(255,252,238,.07);
         border-radius: 16px; padding: 28px;
@@ -60,10 +61,10 @@
     .cashier-price-label { font-size: 13px; color: #9a9a9a; }
     .cashier-price-amount { font-size: 24px; font-weight: 700; color: #FDB515; font-family: 'Clash Display', sans-serif; }
 </style>
+@endpush
 
+@section('content')
 <div class="cashier-wrap">
-    <h1 class="section-title" style="text-align:center;border-left:none;padding-left:0;">Cashier</h1>
-    <p class="section-sub" style="text-align:center;padding-left:0;">Choose your package and check out securely.</p>
 
     @if(session('error'))
     <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;color:#f87171;font-size:13.5px;">

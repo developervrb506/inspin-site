@@ -1,8 +1,9 @@
-@extends('layouts.public')
+@extends('layouts.subscriber')
 @section('title', 'Order Confirmed - INSPIN')
+@section('page-title', 'Order Confirmed')
 
 @section('content')
-<div style="max-width:560px;margin:0 auto;padding:80px 24px;text-align:center;">
+<div style="max-width:560px;margin:0 auto;padding:24px 0 40px;text-align:center;">
     <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,209,91,.1);border:1px solid rgba(0,209,91,.3);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 24px;">✓</div>
 
     <h1 style="font-family:'Clash Display',sans-serif;font-size:1.8rem;font-weight:600;color:#FFFCEE;margin-bottom:10px;">Payment Successful</h1>

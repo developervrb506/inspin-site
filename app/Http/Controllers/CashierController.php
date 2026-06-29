@@ -26,7 +26,7 @@ class CashierController extends Controller
         $packages = Package::active()->where('price', '>', 0)->get();
         $selected = Package::where('slug', $request->query('package'))->first();
 
-        return view('public.cashier', [
+        return view('subscriber.cashier', [
             'packages' => $packages,
             'selectedPackageId' => $selected?->id,
             'stripeConfigured' => (bool) config('services.stripe.secret'),
@@ -111,7 +111,7 @@ class CashierController extends Controller
             Log::warning('Purchase confirmation email failed: ' . $e->getMessage());
         }
 
-        return view('public.cashier-success', ['userPackage' => $userPackage]);
+        return view('subscriber.cashier-success', ['userPackage' => $userPackage]);
     }
 
     public function cancel()
