@@ -46,12 +46,13 @@
 
 {{-- Package grid --}}
 @php
-$featuredSlugs = ['free-trial','1-week','2-weeks','monthly','quarterly','semi-annual'];
+$featuredSlugs = ['free-trial','1-week','2-weeks','monthly','2-months','quarterly','semi-annual'];
 $packageDetails = [
     'free-trial'  => ['stars'=>1, 'excludes'=>'2, 3, 4, 5, 10★ Picks'],
     '1-week'      => ['stars'=>2, 'excludes'=>'3, 4, 5, 10★ Picks'],
     '2-weeks'     => ['stars'=>3, 'excludes'=>'4, 5, 10★ Picks'],
     'monthly'     => ['stars'=>4, 'excludes'=>'5, 10★ Picks'],
+    '2-months'    => ['stars'=>4, 'excludes'=>'5, 10★ Picks'],
     'quarterly'   => ['stars'=>5, 'excludes'=>'10★ Picks'],
     'semi-annual' => ['stars'=>5, 'excludes'=>'10★ Picks'],
 ];

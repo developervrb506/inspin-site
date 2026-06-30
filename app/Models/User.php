@@ -52,8 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function activeSubscription(): ?UserPackage
     {
-        return $this->subscriptions()
+        return $this->hasMany(UserPackage::class)
             ->where('is_active', true)
+            ->where(fn($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->orderByDesc('max_stars')
+            ->orderByDesc('expires_at')
             ->first();
     }
 

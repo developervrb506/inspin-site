@@ -26,10 +26,15 @@ class CashierController extends Controller
         $packages = Package::active()->where('price', '>', 0)->get();
         $selected = Package::where('slug', $request->query('package'))->first();
 
+        $currentSub  = $request->user()->activeSubscription()?->load('package');
+        $currentStars = $currentSub?->max_stars ?? 0;
+
         return view('subscriber.cashier', [
-            'packages' => $packages,
+            'packages'          => $packages,
             'selectedPackageId' => $selected?->id,
-            'stripeConfigured' => (bool) config('services.stripe.secret'),
+            'stripeConfigured'  => (bool) config('services.stripe.secret'),
+            'currentSub'        => $currentSub,
+            'currentStars'      => $currentStars,
         ]);
     }
 
@@ -89,6 +94,21 @@ class CashierController extends Controller
 
         $package = Package::findOrFail($session->metadata->package_id);
 
+        // Map package slug → max_stars so pick access is correct after purchase
+        $starsMap = [
+            'free-trial'  => 1,
+            '1-week'      => 2,
+            '2-weeks'     => 3,
+            '2-months'    => 4,
+            'monthly'     => 4,
+            'quarterly'   => 5,
+            'semi-annual' => 5,
+            '9-months'    => 7,
+            '12-months'   => 10,
+            'whale-package' => 10,
+        ];
+        $maxStars = $starsMap[$package->slug] ?? 4;
+
         $userPackage = UserPackage::firstOrCreate(
             ['stripe_checkout_session_id' => $session->id],
             [
@@ -97,6 +117,7 @@ class CashierController extends Controller
                 'starts_at' => now(),
                 'expires_at' => now()->addDays($package->duration_days),
                 'is_active' => true,
+                'max_stars' => $maxStars,
                 'stripe_customer_id' => $session->customer,
                 'stripe_payment_intent_id' => $session->payment_intent,
                 'amount_paid' => $session->amount_total / 100,

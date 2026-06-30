@@ -221,6 +221,16 @@
     .pkg-notice strong { font-weight: 700; }
     .pkg-notice-dismiss { margin-left:auto; cursor:pointer; opacity:.5; font-size:16px; line-height:1; background:none; border:none; color:#FDB515; padding:0; }
     .pkg-notice-dismiss:hover { opacity: 1; }
+
+    /* ── Downgrade warning ── */
+    .downgrade-warn {
+        display: none; align-items: flex-start; gap: 10px;
+        background: rgba(239,68,68,.06);
+        border: 1px solid rgba(239,68,68,.18);
+        border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+        font-size: 13px; color: #fca5a5; animation: fadeUp .3s ease both;
+    }
+    .downgrade-warn.visible { display: flex; }
 </style>
 @endpush
 
@@ -251,13 +261,17 @@
         <div class="cashier-left">
             <span class="section-label">Select Your Package</span>
             <div class="pkg-grid">
+                @php
+                $starsMap = ['free-trial'=>1,'1-week'=>2,'2-weeks'=>3,'2-months'=>4,'monthly'=>4,'quarterly'=>5,'semi-annual'=>5,'9-months'=>7,'12-months'=>10,'whale-package'=>10];
+                @endphp
                 @foreach($packages as $package)
-                @php $isPopular = $package->slug === 'monthly'; @endphp
+                @php $isPopular = $package->slug === 'monthly'; $pkgStars = $starsMap[$package->slug] ?? 4; @endphp
                 <div class="pkg-card {{ ($selectedPackageId == $package->id) ? 'selected arrived' : '' }}"
                      data-id="{{ $package->id }}"
                      data-price="{{ number_format($package->price, 2) }}"
                      data-name="{{ $package->name }}"
                      data-duration="{{ $package->duration }}"
+                     data-stars="{{ $pkgStars }}"
                      onclick="selectPackage(this)">
 
                     <div class="pkg-check">
@@ -284,6 +298,12 @@
 
         {{-- RIGHT: Order summary + payment --}}
         <div class="cashier-right">
+
+            {{-- Downgrade warning (shown by JS when selected < current stars) --}}
+            <div class="downgrade-warn" id="downgradeWarn">
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path stroke="#fca5a5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                <span>You already have a higher-tier plan active (<strong>{{ $currentSub?->package?->name ?? 'current plan' }}</strong>). This package has fewer picks — your access won't decrease, but you won't gain extra picks either. It will become your active plan after your current one expires.</span>
+            </div>
 
             {{-- Order summary --}}
             <div class="panel-card">
@@ -357,6 +377,8 @@
 </form>
 
 <script>
+var CURRENT_STARS = {{ $currentStars ?? 0 }};
+
 function animateVal(el) {
     el.classList.remove('updating');
     void el.offsetWidth;
@@ -365,6 +387,12 @@ function animateVal(el) {
 function selectPackage(el) {
     document.querySelectorAll('.pkg-card').forEach(c => { c.classList.remove('selected'); c.classList.remove('arrived'); });
     el.classList.add('selected');
+    // Show downgrade warning if selected package has fewer stars than current plan
+    var warn = document.getElementById('downgradeWarn');
+    if (warn) {
+        var pkgStars = parseInt(el.dataset.stars || '0', 10);
+        warn.classList.toggle('visible', CURRENT_STARS > 0 && pkgStars < CURRENT_STARS);
+    }
     document.getElementById('selectedPackageId').value = el.dataset.id;
 
     var pkg  = document.getElementById('summaryPackage');
