@@ -23,7 +23,7 @@ class CashierController extends Controller
      */
     public function index(Request $request)
     {
-        $packages = Package::active()->where('price', '>', 0)->orderBy('price')->get();
+        $packages = Package::active()->where('price', '>', 0)->reorder()->orderBy('price')->get();
         $selected = Package::where('slug', $request->query('package'))->first();
 
         $currentSub  = $request->user()->activeSubscription()?->load('package');

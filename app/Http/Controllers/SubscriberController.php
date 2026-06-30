@@ -201,22 +201,23 @@ class SubscriberController extends Controller
 
     public function packages()
     {
-        $featuredSlugs = ['free-trial','1-week','2-weeks','monthly','2-months','quarterly','semi-annual','9-months','12-months'];
-        $packages = Package::active()->get();
-        $featuredPackages = $packages
-            ->filter(fn($p) => in_array($p->slug, $featuredSlugs))
-            ->sortBy(fn($p) => array_search($p->slug, $featuredSlugs));
+        $allActive = Package::active()->get();
 
-        // Use same whale logic as main join page: prefer Package slug 'whale-package', fallback to WhalePackage
+        // Split by role — no slug-list filtering so nothing gets dropped
+        $freeTrial   = $allActive->firstWhere('slug', 'free-trial');
+        $whale       = $allActive->firstWhere('slug', 'whale-package');
+        $paidPackages = $allActive
+            ->filter(fn($p) => $p->price > 0 && $p->slug !== 'whale-package')
+            ->sortBy('price')
+            ->values();
+
         $whalePackages = WhalePackage::active()->get();
-        $whaleRegular  = $packages->firstWhere('slug', 'whale-package');
-
-        $currentSub = auth()->user()->activeSubscription()?->load('package');
+        $currentSub    = auth()->user()->activeSubscription()?->load('package');
 
         $hasUsedTrial = UserPackage::where('user_id', auth()->id())
             ->whereHas('package', fn($q) => $q->where('slug', 'free-trial'))
             ->exists();
 
-        return view('subscriber.packages', compact('featuredPackages', 'whalePackages', 'whaleRegular', 'currentSub', 'hasUsedTrial'));
+        return view('subscriber.packages', compact('freeTrial', 'paidPackages', 'whale', 'whalePackages', 'currentSub', 'hasUsedTrial'));
     }
 }
