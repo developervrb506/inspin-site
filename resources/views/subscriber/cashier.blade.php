@@ -264,8 +264,17 @@
                 @php
                 $starsMap = ['free-trial'=>1,'1-week'=>2,'2-weeks'=>3,'2-months'=>4,'monthly'=>4,'quarterly'=>5,'semi-annual'=>5,'9-months'=>7,'12-months'=>10,'whale-package'=>10];
                 @endphp
+                @php
+                $perDayMap = ['1-week'=>3.57,'2-weeks'=>3.57,'monthly'=>3.33,'2-months'=>2.50,'quarterly'=>2.22,'semi-annual'=>1.67,'9-months'=>1.48,'12-months'=>1.37,'whale-package'=>2.74];
+                @endphp
                 @foreach($packages as $package)
-                @php $isPopular = $package->slug === 'monthly'; $pkgStars = $starsMap[$package->slug] ?? 4; @endphp
+                @php
+                    $isPopular  = $package->slug === 'monthly';
+                    $isBest     = $package->slug === '12-months';
+                    $isValue    = $package->slug === 'semi-annual';
+                    $pkgStars   = $starsMap[$package->slug] ?? 4;
+                    $pkgPerDay  = $perDayMap[$package->slug] ?? null;
+                @endphp
                 <div class="pkg-card {{ ($selectedPackageId == $package->id) ? 'selected arrived' : '' }}"
                      data-id="{{ $package->id }}"
                      data-price="{{ number_format($package->price, 2) }}"
@@ -280,17 +289,21 @@
 
                     <div class="pkg-badge-row">
                         @if($isPopular)
-                        <div class="pkg-badge">
-                            <svg width="9" height="9" fill="#FDB515" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            Most Popular
-                        </div>
+                        <div class="pkg-badge">⭐ Most Popular</div>
+                        @elseif($isBest)
+                        <div class="pkg-badge" style="background:rgba(45,212,191,.08);color:#2dd4bf;border-color:rgba(45,212,191,.2);">🏆 Best Value</div>
+                        @elseif($isValue)
+                        <div class="pkg-badge" style="background:rgba(139,92,246,.08);color:#a78bfa;border-color:rgba(139,92,246,.2);">💎 Great Deal</div>
                         @endif
                     </div>
 
                     <div class="pkg-name">{{ $package->name }}</div>
                     <div class="pkg-duration">{{ $package->duration }} access</div>
                     <div class="pkg-price">${{ number_format($package->price, 2) }}</div>
-                    <div class="pkg-price-sub">one-time · no renewal</div>
+                    <div class="pkg-price-sub">
+                        @if($pkgPerDay) ~${{ number_format($pkgPerDay,2) }}/day &nbsp;·&nbsp; @endif
+                        1★–{{ $pkgStars }}★ picks
+                    </div>
                 </div>
                 @endforeach
             </div>

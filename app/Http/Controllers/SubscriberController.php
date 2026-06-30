@@ -201,7 +201,7 @@ class SubscriberController extends Controller
 
     public function packages()
     {
-        $featuredSlugs = ['free-trial','1-week','2-weeks','monthly','2-months','quarterly','semi-annual'];
+        $featuredSlugs = ['free-trial','1-week','2-weeks','monthly','2-months','quarterly','semi-annual','9-months','12-months'];
         $packages = Package::active()->get();
         $featuredPackages = $packages
             ->filter(fn($p) => in_array($p->slug, $featuredSlugs))
