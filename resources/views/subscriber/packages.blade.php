@@ -6,20 +6,20 @@
 <style>
     @keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes whaleBob {
-        0%,100% { transform: translateY(0) rotate(-3deg); }
-        50%      { transform: translateY(-6px) rotate(3deg); }
+        0%,100% { transform: translateY(0) rotate(-2deg); }
+        50%      { transform: translateY(-8px) rotate(2deg); }
     }
     @keyframes whaleGlow {
-        0%,100% { box-shadow: 0 0 0 0 rgba(253,181,21,0), 0 8px 28px rgba(0,0,0,.5); }
-        50%     { box-shadow: 0 0 28px 6px rgba(253,181,21,.18), 0 8px 28px rgba(0,0,0,.5); }
+        0%,100% { box-shadow: 0 0 0 0 rgba(253,181,21,0), 0 8px 32px rgba(0,0,0,.5); }
+        50%      { box-shadow: 0 0 40px 8px rgba(253,181,21,.14), 0 8px 32px rgba(0,0,0,.5); }
     }
-    @keyframes shimmer {
+    @keyframes whaleBorder {
+        0%,100% { border-color: rgba(253,181,21,.3); }
+        50%      { border-color: rgba(253,181,21,.7); }
+    }
+    @keyframes whaleShimmer {
         0%   { background-position: -300% center; }
         100% { background-position: 300% center; }
-    }
-    @keyframes borderPulse {
-        0%,100% { border-color: rgba(253,181,21,.35); }
-        50%     { border-color: rgba(253,181,21,.75); }
     }
 
     /* ── Notices ── */
@@ -89,7 +89,6 @@
     .pkg-card:hover { border-color:rgba(253,181,21,.3); transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,0,0,.45); }
     .pkg-card.is-current { border-color:rgba(253,181,21,.35); background:rgba(253,181,21,.02); }
 
-    /* stagger */
     .pkg-card:nth-child(1){animation-delay:.04s} .pkg-card:nth-child(2){animation-delay:.08s}
     .pkg-card:nth-child(3){animation-delay:.12s} .pkg-card:nth-child(4){animation-delay:.16s}
     .pkg-card:nth-child(5){animation-delay:.20s} .pkg-card:nth-child(6){animation-delay:.24s}
@@ -106,15 +105,15 @@
         font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
         border-radius:20px; padding:2px 9px; line-height:1; white-space:nowrap;
     }
-    .badge-gold  { background:rgba(253,181,21,.1); color:#FDB515; border:1px solid rgba(253,181,21,.22); }
-    .badge-teal  { background:rgba(45,212,191,.1);  color:#2dd4bf; border:1px solid rgba(45,212,191,.22); }
-    .badge-purple{ background:rgba(139,92,246,.1);  color:#a78bfa; border:1px solid rgba(139,92,246,.22); }
+    .badge-gold   { background:rgba(253,181,21,.1); color:#FDB515; border:1px solid rgba(253,181,21,.22); }
+    .badge-teal   { background:rgba(45,212,191,.1);  color:#2dd4bf; border:1px solid rgba(45,212,191,.22); }
+    .badge-purple { background:rgba(139,92,246,.1);  color:#a78bfa; border:1px solid rgba(139,92,246,.22); }
 
     .card-duration { font-size:10px; color:#555; letter-spacing:.3px; margin-bottom:4px; }
     .card-name     { font-size:15px; font-weight:700; color:#FFFCEE; margin-bottom:14px; }
     .card-price    { font-family:'Clash Display',sans-serif; font-size:27px; font-weight:700; color:#FDB515; line-height:1; margin-bottom:2px; }
     .card-price sup{ font-size:13px; color:#777; vertical-align:top; margin-top:5px; font-family:'DM Sans',sans-serif; font-weight:400; }
-    .card-perday   { font-size:10.5px; color:#3a3a3a; margin-bottom:14px; }
+    .card-perday   { font-size:10.5px; color:#3a3a3a; margin-bottom:14px; min-height:16px; }
 
     .card-tier {
         background:rgba(253,181,21,.04); border:1px solid rgba(253,181,21,.1);
@@ -134,79 +133,72 @@
     .cta-solid   { border:1.5px solid #FDB515; background:#FDB515; color:#171818; }
     .cta-solid:hover { background:#e09c0d; border-color:#e09c0d; }
     .cta-current { border:1.5px solid rgba(253,181,21,.2); background:rgba(253,181,21,.07); color:#FDB515; cursor:default; }
+    .cta-locked  { border:1.5px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); color:#3a3a3a; cursor:not-allowed; }
     .cta-trial   { border:1.5px solid #22c55e; color:#22c55e; background:transparent; }
     .cta-trial:hover { background:rgba(34,197,94,.08); }
-    .cta-locked  { border:1.5px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); color:#3a3a3a; cursor:not-allowed; }
 
-    /* ── WHALE card — same grid size, special effects ── */
-    .whale-card {
-        background: radial-gradient(ellipse at 30% 20%, rgba(253,181,21,.07) 0%, #141414 60%);
-        border:2px solid rgba(253,181,21,.4);
-        border-radius:14px; padding:18px 16px 16px;
-        position:relative; display:flex; flex-direction:column;
-        overflow:hidden;
-        animation:fadeUp .4s ease .36s both, whaleGlow 3s ease-in-out 1s infinite, borderPulse 3s ease-in-out 1s infinite;
+    /* ── Whale banner (mirrors free trial style but gold) ── */
+    .whale-banner {
+        display:flex; align-items:center; justify-content:space-between; gap:24px;
+        background: radial-gradient(ellipse at 15% 50%, rgba(253,181,21,.06) 0%, #141414 55%);
+        border:2px solid rgba(253,181,21,.3);
+        border-radius:16px; padding:22px 28px;
+        position:relative; overflow:hidden; flex-wrap:wrap;
+        animation:fadeUp .4s ease .38s both, whaleGlow 3s ease-in-out 1s infinite, whaleBorder 3s ease-in-out 1s infinite;
     }
     /* shimmer sweep */
-    .whale-card::before {
+    .whale-banner::before {
         content:'';
         position:absolute; inset:0;
-        background: linear-gradient(105deg, transparent 40%, rgba(253,181,21,.07) 50%, transparent 60%);
+        background:linear-gradient(105deg, transparent 35%, rgba(253,181,21,.06) 50%, transparent 65%);
         background-size:300% 100%;
-        animation: shimmer 4s linear 1.5s infinite;
+        animation:whaleShimmer 4s linear 1.5s infinite;
         pointer-events:none;
     }
-    /* corner sparkle */
-    .whale-card::after {
-        content:'✦';
-        position:absolute; top:10px; left:12px;
-        font-size:10px; color:rgba(253,181,21,.35);
-        animation: whaleBob 3s ease-in-out infinite;
+    /* right-side gold radial glow */
+    .whale-banner::after {
+        content:''; position:absolute; right:0; top:0; bottom:0; width:300px;
+        background:radial-gradient(ellipse at right center, rgba(253,181,21,.09) 0%, transparent 70%);
+        pointer-events:none;
     }
-    .whale-emoji {
-        font-size:2rem; line-height:1; margin-bottom:6px; display:block;
-        animation: whaleBob 2.8s ease-in-out infinite;
-        filter:drop-shadow(0 2px 8px rgba(253,181,21,.4));
+    .whale-left  { display:flex; align-items:center; gap:20px; position:relative; z-index:1; }
+    .whale-emoji { font-size:3rem; line-height:1; flex-shrink:0; display:block; animation:whaleBob 2.8s ease-in-out infinite; filter:drop-shadow(0 3px 10px rgba(253,181,21,.45)); }
+    .whale-tag   {
+        display:inline-flex; align-items:center; gap:5px;
+        font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+        background:rgba(253,181,21,.1); color:#FDB515;
+        border:1px solid rgba(253,181,21,.28); border-radius:20px; padding:3px 10px; margin-bottom:8px;
     }
-    .whale-ultimate-badge {
-        display:inline-flex; align-items:center; gap:4px;
-        font-size:8.5px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
-        background:rgba(253,181,21,.12); color:#FDB515;
-        border:1px solid rgba(253,181,21,.3); border-radius:20px; padding:2px 9px;
-        margin-bottom:10px;
-    }
-    .whale-name { font-size:15px; font-weight:700; color:#FFFCEE; margin-bottom:14px; }
+    .whale-title { font-family:'Clash Display',sans-serif; font-size:1.55rem; font-weight:700; color:#FFFCEE; line-height:1; margin-bottom:4px; }
+    .whale-sub   { font-size:12px; color:#555; margin-bottom:0; }
+    .whale-feats { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; }
+    .whale-feat  { display:flex; align-items:center; gap:5px; font-size:12px; color:#6e6e6e; }
+
+    .whale-right { flex-shrink:0; text-align:center; position:relative; z-index:1; }
     .whale-price {
-        font-family:'Clash Display',sans-serif; font-size:27px; font-weight:700; line-height:1;
+        font-family:'Clash Display',sans-serif; font-size:2.6rem; font-weight:700; line-height:1;
         background:linear-gradient(135deg,#fdd060,#FDB515,#e09c0d);
         -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-        margin-bottom:2px;
+        margin-bottom:3px;
     }
-    .whale-perday { font-size:10.5px; color:#3a3a3a; margin-bottom:14px; }
-    .whale-tier {
-        background:rgba(253,181,21,.06); border:1px solid rgba(253,181,21,.18);
-        border-radius:8px; padding:7px 10px; text-align:center; margin-bottom:14px;
-    }
-    .whale-tier-val { font-size:13px; color:#FDB515; font-weight:700; }
+    .whale-perday { font-size:11px; color:#4a4a4a; margin-bottom:14px; }
     .whale-cta {
-        display:flex; align-items:center; justify-content:center; gap:6px;
-        width:100%; padding:11px 12px; border-radius:9px;
-        font-size:13px; font-weight:700; cursor:pointer; text-decoration:none;
-        font-family:'DM Sans',sans-serif; margin-top:auto;
-        background:#FDB515; color:#171818; border:none;
-        box-shadow:0 0 18px rgba(253,181,21,.3);
-        transition:background .15s, box-shadow .2s, transform .15s;
-        position:relative; z-index:1;
+        display:inline-flex; align-items:center; gap:8px;
+        padding:12px 32px; background:#FDB515; color:#171818;
+        border-radius:50px; font-weight:700; font-size:14px; text-decoration:none;
+        box-shadow:0 0 20px rgba(253,181,21,.3);
+        transition:box-shadow .2s, transform .15s, background .15s;
+        font-family:'DM Sans',sans-serif;
     }
-    .whale-cta:hover { background:#e09c0d; box-shadow:0 0 28px rgba(253,181,21,.5); transform:translateY(-1px); }
+    .whale-cta:hover { background:#e09c0d; box-shadow:0 0 36px rgba(253,181,21,.55); transform:translateY(-1px); }
 </style>
 @endpush
 
 @section('content')
 
 @php
-$starsMap = ['1-week'=>2,'2-weeks'=>3,'monthly'=>4,'2-months'=>4,'quarterly'=>5,'semi-annual'=>5,'9-months'=>7,'12-months'=>10,'whale-package'=>10];
-$perDayMap= ['1-week'=>3.57,'2-weeks'=>3.57,'monthly'=>3.33,'2-months'=>2.50,'quarterly'=>2.22,'semi-annual'=>1.67,'9-months'=>1.48,'12-months'=>1.37,'whale-package'=>2.74];
+$starsMap  = ['1-week'=>2,'2-weeks'=>3,'monthly'=>4,'2-months'=>4,'quarterly'=>5,'semi-annual'=>5,'9-months'=>7,'12-months'=>10];
+$perDayMap = ['1-week'=>3.57,'2-weeks'=>3.57,'monthly'=>3.33,'2-months'=>2.50,'quarterly'=>2.22,'semi-annual'=>1.67,'9-months'=>1.48,'12-months'=>1.37];
 @endphp
 
 {{-- Expired --}}
@@ -257,88 +249,102 @@ $perDayMap= ['1-week'=>3.57,'2-weeks'=>3.57,'monthly'=>3.33,'2-months'=>2.50,'qu
     <div style="flex-shrink:0;text-align:center;position:relative;z-index:1;">
         <div style="font-family:'Clash Display',sans-serif;font-size:2.6rem;font-weight:700;color:#FFFCEE;line-height:1;margin-bottom:10px;">FREE</div>
         @if($isCurTrial)
-        <div style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;background:rgba(253,181,21,.08);border:1.5px solid rgba(253,181,21,.2);color:#FDB515;display:inline-block;">✓ Active Plan</div>
+            <div style="padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;background:rgba(253,181,21,.08);border:1.5px solid rgba(253,181,21,.2);color:#FDB515;display:inline-block;">✓ Active Plan</div>
         @elseif($hasUsedTrial)
-        <div style="padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,255,255,.02);border:1.5px solid rgba(255,255,255,.06);color:#3a3a3a;display:inline-flex;align-items:center;gap:6px;">
-            <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#3a3a3a" stroke-width="2"/><path stroke="#3a3a3a" stroke-width="2" stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Trial Already Used
-        </div>
+            <div style="padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(255,255,255,.02);border:1.5px solid rgba(255,255,255,.06);color:#3a3a3a;display:inline-flex;align-items:center;gap:6px;">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#3a3a3a" stroke-width="2"/><path stroke="#3a3a3a" stroke-width="2" stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Trial Already Used
+            </div>
         @else
-        <button onclick="showUpgradeModal()" style="padding:11px 32px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid #22c55e;color:#22c55e;background:transparent;transition:background .15s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='rgba(34,197,94,.08)'" onmouseout="this.style.background='transparent'">
-            Start Free Trial →
-        </button>
+            <button onclick="showUpgradeModal()" style="padding:11px 32px;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;border:1.5px solid #22c55e;color:#22c55e;background:transparent;transition:background .15s;font-family:'DM Sans',sans-serif;" onmouseover="this.style.background='rgba(34,197,94,.08)'" onmouseout="this.style.background='transparent'">
+                Start Free Trial →
+            </button>
         @endif
     </div>
 </div>
 @endif
 
-{{-- ── Paid Packages + Whale in one grid ── --}}
+{{-- ── Paid Packages ── --}}
 <div class="pkg-divider">Paid Packages — One-Time · No Recurring Billing</div>
 <div class="packages-grid">
-
     @foreach($paidPackages as $pkg)
     @php
         $stars     = $starsMap[$pkg->slug] ?? 4;
         $perDay    = $perDayMap[$pkg->slug] ?? null;
         $isCurrent = $currentSub && $currentSub->package && $currentSub->package->slug === $pkg->slug;
         $isPopular = $pkg->slug === 'monthly';
-        $isBestVal = $pkg->price >= 499; // 12 months tier
+        $isBestVal = $pkg->price >= 499;
         $isGreat   = $pkg->slug === 'semi-annual';
     @endphp
     <div class="pkg-card {{ $isCurrent ? 'is-current' : '' }}">
         @if($isCurrent)
         <div class="card-top-badge" style="background:#FDB515;color:#171818;">CURRENT PLAN</div>
         @endif
+
         <div class="card-badge-row">
             @if($isPopular)    <span class="card-badge badge-gold">⭐ Most Popular</span>
             @elseif($isBestVal)<span class="card-badge badge-teal">🏆 Best Value</span>
             @elseif($isGreat)  <span class="card-badge badge-purple">💎 Great Deal</span>
             @endif
         </div>
+
         <div class="card-duration">{{ $pkg->duration }} Access</div>
         <div class="card-name">{{ $pkg->name }}</div>
         <div class="card-price"><sup>$</sup>{{ number_format($pkg->price, 2) }}</div>
-        <div class="card-perday">@if($perDay)~${{ number_format($perDay,2) }} / day@else &nbsp;@endif</div>
+        <div class="card-perday">{{ $perDay ? '~$'.number_format($perDay,2).' / day' : '' }}</div>
+
         <div class="card-tier">
             <span class="card-tier-label">Picks Access</span>
             <span class="card-tier-val">1★ – {{ $stars }}★ Picks</span>
         </div>
+
         @if($isCurrent)
-        <div class="card-cta cta-current">✓ Active Plan</div>
+            <div class="card-cta cta-current">✓ Active Plan</div>
         @else
-        <a href="{{ route('cashier', ['package' => $pkg->slug]) }}" class="card-cta {{ $isPopular ? 'cta-solid' : 'cta-outline' }}">
-            Get Started →
-        </a>
+            <a href="{{ route('cashier', ['package' => $pkg->slug]) }}" class="card-cta {{ $isPopular ? 'cta-solid' : 'cta-outline' }}">
+                Get Started →
+            </a>
         @endif
     </div>
     @endforeach
-
-    {{-- Whale Card — same grid slot, special treatment --}}
-    @if($whale)
-    @php $whaleIsCurrent = $currentSub && $currentSub->package && $currentSub->package->slug === 'whale-package'; @endphp
-    <div class="whale-card">
-        <span class="whale-emoji">🐋</span>
-        <div class="whale-ultimate-badge">🌊 Ultimate Access</div>
-        <div class="whale-name">{{ $whale->name }}</div>
-        <div class="whale-price"><sup style="font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif;-webkit-text-fill-color:#9a9a9a;background:none;">$</sup>{{ number_format($whale->price, 2) }}</div>
-        <div class="whale-perday">~${{ number_format($perDayMap['whale-package'],2) }} / day</div>
-        <div class="whale-tier">
-            <span class="card-tier-label">Picks Access</span>
-            <span class="whale-tier-val">1★ – 10★ All Picks</span>
-        </div>
-        @if($whaleIsCurrent)
-        <div class="card-cta cta-current">✓ Active Plan</div>
-        @else
-        <a href="{{ route('cashier', ['package' => 'whale-package']) }}" class="whale-cta">
-            🐋 Become a Whale
-        </a>
-        @endif
-    </div>
-    @endif
-
 </div>
 
-<p style="text-align:center;color:#3a3a3a;font-size:11.5px;margin-top:14px;line-height:1.6;">
+{{-- ── Whale Package Banner ── --}}
+@if($whale)
+@php $whaleIsCurrent = $currentSub && $currentSub->package && $currentSub->package->slug === 'whale-package'; @endphp
+<div class="pkg-divider">Ultimate Access</div>
+<div class="whale-banner">
+    <div class="whale-left">
+        <span class="whale-emoji">🐋</span>
+        <div>
+            <div class="whale-tag">🌊 All Picks · 1★ – 10★</div>
+            <div class="whale-title">{{ $whale->name }}</div>
+            <div class="whale-sub">The ultimate INSPIN experience — every pick, every star tier, forever.</div>
+            <div class="whale-feats">
+                @foreach(['All star picks (1★ – 10★)', '1 Year Access', 'Priority Support', 'No recurring charges'] as $f)
+                <div class="whale-feat">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(253,181,21,.08)"/><polyline points="5,8.5 7,10.5 11,6" stroke="#FDB515" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                    {{ $f }}
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    <div class="whale-right">
+        <div class="whale-price">${{ number_format($whale->price, 2) }}</div>
+        <div class="whale-perday">~$2.74 / day · One-time charge</div>
+        @if($whaleIsCurrent)
+            <div style="padding:11px 32px;border-radius:50px;font-size:13px;font-weight:700;background:rgba(253,181,21,.08);border:1.5px solid rgba(253,181,21,.2);color:#FDB515;display:inline-block;">✓ Active Plan</div>
+        @else
+            <a href="{{ route('cashier', ['package' => 'whale-package']) }}" class="whale-cta">
+                🐋 Become a Whale
+            </a>
+        @endif
+    </div>
+</div>
+@endif
+
+<p style="text-align:center;color:#3a3a3a;font-size:11.5px;margin-top:18px;line-height:1.6;">
     All packages are one-time charges — no auto-renewal, ever. &nbsp;·&nbsp;
     Questions? <a href="mailto:help@inspin.com" style="color:#FDB515;text-decoration:none;">help@inspin.com</a>
 </p>
