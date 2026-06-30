@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\BettingConsensus;
 use App\Models\Package;
 use App\Models\Pick;
+use App\Models\UserPackage;
 use App\Models\WhalePackage;
 use App\Services\StreakService;
 use App\Services\SubscriptionService;
@@ -212,6 +213,10 @@ class SubscriberController extends Controller
 
         $currentSub = auth()->user()->activeSubscription()?->load('package');
 
-        return view('subscriber.packages', compact('featuredPackages', 'whalePackages', 'whaleRegular', 'currentSub'));
+        $hasUsedTrial = UserPackage::where('user_id', auth()->id())
+            ->whereHas('package', fn($q) => $q->where('slug', 'free-trial'))
+            ->exists();
+
+        return view('subscriber.packages', compact('featuredPackages', 'whalePackages', 'whaleRegular', 'currentSub', 'hasUsedTrial'));
     }
 }

@@ -122,13 +122,25 @@ $packageDetails = [
         <div style="display:block;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(253,181,21,.08);border:1px solid rgba(253,181,21,.2);color:#FDB515;cursor:default;">
             ✓ Active Plan
         </div>
-        @else
-        <button onclick="showUpgradeModal('{{ $pkg->name }}', '{{ $isFree ? 'free' : 'paid' }}')"
-           style="display:block;width:100%;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid {{ $isFree?'#22c55e':'#FDB515' }};color:{{ $isFree?'#22c55e':'#FDB515' }};background:transparent;transition:background .18s;"
-           onmouseover="this.style.background='{{ $isFree?'rgba(34,197,94,.1)':'rgba(253,181,21,.1)' }}'"
+        @elseif($isFree && $hasUsedTrial)
+        <div style="display:block;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:rgba(100,100,100,.06);border:1px solid rgba(255,255,255,.06);color:#4a4a4a;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#4a4a4a" stroke-width="2"/><path stroke="#4a4a4a" stroke-width="2" stroke-linecap="round" d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Trial Already Used
+        </div>
+        @elseif($isFree)
+        <button onclick="showUpgradeModal('{{ $pkg->name }}', 'free')"
+           style="display:block;width:100%;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #22c55e;color:#22c55e;background:transparent;transition:background .18s;"
+           onmouseover="this.style.background='rgba(34,197,94,.1)'"
            onmouseout="this.style.background='transparent'">
-            {{ $isFree ? 'Start Free Trial' : 'Get Started' }} →
+            Start Free Trial →
         </button>
+        @else
+        <a href="{{ route('cashier', ['package' => $pkg->slug]) }}"
+           style="display:block;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #FDB515;color:#FDB515;background:transparent;text-decoration:none;transition:background .18s, box-shadow .18s;"
+           onmouseover="this.style.background='rgba(253,181,21,.1)';this.style.boxShadow='0 0 14px rgba(253,181,21,.18)'"
+           onmouseout="this.style.background='transparent';this.style.boxShadow='none'">
+            Get Started →
+        </a>
         @endif
     </div>
     @endforeach
@@ -155,7 +167,7 @@ $packageDetails = [
         <div style="text-align:center;flex-shrink:0;">
             <div style="font-family:'Clash Display',sans-serif;font-size:2rem;font-weight:600;background:linear-gradient(135deg,#fdd060,#FDB515,#e09c0d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">${{ number_format($whale->price,2) }}</div>
             <div style="font-size:11px;color:#4a4a4a;margin:4px 0 14px;">1 Year Access</div>
-            <button onclick="showUpgradeModal('Whale Package', 'paid')" style="display:inline-block;padding:10px 24px;background:#FDB515;color:#171818;border-radius:50px;font-weight:700;font-size:13px;cursor:pointer;border:none;box-shadow:0 0 16px rgba(253,181,21,.3);">Become a Whale →</button>
+            <a href="{{ route('cashier', ['package' => 'whale-package']) }}" style="display:inline-block;padding:10px 24px;background:#FDB515;color:#171818;border-radius:50px;font-weight:700;font-size:13px;text-decoration:none;box-shadow:0 0 16px rgba(253,181,21,.3);transition:box-shadow .2s,transform .2s;" onmouseover="this.style.boxShadow='0 0 28px rgba(253,181,21,.5)';this.style.transform='translateY(-1px)'" onmouseout="this.style.boxShadow='0 0 16px rgba(253,181,21,.3)';this.style.transform='none'">Become a Whale →</a>
         </div>
     </div>
 </div>

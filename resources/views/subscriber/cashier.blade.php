@@ -198,6 +198,29 @@
         color: #3a3a3a; font-size: 13px; text-align: center;
         padding: 20px 0 4px; font-style: italic;
     }
+
+    /* ── Pre-selected glow (from packages page) ── */
+    @keyframes arrivedGlow {
+        0%   { box-shadow: 0 0 0 0 rgba(253,181,21,.0);  border-color: #FDB515; }
+        30%  { box-shadow: 0 0 0 8px rgba(253,181,21,.2); }
+        60%  { box-shadow: 0 0 0 14px rgba(253,181,21,.08); }
+        100% { box-shadow: 0 0 0 0 rgba(253,181,21,.0);  border-color: #FDB515; }
+    }
+    .pkg-card.arrived {
+        animation: arrivedGlow 1.2s ease .6s 2, fadeUp .4s ease both !important;
+    }
+
+    /* ── Selected-from-packages notice ── */
+    .pkg-notice {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(253,181,21,.05);
+        border: 1px solid rgba(253,181,21,.18);
+        border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+        font-size: 13px; color: #FDB515; animation: fadeUp .4s ease both;
+    }
+    .pkg-notice strong { font-weight: 700; }
+    .pkg-notice-dismiss { margin-left:auto; cursor:pointer; opacity:.5; font-size:16px; line-height:1; background:none; border:none; color:#FDB515; padding:0; }
+    .pkg-notice-dismiss:hover { opacity: 1; }
 </style>
 @endpush
 
@@ -208,6 +231,14 @@
 @endif
 @if(!$stripeConfigured)
 <div class="alert-warn">Payment processing is being finalized. Checkout will be enabled shortly.</div>
+@endif
+
+@if($selectedPackageId)
+<div class="pkg-notice" id="pkgNotice">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="#FDB515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Package pre-selected — <strong id="noticePackageName">your chosen package</strong> is highlighted below. Review and continue when ready.</span>
+    <button class="pkg-notice-dismiss" onclick="document.getElementById('pkgNotice').style.display='none'">✕</button>
+</div>
 @endif
 
 <form method="POST" action="{{ route('cashier.checkout') }}" id="cashierForm">
@@ -222,7 +253,7 @@
             <div class="pkg-grid">
                 @foreach($packages as $package)
                 @php $isPopular = $package->slug === 'monthly'; @endphp
-                <div class="pkg-card {{ ($selectedPackageId == $package->id) ? 'selected' : '' }}"
+                <div class="pkg-card {{ ($selectedPackageId == $package->id) ? 'selected arrived' : '' }}"
                      data-id="{{ $package->id }}"
                      data-price="{{ number_format($package->price, 2) }}"
                      data-name="{{ $package->name }}"
@@ -332,7 +363,7 @@ function animateVal(el) {
     el.classList.add('updating');
 }
 function selectPackage(el) {
-    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.pkg-card').forEach(c => { c.classList.remove('selected'); c.classList.remove('arrived'); });
     el.classList.add('selected');
     document.getElementById('selectedPackageId').value = el.dataset.id;
 
@@ -355,7 +386,14 @@ function selectPackage(el) {
 }
 document.addEventListener('DOMContentLoaded', function () {
     var pre = document.querySelector('.pkg-card.selected');
-    if (pre) selectPackage(pre);
+    if (pre) {
+        selectPackage(pre);
+        pre.classList.add('arrived'); // re-add after selectPackage cleared it
+        var noticeNameEl = document.getElementById('noticePackageName');
+        if (noticeNameEl) noticeNameEl.textContent = pre.dataset.name;
+        // scroll card into view smoothly
+        setTimeout(function() { pre.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
+    }
 
     document.getElementById('cashierForm').addEventListener('submit', function(e) {
         if (!document.getElementById('selectedPackageId').value) {
