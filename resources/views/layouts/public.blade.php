@@ -344,39 +344,82 @@
             .nav {
                 position: fixed;
                 top: 0; right: 0;
-                width: 290px; height: 100vh;
-                background: var(--black);
-                border-left: 1px solid var(--black-border);
+                width: 300px;
+                height: 100vh;
+                height: 100dvh; /* dynamic viewport height — fixes mobile address bar */
+                background: #111;
+                border-left: 1px solid rgba(255,255,255,.06);
                 flex-direction: column;
                 align-items: stretch;
                 gap: 0;
                 z-index: 101;
                 transform: translateX(100%);
                 transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-                padding-top: 70px;
-                box-shadow: -8px 0 40px rgba(0,0,0,0.5);
-                overflow-y: auto;
-                overflow-x: hidden;
+                padding-top: 0;
+                box-shadow: -12px 0 48px rgba(0,0,0,.7);
+                display: flex;
+                overflow: hidden; /* let inner parts scroll, not the whole panel */
                 visibility: hidden;
             }
             .nav.open { transform: translateX(0); visibility: visible; }
+
+            /* nav header — pinned at top of panel */
+            .mob-nav-header {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding: 18px 20px;
+                border-bottom: 1px solid rgba(255,255,255,.06);
+                background: #111;
+                flex-shrink: 0;
+            }
+            .mob-nav-close {
+                width: 34px; height: 34px; border-radius: 8px;
+                background: rgba(255,255,255,.06);
+                border: 1px solid rgba(255,255,255,.08);
+                color: #9a9a9a; font-size: 18px; line-height: 1;
+                display: flex; align-items: center; justify-content: center;
+                cursor: pointer; flex-shrink: 0; transition: all .15s;
+            }
+            .mob-nav-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+            /* scrollable area inside nav */
+            .mob-nav-scroll {
+                flex: 1;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* section labels */
+            .mob-nav-section-label {
+                display: block;
+                font-size: 9px; font-weight: 800; letter-spacing: .8px;
+                text-transform: uppercase; color: #3a3a3a;
+                padding: 18px 20px 8px;
+            }
+
             .nav > li { display: block; }
-            .nav a { height: auto; padding: 16px 24px; font-size: 13.5px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
+            .nav a { height: auto; padding: 14px 20px; font-size: 14px; font-weight: 500;
+                border-bottom: 1px solid rgba(255,255,255,.04); margin-bottom: 0;
+                display: flex; align-items: center; gap: 10px; color: #9a9a9a; }
+            .nav a:hover { color: #fff; background: rgba(255,255,255,.03); }
             .nav a.active { color: var(--gold); }
             .nav a.active::after, .nav a:hover::after { display: none; }
             .nav-dropdown-wrap { flex-direction: column; }
             .nav-dropdown { position: static; transform: none; display: none !important; min-width: unset; }
             .nav-dropdown-wrap.open .nav-dropdown { display: block !important; animation: none; }
-            .nav-dropdown-inner { border-radius: 0; border: none; border-top: 1px solid rgba(255,252,238,.06); background: rgba(255,255,255,.03); box-shadow: none; padding: 4px 0; margin: 0; }
-            .nav-dropdown-item { padding: 12px 28px !important; border-radius: 0; }
-            .nav-dropdown-trigger { padding: 16px 24px; border-bottom: 1px solid var(--black-border); width: 100%; }
+            .nav-dropdown-inner { border-radius: 0; border: none; border-top: 1px solid rgba(255,252,238,.05);
+                background: rgba(255,255,255,.02); box-shadow: none; padding: 4px 0; margin: 0; }
+            .nav-dropdown-item { padding: 12px 30px !important; border-radius: 0; gap: 10px; }
+            .nav-dropdown-trigger { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,.04); width: 100%; color: #9a9a9a; }
 
             /* Mobile auth panel */
             .mob-auth-wrap {
-                display:block;
-                padding:20px 16px 24px;
-                border-top:1px solid rgba(255,255,255,.07);
-                margin-top:8px;
+                display: block;
+                padding: 16px 16px 28px;
+                border-top: 1px solid rgba(255,255,255,.06);
+                background: rgba(255,255,255,.01);
             }
 
             /* Hero */
@@ -566,9 +609,28 @@
                 <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN - Insider Picks Sports Information">
             </a>
             <ul class="nav" id="mainNav">
+                {{-- Mobile nav header (logo + close button) --}}
+                <li class="mobile-only-nav-item mob-nav-header">
+                    <a href="{{ route('home') }}" onclick="closeNav()" style="display:flex;align-items:center;">
+                        <img src="{{ asset('images/inspin-logo.png') }}?v=2" alt="INSPIN" style="height:30px;width:auto;">
+                    </a>
+                    <button onclick="closeNav()" class="mob-nav-close" aria-label="Close menu">✕</button>
+                </li>
+
+                {{-- Scrollable body --}}
+                <li class="mobile-only-nav-item" style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;">
+                <div>
+                <span class="mob-nav-section-label mobile-only-nav-item">Navigate</span>
+
                 {{-- Primary: revenue pages --}}
-                <li><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}">Exclusive Articles</a></li>
-                <li><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}">Picks</a></li>
+                <div><a href="{{ route('articles') }}" class="{{ request()->routeIs('article*') || request()->routeIs('articles') ? 'active' : '' }}" onclick="closeNav()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                    Exclusive Articles</a></div>
+                <div><a href="{{ route('picks') }}" class="{{ request()->routeIs('picks') ? 'active' : '' }}" onclick="closeNav()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.6"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Picks</a></div>
+
+                <span class="mob-nav-section-label mobile-only-nav-item" style="padding-top:14px;">Data &amp; Tools</span>
 
                 {{-- Data & Tools dropdown --}}
                 <li class="nav-dropdown-wrap">
@@ -623,12 +685,26 @@
                     </div>
                 </li>
 
-                <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
-                <li class="mobile-only-nav-item"><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact Us</a></li>
-                <li class="mobile-only-nav-item"><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
+                <li style="display:none;"></li>{{-- desktop placeholder --}}
+                <div><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}" onclick="closeNav()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+                    Packages</a></div>
+                <li class="mobile-only-nav-item" style="display:none;"></li>
+                <div class="mobile-only-nav-item" style="display:none;"></div>
 
-                {{-- Mobile account section --}}
-                <li class="mobile-only-nav-item" style="list-style:none;">
+                <span class="mob-nav-section-label mobile-only-nav-item" style="padding-top:14px;">More</span>
+                <div class="mobile-only-nav-item"><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}" onclick="closeNav()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.6"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.06 9.81 19.79 19.79 0 01.99 1.18 2 2 0 013 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                    Contact Us</a></div>
+                <div class="mobile-only-nav-item"><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}" onclick="closeNav()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;opacity:.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    About</a></div>
+
+                </div>
+                </li>{{-- end scrollable body --}}
+
+                {{-- Mobile account section — pinned at bottom --}}
+                <li class="mobile-only-nav-item" style="list-style:none;flex-shrink:0;">
                     <div class="mob-auth-wrap">
                         @auth
                         <div class="mob-user-card">
