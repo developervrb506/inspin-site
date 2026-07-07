@@ -5,12 +5,31 @@
 <style>
 .art-wrap { display:{{ $article->supplements->count() > 0 ? 'flex' : 'block' }}; gap:40px; align-items:flex-start; max-width:{{ $article->supplements->count() > 0 ? '1200px' : '800px' }}; margin:0 auto; padding:52px 20px; }
 @media(max-width:900px) {
-    .art-wrap { flex-direction:column; padding:32px 16px; }
+    .art-wrap { flex-direction:column; padding:28px 16px; }
     .art-sidebar { width:100% !important; position:static !important; }
     .art-sidebar > div { position:static !important; }
 }
+@media(max-width:768px) {
+    /* Prevent ALL article content from overflowing the viewport */
+    .art-wrap { overflow-x:hidden; max-width:100vw; padding:20px 16px; }
+    .article-detail { overflow-x:hidden; max-width:100%; }
+    .article-detail h1 { font-size:1.45rem !important; line-height:1.3; word-break:break-word; overflow-wrap:break-word; }
+    .article-detail .meta { flex-wrap:wrap; gap:6px; font-size:12px; }
+    /* Excerpt blockquote */
+    .article-detail p { word-break:break-word; overflow-wrap:break-word; max-width:100%; }
+    /* Rich content area */
+    .article-detail .content { word-break:break-word; overflow-wrap:break-word; overflow-x:hidden; max-width:100%; }
+    .article-detail .content * { max-width:100%; box-sizing:border-box; }
+    .article-detail .content img { width:100% !important; height:auto !important; object-fit:cover; }
+    .article-detail .content table { display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .article-detail .content iframe { max-width:100%; }
+    .article-detail .content pre, .article-detail .content code { white-space:pre-wrap; word-break:break-all; overflow-x:auto; }
+    /* Featured image */
+    .article-detail > img, .article-detail img[style*="width:100%"] { width:100% !important; max-width:100% !important; height:auto !important; }
+}
 @media(max-width:480px) {
-    .art-wrap { padding:24px 14px; gap:24px; }
+    .art-wrap { padding:16px 14px; gap:20px; }
+    .article-detail h1 { font-size:1.3rem !important; }
 }
 </style>
 @endpush

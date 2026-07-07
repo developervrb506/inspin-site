@@ -42,6 +42,38 @@
 
         .mobile-only-nav-item { display: none; }
 
+        /* ── Mobile auth panel (hidden on desktop) ── */
+        .mob-auth-wrap { display:none; }
+        .mob-user-card {
+            display:flex; align-items:center; gap:12px;
+            padding:16px 20px; margin-bottom:12px;
+            background:rgba(255,255,255,.04); border-radius:12px;
+            border:1px solid rgba(255,255,255,.07);
+        }
+        .mob-user-avatar {
+            width:40px; height:40px; border-radius:10px;
+            background:var(--gold); color:#171818;
+            font-size:16px; font-weight:800;
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0;
+        }
+        .mob-user-name { font-size:14px; font-weight:700; color:#FFFCEE; line-height:1.2; }
+        .mob-user-label { font-size:11px; color:#555; margin-top:2px; }
+        .mob-btn {
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            width:100%; padding:13px 16px; border-radius:10px;
+            font-size:14px; font-weight:700; cursor:pointer;
+            font-family:'DM Sans',sans-serif; margin-bottom:10px;
+            border:none; transition:all .15s; text-decoration:none;
+        }
+        .mob-btn:last-child { margin-bottom:0; }
+        .mob-btn-gold { background:#FDB515; color:#171818; }
+        .mob-btn-gold:hover { background:#e09c0d; color:#171818; }
+        .mob-btn-outline { background:rgba(255,255,255,.06); color:#FFFCEE; border:1px solid rgba(255,255,255,.1) !important; }
+        .mob-btn-outline:hover { background:rgba(255,255,255,.1); color:#FFFCEE; }
+        .mob-btn-danger { background:rgba(239,68,68,.08); color:#ef4444; border:1px solid rgba(239,68,68,.2) !important; }
+        .mob-btn-danger:hover { background:rgba(239,68,68,.15); }
+
         /* ===== HEADER AUTH (right side) ===== */
         .header-auth { display: flex; gap: 18px; align-items: center; flex-shrink: 0; }
         .header-login { color: #FFFCEE; font-size: 13.5px; font-weight: 500; font-family: 'DM Sans', sans-serif; text-decoration: none; transition: color 0.15s; cursor: pointer; background: none; border: none; padding: 0; opacity: 0.75; }
@@ -339,8 +371,13 @@
             .nav-dropdown-item { padding: 12px 28px !important; border-radius: 0; }
             .nav-dropdown-trigger { padding: 16px 24px; border-bottom: 1px solid var(--black-border); width: 100%; }
 
-            /* Mobile auth section */
-            .mobile-auth-section { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; }
+            /* Mobile auth panel */
+            .mob-auth-wrap {
+                display:block;
+                padding:20px 16px 24px;
+                border-top:1px solid rgba(255,255,255,.07);
+                margin-top:8px;
+            }
 
             /* Hero */
             .hero { padding: 44px 0 36px; }
@@ -590,33 +627,35 @@
                 <li class="mobile-only-nav-item"><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact Us</a></li>
                 <li class="mobile-only-nav-item"><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
 
-                {{-- Mobile auth section at bottom of nav --}}
-                <li class="mobile-only-nav-item mobile-auth-section">
-                    @auth
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('dashboard') }}" style="display:flex;align-items:center;gap:10px;padding:16px 24px;font-size:13px;font-weight:600;color:#FFFCEE;border-bottom:1px solid var(--black-border);">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                                {{ Auth::user()->name }} — Dashboard
-                            </a>
-                        @else
-                            <a href="/subscriber/dashboard" style="display:flex;align-items:center;gap:10px;padding:16px 24px;font-size:13px;font-weight:600;color:#FFFCEE;border-bottom:1px solid var(--black-border);">
-                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                                {{ Auth::user()->name }} — My Portal
-                            </a>
-                        @endif
-                        <button onclick="doLogout();closeNav();" style="display:flex;align-items:center;gap:10px;width:100%;padding:16px 24px;background:none;border:none;border-bottom:1px solid var(--black-border);font-size:13px;font-weight:600;color:#ef4444;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                {{-- Mobile account section --}}
+                <li class="mobile-only-nav-item" style="list-style:none;">
+                    <div class="mob-auth-wrap">
+                        @auth
+                        <div class="mob-user-card">
+                            <div class="mob-user-avatar">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
+                            <div>
+                                <div class="mob-user-name">{{ Auth::user()->name }}</div>
+                                <div class="mob-user-label">{{ Auth::user()->isAdmin() ? 'Administrator' : 'Member' }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ Auth::user()->isAdmin() ? route('dashboard') : '/subscriber/dashboard' }}" class="mob-btn mob-btn-outline" onclick="closeNav()">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                            My Dashboard
+                        </a>
+                        <button onclick="doLogout();closeNav();" class="mob-btn mob-btn-danger">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
                             Log Out
                         </button>
-                    @else
-                        <button onclick="openModal();closeNav();" style="display:flex;align-items:center;gap:10px;width:100%;padding:16px 24px;background:none;border:none;border-bottom:1px solid var(--black-border);font-size:13px;font-weight:600;color:#FFFCEE;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        @else
+                        <button onclick="openModal();closeNav();" class="mob-btn mob-btn-outline">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                             Log In
                         </button>
-                        <button onclick="openModal('join');closeNav();" style="display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 48px);margin:16px 24px;padding:13px;background:#FDB515;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#171818;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                        <button onclick="openModal('join');closeNav();" class="mob-btn mob-btn-gold">
                             Join Now — Get Started
                         </button>
-                    @endauth
+                        @endauth
+                    </div>
                 </li>
             </ul>
 
