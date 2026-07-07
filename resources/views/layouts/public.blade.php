@@ -298,6 +298,9 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            /* Prevent any horizontal overflow site-wide */
+            html, body { overflow-x: hidden; max-width: 100vw; }
+
             /* Header */
             .header .wrap { padding: 0 16px; }
             .logo img { height: 40px; }
@@ -309,7 +312,7 @@
             .nav {
                 position: fixed;
                 top: 0; right: 0;
-                width: 280px; height: 100vh;
+                width: 290px; height: 100vh;
                 background: var(--black);
                 border-left: 1px solid var(--black-border);
                 flex-direction: column;
@@ -321,11 +324,13 @@
                 padding-top: 70px;
                 box-shadow: -8px 0 40px rgba(0,0,0,0.5);
                 overflow-y: auto;
+                overflow-x: hidden;
                 visibility: hidden;
             }
             .nav.open { transform: translateX(0); visibility: visible; }
             .nav > li { display: block; }
-            .nav a { height: auto; padding: 16px 24px; font-size: 13px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
+            .nav a { height: auto; padding: 16px 24px; font-size: 13.5px; border-bottom: 1px solid var(--black-border); margin-bottom: 0; }
+            .nav a.active { color: var(--gold); }
             .nav a.active::after, .nav a:hover::after { display: none; }
             .nav-dropdown-wrap { flex-direction: column; }
             .nav-dropdown { position: static; transform: none; display: none !important; min-width: unset; }
@@ -334,9 +339,12 @@
             .nav-dropdown-item { padding: 12px 28px !important; border-radius: 0; }
             .nav-dropdown-trigger { padding: 16px 24px; border-bottom: 1px solid var(--black-border); width: 100%; }
 
+            /* Mobile auth section */
+            .mobile-auth-section { border-top: 1px solid rgba(255,255,255,.1); margin-top: 8px; }
+
             /* Hero */
             .hero { padding: 44px 0 36px; }
-            .hero h1 { font-size: 1.65rem; letter-spacing: -0.3px; }
+            .hero h1 { font-size: 1.65rem; letter-spacing: -0.3px; word-break: break-word; }
             .hero p { font-size: 14px; }
             .hero-actions { gap: 10px; }
             .btn { padding: 12px 22px; font-size: 14px; }
@@ -362,6 +370,23 @@
 
             /* Modal */
             .modal-box { padding: 24px 20px; width: 95%; }
+
+            /* Article & page content — no overflow */
+            .article-detail { padding: 28px 16px; overflow-x: hidden; }
+            .article-detail h1 { font-size: 1.5rem; line-height: 1.3; word-break: break-word; }
+            .article-detail .content { word-break: break-word; overflow-wrap: break-word; }
+            .article-detail .content img { max-width: 100%; height: auto; }
+            .article-detail .content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+            .article-detail .content pre, .article-detail .content code { white-space: pre-wrap; word-break: break-word; }
+            .page { padding: 28px 16px; overflow-x: hidden; word-break: break-word; }
+
+            /* Sport filter chips — horizontal scroll */
+            .sport-filter { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
+            .sport-filter::-webkit-scrollbar { display: none; }
+            .sport-filter a { flex-shrink: 0; }
+
+            /* Tables */
+            .c-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
 
         @media (max-width: 480px) {
@@ -563,6 +588,36 @@
 
                 <li><a href="{{ route('join') }}" class="{{ request()->routeIs('join') ? 'active' : '' }}">Packages</a></li>
                 <li class="mobile-only-nav-item"><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact Us</a></li>
+                <li class="mobile-only-nav-item"><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
+
+                {{-- Mobile auth section at bottom of nav --}}
+                <li class="mobile-only-nav-item mobile-auth-section">
+                    @auth
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('dashboard') }}" style="display:flex;align-items:center;gap:10px;padding:16px 24px;font-size:13px;font-weight:600;color:#FFFCEE;border-bottom:1px solid var(--black-border);">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                {{ Auth::user()->name }} — Dashboard
+                            </a>
+                        @else
+                            <a href="/subscriber/dashboard" style="display:flex;align-items:center;gap:10px;padding:16px 24px;font-size:13px;font-weight:600;color:#FFFCEE;border-bottom:1px solid var(--black-border);">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                {{ Auth::user()->name }} — My Portal
+                            </a>
+                        @endif
+                        <button onclick="doLogout();closeNav();" style="display:flex;align-items:center;gap:10px;width:100%;padding:16px 24px;background:none;border:none;border-bottom:1px solid var(--black-border);font-size:13px;font-weight:600;color:#ef4444;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                            Log Out
+                        </button>
+                    @else
+                        <button onclick="openModal();closeNav();" style="display:flex;align-items:center;gap:10px;width:100%;padding:16px 24px;background:none;border:none;border-bottom:1px solid var(--black-border);font-size:13px;font-weight:600;color:#FFFCEE;cursor:pointer;font-family:'DM Sans',sans-serif;text-align:left;">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                            Log In
+                        </button>
+                        <button onclick="openModal('join');closeNav();" style="display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 48px);margin:16px 24px;padding:13px;background:#FDB515;border:none;border-radius:10px;font-size:14px;font-weight:700;color:#171818;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                            Join Now — Get Started
+                        </button>
+                    @endauth
+                </li>
             </ul>
 
             {{-- Right side: secondary + auth --}}

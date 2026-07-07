@@ -17,7 +17,7 @@
 
 @section('content')
 @php $hasSups = $article->supplements->count() > 0; @endphp
-<div style="background:#171818;min-height:60vh;">
+<div style="background:#171818;min-height:60vh;overflow-x:hidden;">
 <div class="art-wrap">
 
 {{-- Main article column --}}
